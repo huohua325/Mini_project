@@ -27,7 +27,9 @@ com\shapeville\game\CompoundShapeCalculation$CompoundShape.class
 com\shapeville\game\SectorCalculation.class
 com\shapeville\gui\tasks\TaskPanelInterface.class
 com\shapeville\gui\tasks\ShapePanel.class
+com\shapeville\utils\ShapeDrawer.class
 com\shapeville\game\AreaCalculation$ShapeType.class
+com\shapeville\utils\ShapeDrawer$ShapePanel.class
 com\shapeville\gui\ResultWindow$1.class
 com\shapeville\gui\tasks\AngleCalculationPanel$1.class
 com\shapeville\model\Shape2D.class

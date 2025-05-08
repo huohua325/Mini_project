@@ -5,26 +5,28 @@ import java.awt.*;
 import com.shapeville.model.Shape2D;
 import com.shapeville.model.Shape3D;
 import com.shapeville.game.ShapeRecognition;
+import com.shapeville.utils.ShapeDrawer;
 
 public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
     private final ShapeRecognition shapeRecognition;
     private int currentShapeIndex = 0;
     private boolean is2DMode = true;
     private JLabel shapeLabel;
+    private ShapeDrawer.ShapePanel shapeDrawingPanel;
     private JTextField answerField;
     private JButton submitButton;
     
     public ShapePanel() {
-        super("形状识别");
+        super("Shape Recognition");
         this.shapeRecognition = new ShapeRecognition();
     }
     
     @Override
     public void initializeUI() {
-        // 创建模式选择按钮
+        // Create mode selection buttons
         JPanel modePanel = new JPanel();
-        JButton mode2DButton = new JButton("2D形状");
-        JButton mode3DButton = new JButton("3D形状");
+        JButton mode2DButton = new JButton("2D Shapes (Basic)");
+        JButton mode3DButton = new JButton("3D Shapes (Advanced)");
         
         mode2DButton.addActionListener(e -> {
             is2DMode = true;
@@ -46,44 +48,70 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
         modePanel.add(mode3DButton);
         add(modePanel, BorderLayout.NORTH);
         
-        // 创建中央面板
+        // Create central panel with fixed size
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setPreferredSize(new Dimension(400, 500));
         
-        // 创建形状显示标签
+        // Create shape display label
         shapeLabel = new JLabel("", SwingConstants.CENTER);
-        shapeLabel.setFont(new Font("微软雅黑", Font.BOLD, 24));
+        shapeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         shapeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         centerPanel.add(shapeLabel);
+        centerPanel.add(Box.createVerticalStrut(20));
         
-        // 创建答案输入区域
+        // Create shape drawing panel with fixed size and border
+        shapeDrawingPanel = new ShapeDrawer.ShapePanel(300, 300);
+        shapeDrawingPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        shapeDrawingPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+        shapeDrawingPanel.setOpaque(true); // 确保面板是不透明的
+        
+        // Create a wrapper panel to center the shape drawing panel
+        JPanel shapeWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        shapeWrapper.setOpaque(true); // 确保包装面板是不透明的
+        shapeWrapper.add(shapeDrawingPanel);
+        centerPanel.add(shapeWrapper);
+        
+        centerPanel.add(Box.createVerticalStrut(20));
+        
+        // Create answer input area
         JPanel answerPanel = new JPanel();
         answerField = new JTextField(20);
-        submitButton = new JButton("提交答案");
+        submitButton = new JButton("Submit Answer");
         
         submitButton.addActionListener(e -> handleSubmit());
         
-        answerPanel.add(new JLabel("请输入形状的英文名称："));
+        answerPanel.add(new JLabel("Enter the shape name:"));
         answerPanel.add(answerField);
         answerPanel.add(submitButton);
         centerPanel.add(answerPanel);
         
         add(centerPanel, BorderLayout.CENTER);
         
-        // 显示第一个形状
-        showCurrentShape();
+        // Show first shape immediately
+        SwingUtilities.invokeLater(this::showCurrentShape);
     }
     
     private void showCurrentShape() {
         if (is2DMode && currentShapeIndex < shapeRecognition.getShapes2D().size()) {
             Shape2D shape = shapeRecognition.getShapes2D().get(currentShapeIndex);
-            shapeLabel.setText("请识别这个2D形状：" + shape.getChinese());
+            shapeLabel.setText("Identify this 2D shape:");
+            Shape shapeObj = ShapeDrawer.create2DShape(shape.name(), 300, 300);
+            shapeDrawingPanel.setShape(shapeObj);
+            System.out.println("Drawing 2D shape: " + shape.name()); // 调试信息
         } else if (!is2DMode && currentShapeIndex < shapeRecognition.getShapes3D().size()) {
             Shape3D shape = shapeRecognition.getShapes3D().get(currentShapeIndex);
-            shapeLabel.setText("请识别这个3D形状：" + shape.getChinese());
+            shapeLabel.setText("Identify this 3D shape:");
+            Shape shapeObj = ShapeDrawer.create3DShape(shape.name(), 300, 300);
+            shapeDrawingPanel.setShape(shapeObj);
+            System.out.println("Drawing 3D shape: " + shape.name()); // 调试信息
         }
         answerField.setText("");
         answerField.requestFocus();
+        
+        // Force immediate repaint
+        shapeDrawingPanel.revalidate();
+        shapeDrawingPanel.repaint();
     }
     
     @Override
@@ -111,7 +139,7 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
         incrementAttempts();
         
         if (correct) {
-            setFeedback("回答正确！");
+            setFeedback("Correct!");
             addAttemptToList();
             currentShapeIndex++;
             resetAttempts();
@@ -123,7 +151,7 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
             }
             showCurrentShape();
         } else if (!hasRemainingAttempts()) {
-            setFeedback("已达到最大尝试次数。正确答案是：" + correctAnswer);
+            setFeedback("Maximum attempts reached. The correct answer is: " + correctAnswer);
             addAttemptToList();
             currentShapeIndex++;
             resetAttempts();
@@ -135,7 +163,7 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
             }
             showCurrentShape();
         } else {
-            setFeedback("回答错误，请再试一次。还剩" + getRemainingAttempts() + "次机会。");
+            setFeedback("Incorrect. " + getRemainingAttempts() + " attempts remaining.");
         }
     }
     
@@ -152,12 +180,23 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
     @Override
     protected int calculateScore() {
         int totalScore = 0;
+        if (is2DMode) {
+            // Basic scoring for 2D shapes
         for (int attempts : attemptsPerTask) {
             if (attempts == 1) totalScore += 3;
             else if (attempts == 2) totalScore += 2;
             else if (attempts == 3) totalScore += 1;
         }
         return (int)((double)totalScore / (attemptsPerTask.size() * 3) * 100);
+        } else {
+            // Advanced scoring for 3D shapes
+            for (int attempts : attemptsPerTask) {
+                if (attempts == 1) totalScore += 5;
+                else if (attempts == 2) totalScore += 3;
+                else if (attempts == 3) totalScore += 1;
+            }
+            return (int)((double)totalScore / (attemptsPerTask.size() * 5) * 100);
+        }
     }
     
     @Override
