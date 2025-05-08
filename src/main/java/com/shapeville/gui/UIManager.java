@@ -23,6 +23,8 @@ public class UIManager {
         "复合形状", "扇形计算"
     };
     
+    private boolean initialized = false;
+    
     private UIManager() {
         taskStatusMap = new HashMap<>();
         taskScores = new HashMap<>();
@@ -54,11 +56,15 @@ public class UIManager {
     }
     
     public void initialize() {
+        if (initialized) {
+            return;  // 防止重复初始化
+        }
         SwingUtilities.invokeLater(() -> {
             mainWindow = new MainWindow();
             currentWindow = mainWindow;
             showMainWindow();
             updateMainWindowStatus();
+            initialized = true;
         });
     }
     
@@ -117,11 +123,14 @@ public class UIManager {
         updateUserLevel();
         
         // 显示结果窗口
-        ResultWindow resultWindow = new ResultWindow(taskName, score, feedback);
-        resultWindow.setVisible(true);
-        
-        // 更新主窗口状态
-        updateMainWindowStatus();
+        SwingUtilities.invokeLater(() -> {
+            ResultWindow resultWindow = new ResultWindow(taskName, score, feedback);
+            resultWindow.setVisible(true);
+            
+            // 更新主窗口状态并显示
+            showMainWindow();
+            updateMainWindowStatus();
+        });
     }
     
     private void checkAndUnlockTasks() {

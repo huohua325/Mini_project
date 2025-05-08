@@ -2,33 +2,25 @@ package com.shapeville.gui.tasks;
 
 import javax.swing.*;
 import java.awt.*;
+import com.shapeville.gui.TaskWindow;
 
 public abstract class BaseTaskPanel extends JPanel {
     protected Timer timer;
     protected int attempts;
-    protected JTextArea feedbackArea;
     protected String taskName;
     protected java.util.List<Integer> attemptsPerTask;
+    protected TaskWindow parentWindow;
     
     public BaseTaskPanel(String taskName) {
         this.taskName = taskName;
         this.attempts = 0;
         this.attemptsPerTask = new java.util.ArrayList<>();
         setLayout(new BorderLayout());
-        initializeCommonComponents();
-        initializeUI();
     }
     
-    private void initializeCommonComponents() {
-        // 创建反馈区域
-        feedbackArea = new JTextArea();
-        feedbackArea.setEditable(false);
-        feedbackArea.setWrapStyleWord(true);
-        feedbackArea.setLineWrap(true);
-        feedbackArea.setFont(new Font("微软雅黑", Font.PLAIN, 14));
-        JScrollPane feedbackScroll = new JScrollPane(feedbackArea);
-        feedbackScroll.setPreferredSize(new Dimension(750, 100));
-        add(feedbackScroll, BorderLayout.SOUTH);
+    // 设置父窗口引用
+    public void setParentWindow(TaskWindow window) {
+        this.parentWindow = window;
     }
     
     // 子类必须实现的方法
@@ -39,11 +31,15 @@ public abstract class BaseTaskPanel extends JPanel {
     
     // 通用方法
     protected void setFeedback(String message) {
-        feedbackArea.setText(message);
+        if (parentWindow != null) {
+            parentWindow.setFeedback(message);
+        }
     }
     
     protected void appendFeedback(String message) {
-        feedbackArea.append(message + "\n");
+        if (parentWindow != null) {
+            parentWindow.appendFeedback(message);
+        }
     }
     
     protected void incrementAttempts() {

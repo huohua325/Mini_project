@@ -133,14 +133,21 @@ public class MainWindow extends JFrame {
     
     private void addTaskButton(String text, String tooltip, String difficulty) {
         JButton button = new JButton(text);
-        button.setToolTipText(tooltip);
-        button.setFont(new Font("微软雅黑", Font.BOLD, 16));
         
-        // 设置按钮样式
+        // 修改工具提示的显示方式
         if ("advanced".equals(difficulty)) {
+            // 为高级任务添加更详细的提示信息
+            String advancedTooltip = String.format("<html>%s<br><br>" +
+                "<font color='red'>高级任务 - 当前未解锁</font><br>" +
+                "解锁条件：完成所有基础任务并获得至少70分<br>" +
+                "基础任务：形状识别、角度识别、面积计算、圆形计算</html>", 
+                tooltip);
+            button.setToolTipText(advancedTooltip);
             button.setBackground(new Color(255, 204, 153));
             button.setForeground(new Color(153, 51, 0));
         } else {
+            // 为基础任务添加基本提示
+            button.setToolTipText("<html>" + tooltip + "</html>");
             button.setBackground(new Color(204, 229, 255));
             button.setForeground(new Color(0, 51, 153));
         }
@@ -233,22 +240,34 @@ public class MainWindow extends JFrame {
     }
     
     private void updateButtonStatus(JButton button, TaskStatus status) {
+        String currentTooltip = button.getToolTipText();
+        
         switch (status) {
             case LOCKED:
                 button.setEnabled(false);
                 button.setBackground(Color.GRAY);
+                // 保持原有提示不变
                 break;
+            
             case UNLOCKED:
                 button.setEnabled(true);
                 button.setBackground(new Color(51, 153, 255));
+                // 移除未解锁提示（如果存在）
+                if (currentTooltip != null && currentTooltip.contains("未解锁")) {
+                    button.setToolTipText(currentTooltip.replace("<font color='red'>高级任务 - 当前未解锁</font><br>", ""));
+                }
                 break;
+            
             case IN_PROGRESS:
                 button.setEnabled(true);
                 button.setBackground(new Color(255, 153, 51));
+                button.setToolTipText(currentTooltip + "<br><font color='blue'>正在进行中...</font>");
                 break;
+            
             case COMPLETED:
                 button.setEnabled(true);
                 button.setBackground(new Color(51, 153, 51));
+                button.setToolTipText(currentTooltip + "<br><font color='green'>已完成！</font>");
                 break;
         }
     }
@@ -264,16 +283,5 @@ public class MainWindow extends JFrame {
             progressBar.setValue(progress);
             progressBar.setString(progress + "%");
         }
-    }
-    
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            com.shapeville.gui.UIManager.getInstance().initialize();
-        });
     }
 }

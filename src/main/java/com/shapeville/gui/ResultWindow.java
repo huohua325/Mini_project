@@ -28,6 +28,7 @@ public class ResultWindow extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(700, 500);
         setLocationRelativeTo(null);
+        setAlwaysOnTop(true);
         
         // 创建主面板
         JPanel mainPanel = new JPanel();
@@ -79,14 +80,33 @@ public class ResultWindow extends JFrame {
             "详细反馈"
         ));
         
-        JTextArea feedbackArea = new JTextArea(feedback);
-        feedbackArea.setEditable(false);
-        feedbackArea.setWrapStyleWord(true);
-        feedbackArea.setLineWrap(true);
-        feedbackArea.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        feedbackArea.setMargin(new Insets(10, 10, 10, 10));
+        // 创建反馈区域的滚动面板
+        JPanel feedbackContent = new JPanel();
+        feedbackContent.setLayout(new BoxLayout(feedbackContent, BoxLayout.Y_AXIS));
         
-        JScrollPane scrollPane = new JScrollPane(feedbackArea);
+        // 添加统计信息
+        if (taskName.equals("形状识别")) {
+            String[] lines = feedback.split("\n");
+            for (String line : lines) {
+                if (!line.trim().isEmpty()) {
+                    JLabel label = new JLabel(line);
+                    label.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+                    label.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+                    label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    feedbackContent.add(label);
+                }
+            }
+        } else {
+            JTextArea feedbackArea = new JTextArea(feedback);
+            feedbackArea.setEditable(false);
+            feedbackArea.setWrapStyleWord(true);
+            feedbackArea.setLineWrap(true);
+            feedbackArea.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+            feedbackArea.setMargin(new Insets(10, 10, 10, 10));
+            feedbackContent.add(feedbackArea);
+        }
+        
+        JScrollPane scrollPane = new JScrollPane(feedbackContent);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         feedbackPanel.add(scrollPane, BorderLayout.CENTER);
         
@@ -171,7 +191,11 @@ public class ResultWindow extends JFrame {
         for (int i = 0; i < 5; i++) {
             JLabel star = new JLabel("★");
             star.setFont(new Font("Dialog", Font.PLAIN, 32));
-            star.setForeground(i < starCount ? Color.ORANGE : Color.LIGHT_GRAY);
+            if (taskName.equals("形状识别")) {
+                star.setForeground(i < starCount ? Color.ORANGE : Color.LIGHT_GRAY);
+            } else {
+                star.setForeground(i < starCount ? Color.ORANGE : Color.LIGHT_GRAY);
+            }
             starsPanel.add(star);
         }
         starsPanel.revalidate();
@@ -188,21 +212,41 @@ public class ResultWindow extends JFrame {
                     scoreProgress.setValue(currentScore);
                     
                     // 更新星星
-                    int stars = currentScore >= 90 ? 5 : 
-                              currentScore >= 80 ? 4 : 
-                              currentScore >= 70 ? 3 : 
-                              currentScore >= 60 ? 2 : 1;
+                    int stars;
+                    if (taskName.equals("形状识别")) {
+                        stars = currentScore >= 90 ? 5 : 
+                               currentScore >= 80 ? 4 : 
+                               currentScore >= 70 ? 3 : 
+                               currentScore >= 60 ? 2 : 1;
+                    } else {
+                        stars = currentScore >= 90 ? 5 : 
+                               currentScore >= 80 ? 4 : 
+                               currentScore >= 70 ? 3 : 
+                               currentScore >= 60 ? 2 : 1;
+                    }
                     updateStars(stars);
                     
                     // 更新进度条颜色
-                    if (currentScore >= 90) {
-                        scoreProgress.setForeground(new Color(0, 153, 0));  // 深绿色
-                    } else if (currentScore >= 70) {
-                        scoreProgress.setForeground(new Color(0, 102, 204));  // 蓝色
-                    } else if (currentScore >= 60) {
-                        scoreProgress.setForeground(new Color(255, 153, 0));  // 橙色
+                    if (taskName.equals("形状识别")) {
+                        if (currentScore >= 90) {
+                            scoreProgress.setForeground(new Color(0, 153, 0));  // 深绿色
+                        } else if (currentScore >= 70) {
+                            scoreProgress.setForeground(new Color(0, 102, 204));  // 蓝色
+                        } else if (currentScore >= 60) {
+                            scoreProgress.setForeground(new Color(255, 153, 0));  // 橙色
+                        } else {
+                            scoreProgress.setForeground(new Color(255, 51, 51));  // 红色
+                        }
                     } else {
-                        scoreProgress.setForeground(new Color(255, 51, 51));  // 红色
+                        if (currentScore >= 90) {
+                            scoreProgress.setForeground(new Color(0, 153, 0));  // 深绿色
+                        } else if (currentScore >= 80) {
+                            scoreProgress.setForeground(new Color(0, 102, 204));  // 蓝色
+                        } else if (currentScore >= 70) {
+                            scoreProgress.setForeground(new Color(255, 153, 0));  // 橙色
+                        } else {
+                            scoreProgress.setForeground(new Color(255, 51, 51));  // 红色
+                        }
                     }
                 } else {
                     ((Timer)e.getSource()).stop();
@@ -225,23 +269,37 @@ public class ResultWindow extends JFrame {
     }
     
     private String getCompletionStatus() {
-        if (score >= 90) return "完美完成";
-        if (score >= 80) return "优秀完成";
-        if (score >= 70) return "良好完成";
-        if (score >= 60) return "基本完成";
-        return "需要改进";
+        if (taskName.equals("形状识别")) {
+            if (score >= 90) return "完美完成";
+            if (score >= 70) return "良好完成";
+            if (score >= 60) return "基本完成";
+            return "需要继续练习";
+        } else {
+            if (score >= 90) return "完美完成";
+            if (score >= 80) return "优秀完成";
+            if (score >= 70) return "良好完成";
+            if (score >= 60) return "基本完成";
+            return "需要改进";
+        }
     }
     
     private String getAccuracyStatus() {
-        return String.format("%.1f%%", score);
+        return String.format("%.1f%%", (double)score);
     }
     
     private String getPerformanceLevel() {
-        if (score >= 90) return "S级（卓越）";
-        if (score >= 80) return "A级（优秀）";
-        if (score >= 70) return "B级（良好）";
-        if (score >= 60) return "C级（及格）";
-        return "D级（不及格）";
+        if (taskName.equals("形状识别")) {
+            if (score >= 90) return "A级（优秀）";
+            if (score >= 70) return "B级（良好）";
+            if (score >= 60) return "C级（及格）";
+            return "D级（需要练习）";
+        } else {
+            if (score >= 90) return "S级（卓越）";
+            if (score >= 80) return "A级（优秀）";
+            if (score >= 70) return "B级（良好）";
+            if (score >= 60) return "C级（及格）";
+            return "D级（不及格）";
+        }
     }
     
     @Override

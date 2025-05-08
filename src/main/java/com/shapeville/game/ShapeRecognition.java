@@ -58,6 +58,14 @@ public class ShapeRecognition {
         return correctCount3D >= 4;
     }
 
+    public int getCorrectCount2D() {
+        return correctCount2D;
+    }
+
+    public int getCorrectCount3D() {
+        return correctCount3D;
+    }
+
     public void reset() {
         initializeShapes();
     }
@@ -71,7 +79,7 @@ public class ShapeRecognition {
             int attempts = 0;
             boolean correct = false;
             while (attempts < 3 && !correct) {
-                System.out.println("请识别这个2D形状（英文名）: " + shape.getChinese());
+                System.out.println("请识别这个2D形状:");
                 String answer = scanner.nextLine().trim().toLowerCase();
                 attempts++;
                 
@@ -102,7 +110,7 @@ public class ShapeRecognition {
             int attempts = 0;
             boolean correct = false;
             while (attempts < 3 && !correct) {
-                System.out.println("请识别这个3D形状（英文名）: " + shape.getChinese());
+                System.out.println("请识别这个3D形状: ");
                 String answer = scanner.nextLine().trim().toLowerCase();
                 attempts++;
                 
