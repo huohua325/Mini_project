@@ -20,10 +20,16 @@ public class AngleCalculationPanel extends BaseTaskPanel implements TaskPanelInt
         super("角度识别");
         this.angleCalculation = new AngleCalculation();
         initializeUI();
+        setupAngleUI();
     }
     
     @Override
     public void initializeUI() {
+        // 只设置基本布局，不进行复杂初始化
+        setLayout(new BorderLayout(10, 10));
+    }
+    
+    private void setupAngleUI() {
         setLayout(new BorderLayout(10, 10));
         
         // 创建顶部面板

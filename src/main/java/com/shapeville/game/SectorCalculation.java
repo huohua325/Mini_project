@@ -1,27 +1,90 @@
 package com.shapeville.game;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.*;
 
 public class SectorCalculation {
     // 扇形参数类
     public static class Sector {
-        private final String name;
-        private final double radius;
-        private final double angle;
-        private final double correctArea;
-        private final String solution;
+        private double radius;
+        private double angle;
+        private String unit;
+        private double correctArea;
+        private String solution;
 
-        public Sector(String name, double radius, double angle, double correctArea, String solution) {
-            this.name = name;
+        public Sector(double radius, double angle, String unit) {
             this.radius = radius;
             this.angle = angle;
-            this.correctArea = correctArea;
-            this.solution = solution;
+            this.unit = unit;
+            calculateCorrectArea();
         }
 
-        public String getName() { return name; }
+        public String getName() {
+            return String.format("扇形 (r=%.1f%s, θ=%.0f°)", radius, unit, angle);
+        }
+
+        public void draw(Graphics2D g2d, int width, int height) {
+            // 设置绘图质量
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            
+            // 计算绘制参数
+            int margin = 40;
+            int size = Math.min(width, height) - 2 * margin;
+            int centerX = width / 2;
+            int centerY = height / 2;
+            
+            // 绘制扇形
+            g2d.setColor(new Color(255, 200, 200)); // 浅粉色填充
+            g2d.fillArc(centerX - size/2, centerY - size/2, size, size, 0, -(int)angle);
+            
+            // 绘制圆弧
+            g2d.setColor(Color.BLACK);
+            g2d.setStroke(new BasicStroke(2));
+            g2d.drawArc(centerX - size/2, centerY - size/2, size, size, 0, 360);
+            
+            // 绘制扇形边
+            double radians = Math.toRadians(angle);
+            int endX = centerX + (int)(size/2 * Math.cos(radians));
+            int endY = centerY - (int)(size/2 * Math.sin(radians));
+            g2d.drawLine(centerX, centerY, centerX + size/2, centerY); // 水平线
+            g2d.drawLine(centerX, centerY, endX, endY); // 斜线
+            
+            // 绘制标注
+            g2d.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+            // 绘制半径标注
+            String radiusText = radius + " " + unit;
+            g2d.drawString(radiusText, centerX + size/4, centerY - 5);
+            
+            // 绘制角度标注
+            int arcRadius = 30;
+            g2d.drawArc(centerX - arcRadius, centerY - arcRadius, 
+                       2 * arcRadius, 2 * arcRadius, 0, -(int)angle);
+            String angleText = String.format("%.0f°", angle);
+            double labelAngle = Math.toRadians(angle/2);
+            int labelX = centerX + (int)(arcRadius * 1.5 * Math.cos(labelAngle));
+            int labelY = centerY - (int)(arcRadius * 1.5 * Math.sin(labelAngle));
+            g2d.drawString(angleText, labelX, labelY);
+        }
+
+        private void calculateCorrectArea() {
+            this.correctArea = Math.PI * radius * radius * angle / 360.0;
+            this.solution = String.format(
+                "解题步骤：\n" +
+                "1. 扇形面积公式：A = πr²θ/360°\n" +
+                "2. 代入数值：A = 3.14 × %.1f² × %.1f° ÷ 360°\n" +
+                "3. 计算结果：A = %.1f %s²",
+                radius, angle, correctArea, unit
+            );
+        }
+
+        // Getters
         public double getRadius() { return radius; }
         public double getAngle() { return angle; }
+        public String getUnit() { return unit; }
         public double getCorrectArea() { return correctArea; }
         public String getSolution() { return solution; }
     }
@@ -30,21 +93,18 @@ public class SectorCalculation {
     private final Set<Integer> practiced;
 
     public SectorCalculation() {
-        this.sectors = initializeSectors();
-        this.practiced = new HashSet<>();
-    }
-
-    private List<Sector> initializeSectors() {
-        return Arrays.asList(
-            new Sector("扇形1", 8, 90, Math.PI * 8 * 8 * 90 / 360, 
-                      "A = π × r² × x/360 = 3.14×8²×90/360 = 50.24"),
-            new Sector("扇形2", 6, 120, Math.PI * 6 * 6 * 120 / 360,
-                      "A = π × r² × x/360 = 3.14×6²×120/360 = 37.68"),
-            new Sector("扇形3", 10, 60, Math.PI * 10 * 10 * 60 / 360,
-                      "A = π × r² × x/360 = 3.14×10²×60/360 = 52.33"),
-            new Sector("扇形4", 5, 180, Math.PI * 5 * 5 * 180 / 360,
-                      "A = π × r² × x/360 = 3.14×5²×180/360 = 39.25")
-        );
+        sectors = new ArrayList<>();
+        practiced = new HashSet<>();
+        
+        // 添加8个预定义的扇形，对应图片中的扇形
+        sectors.add(new Sector(8, 90, "cm"));    // 1号扇形
+        sectors.add(new Sector(18, 130, "ft"));  // 2号扇形
+        sectors.add(new Sector(19, 240, "cm"));  // 3号扇形
+        sectors.add(new Sector(22, 110, "ft"));  // 4号扇形
+        sectors.add(new Sector(3.5, 100, "m"));  // 5号扇形
+        sectors.add(new Sector(8, 270, "in"));   // 6号扇形
+        sectors.add(new Sector(12, 280, "yd"));  // 7号扇形
+        sectors.add(new Sector(15, 250, "mm"));  // 8号扇形
     }
 
     public List<Sector> getSectors() {
@@ -60,14 +120,7 @@ public class SectorCalculation {
     }
 
     public boolean isComplete() {
-        return practiced.size() >= sectors.size();
-    }
-
-    public boolean checkAnswer(int sectorIndex, double answer) {
-        if (sectorIndex < 0 || sectorIndex >= sectors.size()) {
-            return false;
-        }
-        return Math.abs(answer - sectors.get(sectorIndex).getCorrectArea()) < 0.05;
+        return practiced.size() == sectors.size();
     }
 
     public void reset() {
@@ -83,9 +136,7 @@ public class SectorCalculation {
                 System.out.println("请选择要练习的扇形（1-" + sectors.size() + "），或输入0返回主菜单：");
                 for (int i = 0; i < sectors.size(); i++) {
                     if (!practiced.contains(i)) {
-                        System.out.println((i+1) + ". " + sectors.get(i).getName() + 
-                                         "（半径=" + sectors.get(i).getRadius() + 
-                                         "，圆心角=" + sectors.get(i).getAngle() + "°）");
+                        System.out.println((i+1) + ". " + sectors.get(i).getName());
                     }
                 }
                 
@@ -107,31 +158,34 @@ public class SectorCalculation {
                 
                 Sector sector = sectors.get(idx);
                 int attempts = 0;
-                boolean correct = false;
+                boolean areaCorrect = false;
                 
-                while (attempts < 3 && !correct) {
+                while (attempts < 3 && !areaCorrect) {
                     System.out.println("已知半径 r = " + sector.getRadius() + 
-                                     "，圆心角 x = " + sector.getAngle() + 
-                                     "°，请计算扇形面积（π取3.14，保留2位小数）：");
-                    String answerStr = scanner.nextLine();
-                    attempts++;
+                                     "，圆心角 x = " + sector.getAngle() + "°");
                     
+                    System.out.println("请计算扇形面积（π取3.14，保留2位小数）：");
+                    String answerStr = scanner.nextLine();
                     try {
                         double answer = Double.parseDouble(answerStr);
-                        if (checkAnswer(idx, answer)) {
-                            System.out.println("回答正确！\n");
-                            correct = true;
+                        if (Math.abs(answer - sector.getCorrectArea()) < 0.05) {
+                            System.out.println("面积计算正确！");
+                            areaCorrect = true;
                         } else {
-                            System.out.println("回答错误，请再试一次。");
+                            System.out.println("面积计算错误，请继续。");
                         }
                     } catch (Exception e) {
                         System.out.println("输入无效，请输入数字。");
                     }
+                    
+                    attempts++;
                 }
                 
-                if (!correct) {
-                    System.out.println("正确答案是: " + String.format("%.2f", sector.getCorrectArea()));
-                    System.out.println("详细解法：" + sector.getSolution());
+                if (!areaCorrect) {
+                    System.out.println("\n正确答案：");
+                    System.out.println("面积：" + String.format("%.2f", sector.getCorrectArea()));
+                    System.out.println("\n详细解法：");
+                    System.out.println(sector.getSolution());
                 }
                 System.out.println();
                 

@@ -34,7 +34,7 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
         this.completedShapes = new HashSet<>();
         this.currentParams = new HashMap<>();
         initializeTimer();
-        initializeUI();
+        setupAreaUI();
     }
 
     private void initializeTimer() {
@@ -57,6 +57,10 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
 
     @Override
     public void initializeUI() {
+        setLayout(new BorderLayout(10, 10));
+    }
+    
+    private void setupAreaUI() {
         setLayout(new BorderLayout(10, 10));
 
         // 创建顶部面板

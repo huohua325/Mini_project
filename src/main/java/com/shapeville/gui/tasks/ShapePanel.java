@@ -32,26 +32,54 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
     
     public ShapePanel() {
         super("形状识别");
+        
+        // 在super调用后初始化成员变量
         this.shapeRecognition = new ShapeRecognition();
-        initializeShapes();
-        initializeUI();
-    }
-    
-    private void initializeShapes() {
         shapes2D = new ArrayList<>(Arrays.asList(Shape2D.values()));
         shapes3D = new ArrayList<>(Arrays.asList(Shape3D.values()));
         attemptsPerShape = new ArrayList<>();
         correctAnswers = new ArrayList<>();
+        
+        Collections.shuffle(shapes2D);
+        Collections.shuffle(shapes3D);
+        
+        // 调用自定义的初始化UI方法
+        setupShapeUI();
+    }
+    
+    private void initializeShapes() {
+        // 清空现有列表并重新初始化
+        shapes2D.clear();
+        shapes3D.clear();
+        attemptsPerShape.clear();
+        correctAnswers.clear();
+        
+        // 添加所有形状并洗牌
+        shapes2D.addAll(Arrays.asList(Shape2D.values()));
+        shapes3D.addAll(Arrays.asList(Shape3D.values()));
         Collections.shuffle(shapes2D);
         Collections.shuffle(shapes3D);
     }
     
+    // 创建自定义的UI初始化方法，确保不会覆盖反馈区域
+    private void setupShapeUI() {
+        // 创建一个新的面板来包含形状相关元素
+        JPanel shapeContentPanel = new JPanel(new BorderLayout(10, 10));
+        shapeContentPanel.add(createTopPanel(), BorderLayout.NORTH);
+        shapeContentPanel.add(createContentPanel(), BorderLayout.CENTER);
+        
+        // 将这个面板添加到CENTER位置，这样不会与SOUTH位置的反馈区域冲突
+        add(shapeContentPanel, BorderLayout.CENTER);
+        
+        // 显示当前形状
+        showCurrentShape();
+    }
+    
+    // 实现父类的抽象方法，保持简单
     @Override
     public void initializeUI() {
-        setLayout(new BorderLayout(10, 10));
-        add(createTopPanel(), BorderLayout.NORTH);
-        add(createContentPanel(), BorderLayout.CENTER);
-        showCurrentShape();
+        // 只设置布局，让父类的initializeCommonComponents能正确添加反馈区域
+        setLayout(new BorderLayout());
     }
     
     private JPanel createTopPanel() {
@@ -166,13 +194,13 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
             String chinese = is2DMode ? ((Shape2D)shape).getChinese() : ((Shape3D)shape).getChinese();
             String english = is2DMode ? ((Shape2D)shape).getEnglish() : ((Shape3D)shape).getEnglish();
             
-            shapeLabel.setText("请识别这个" + (is2DMode ? "2D" : "3D") + "形状：" + chinese);
+            shapeLabel.setText("请识别这个" + (is2DMode ? "2D" : "3D") + "形状：");
             displayShapeImage(english.toLowerCase() + ".png", is2DMode);
             answerField.setText("");
             answerField.requestFocus();
             
             // 显示剩余需要识别的类型数量
-            setFeedback(shapeRecognition.getRemainingTypesMessage(is2DMode));
+            updateFeedback(shapeRecognition.getRemainingTypesMessage(is2DMode));
         }
     }
     
@@ -203,6 +231,12 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
         }
     }
     
+    // 简化反馈更新方法，现在只需要调用父类方法
+    private void updateFeedback(String message) {
+        // 直接使用父类方法，间接更新TaskWindow
+        setFeedback(message);
+    }
+    
     @Override
     public void handleSubmit() {
         String answer = answerField.getText().trim().toLowerCase();
@@ -215,7 +249,7 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
         incrementAttempts();
         
         if (correct) {
-            setFeedback("回答正确！\n" + shapeRecognition.getRemainingTypesMessage(is2DMode));
+            updateFeedback("回答正确！\n" + shapeRecognition.getRemainingTypesMessage(is2DMode));
             correctAnswers.add(true);
             addAttemptToList();
             currentShapeIndex++;
@@ -228,7 +262,7 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
             }
             showCurrentShape();
         } else if (!hasRemainingAttempts()) {
-            setFeedback("已达到最大尝试次数。正确答案是：" + correctAnswer + "\n" + 
+            updateFeedback("已达到最大尝试次数。正确答案是：" + correctAnswer + "\n" + 
                        shapeRecognition.getRemainingTypesMessage(is2DMode));
             correctAnswers.add(false);
             addAttemptToList();
@@ -236,7 +270,7 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
             resetAttempts();
             showCurrentShape();
         } else {
-            setFeedback("回答错误，请再试一次。还剩" + getRemainingAttempts() + "次机会。");
+            updateFeedback("回答错误，请再试一次。还剩" + getRemainingAttempts() + "次机会。");
         }
     }
     
@@ -308,7 +342,12 @@ public class ShapePanel extends BaseTaskPanel implements TaskPanelInterface {
         is2DMode = true;
         shapeRecognition.reset();
         initializeShapes();
+        
+        // 确保显示当前形状时不会清除反馈区域
         showCurrentShape();
+        
+        // 添加初始反馈信息
+        updateFeedback(shapeRecognition.getRemainingTypesMessage(is2DMode));
     }
     
     @Override

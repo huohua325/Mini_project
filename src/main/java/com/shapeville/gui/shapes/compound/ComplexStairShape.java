@@ -8,10 +8,10 @@ import com.shapeville.gui.shapes.CompoundShapeDrawer;
 /**
  * 复杂阶梯（形状4）的实现
  * 由四个矩形组成：
- * - 底部矩形：60m × 36m
- * - 中间矩形：5m × 36m
- * - 左侧矩形：36m × 36m
- * - 左上小矩形：19m × 36m
+ * - 底部矩形：24m × 6m
+ * - 中间矩形：10m × 12m
+ * - 左侧矩形：12m × 12m
+ * - 左上小矩形：2m × 12m
  */
 public class ComplexStairShape extends CompoundShapeDrawer {
     private final Map<String, Double> dimensions;
@@ -19,14 +19,14 @@ public class ComplexStairShape extends CompoundShapeDrawer {
     
     public ComplexStairShape() {
         dimensions = new HashMap<>();
-        dimensions.put("bottomWidth", 60.0);  // 底部矩形宽度
-        dimensions.put("bottomHeight", 36.0);  // 底部矩形高度
-        dimensions.put("midWidth", 5.0);     // 中间矩形宽度
-        dimensions.put("midHeight", 36.0);    // 中间矩形高度
-        dimensions.put("leftWidth", 36.0);    // 左侧矩形宽度
-        dimensions.put("leftHeight", 36.0);   // 左侧矩形高度
-        dimensions.put("topWidth", 19.0);      // 左上小矩形宽度
-        dimensions.put("topHeight", 36.0);    // 左上小矩形高度
+        dimensions.put("bottomWidth", 24.0);  // 底部矩形宽度
+        dimensions.put("bottomHeight", 6.0);  // 底部矩形高度
+        dimensions.put("midWidth", 10.0);     // 中间矩形宽度
+        dimensions.put("midHeight", 12.0);    // 中间矩形高度
+        dimensions.put("leftWidth", 12.0);    // 左侧矩形宽度
+        dimensions.put("leftHeight", 12.0);   // 左侧矩形高度
+        dimensions.put("topWidth", 2.0);      // 左上小矩形宽度
+        dimensions.put("topHeight", 12.0);    // 左上小矩形高度
     }
     
     @Override
@@ -40,18 +40,18 @@ public class ComplexStairShape extends CompoundShapeDrawer {
             dimensions.get("leftHeight") + dimensions.get("bottomHeight"));
         
         // 计算实际尺寸
-        int bottomWidth = (int)(dimensions.get("bottomWidth") * scale);  // 60m
-        int bottomHeight = (int)(dimensions.get("bottomHeight") * scale); // 36m
-        int leftWidth = (int)(dimensions.get("leftWidth") * scale);      // 36m
-        int leftHeight = (int)(dimensions.get("leftHeight") * scale);    // 36m
+        int bottomWidth = (int)(dimensions.get("bottomWidth") * scale);  // 24m
+        int bottomHeight = (int)(dimensions.get("bottomHeight") * scale); // 6m
+        int leftWidth = (int)(dimensions.get("leftWidth") * scale);      // 12m
+        int leftHeight = (int)(dimensions.get("leftHeight") * scale);    // 12m
         
         // 计算绘制位置（居中）
         int centerX = width / 2;
         int centerY = height / 2;
         
         // 计算T形的起始位置
-        // bottomWidth = 60m, leftWidth = 36m
-        // 主矩形(36m)从左数第4个位置开始(19m + 36m + 5m = 60m)
+        // bottomWidth = 24m, leftWidth = 12m
+        // 主矩形(12m)从左数第3个位置开始(2m + 12m + 10m = 24m)
         int startX = centerX - bottomWidth / 2;  // T形横条的左边界
         int startY = centerY - (leftHeight + bottomHeight) / 2;  // 整体的上边界
         
@@ -59,20 +59,20 @@ public class ComplexStairShape extends CompoundShapeDrawer {
             // 创建形状路径
             Path2D.Double path = new Path2D.Double();
             
-            // 1. 绘制T形的"腿"部分 (36×36的主矩形,位于左侧)
-            int legX = startX + 19;  // 从左边界开始,偏移19m
+            // 1. 绘制T形的"腿"部分 (12×12的主矩形,位于左侧)
+            int legX = startX + 2;  // 从左边界开始,偏移2m
             path.moveTo(legX, startY);
-            path.lineTo(legX + leftWidth, startY);  // 向右36m
-            path.lineTo(legX + leftWidth, startY + leftHeight);  // 向下36m
-            path.lineTo(legX, startY + leftHeight);  // 向左36m
+            path.lineTo(legX + leftWidth, startY);  // 向右12m
+            path.lineTo(legX + leftWidth, startY + leftHeight);  // 向下12m
+            path.lineTo(legX, startY + leftHeight);  // 向左12m
             path.closePath();
             
-            // 2. 绘制T形的"横"部分 (60×36的横条)
+            // 2. 绘制T形的"横"部分 (24×6的横条)
             Path2D.Double crossPath = new Path2D.Double();
             crossPath.moveTo(startX, startY + leftHeight);  // 从左边界开始
-            crossPath.lineTo(startX + bottomWidth, startY + leftHeight);  // 向右60m
-            crossPath.lineTo(startX + bottomWidth, startY + leftHeight + bottomHeight);  // 向下36m
-            crossPath.lineTo(startX, startY + leftHeight + bottomHeight);  // 向左60m
+            crossPath.lineTo(startX + bottomWidth, startY + leftHeight);  // 向右24m
+            crossPath.lineTo(startX + bottomWidth, startY + leftHeight + bottomHeight);  // 向下6m
+            crossPath.lineTo(startX, startY + leftHeight + bottomHeight);  // 向左24m
             crossPath.closePath();
             
             // 填充形状
@@ -106,39 +106,39 @@ public class ComplexStairShape extends CompoundShapeDrawer {
         int centerY = height / 2;
         int startX = centerX - bottomWidth / 2;
         int startY = centerY - (leftHeight + bottomHeight) / 2;
-        int legX = startX + 19;
+        int legX = startX + 2;
         
         // 绘制主矩形(T形腿)尺寸
         // 宽度标注移到上方40个单位
         drawDimensionLine(g, legX, startY - 40,
                          legX + leftWidth, startY - 40,
-                         "36 m");
+                         "12 m");
         // 高度标注移到左侧40个单位
         drawDimensionLine(g, legX - 40, startY,
                          legX - 40, startY + leftHeight,
-                         "36 m");
+                         "12 m");
         
         // 绘制底部横条(T形横)尺寸
         // 宽度标注移到下方40个单位
         drawDimensionLine(g, startX, startY + leftHeight + bottomHeight + 40,
                          startX + bottomWidth, startY + leftHeight + bottomHeight + 40,
-                         "60 m");
+                         "24 m");
         // 高度标注移到左侧60个单位(避开主矩形的标注)
         drawDimensionLine(g, startX - 60, startY + leftHeight,
                          startX - 60, startY + leftHeight + bottomHeight,
-                         "36 m");
+                         "6 m");
         
         // 绘制左侧延伸部分尺寸
         // 移到左上角,避开其他标注
         drawDimensionLine(g, startX, startY - 20,
-                         startX + 19, startY - 20,
-                         "19 m");
+                         startX + 2, startY - 20,
+                         "2 m");
         
         // 绘制右侧延伸部分尺寸
         // 移到右上角,避开其他标注
         drawDimensionLine(g, legX + leftWidth, startY - 20,
                          startX + bottomWidth, startY - 20,
-                         "5 m");
+                         "10 m");
     }
     
     @Override
@@ -160,17 +160,17 @@ public class ComplexStairShape extends CompoundShapeDrawer {
     public String getSolutionSteps() {
         return String.format(
             "1. 计算底部矩形面积：\n" +
-            "   60 × 36 = 2160 m²\n\n" +
+            "   24 × 6 = 144 m²\n\n" +
             "2. 计算中间矩形面积：\n" +
-            "   5 × 36 = 180 m²\n\n" +
+            "   10 × 12 = 120 m²\n\n" +
             "3. 计算左侧矩形面积：\n" +
-            "   36 × 36 = 1296 m²\n\n" +
+            "   12 × 12 = 144 m²\n\n" +
             "4. 计算左上小矩形面积：\n" +
-            "   19 × 36 = 684 m²\n\n" +
+            "   2 × 12 = 24 m²\n\n" +
             "5. 计算总面积：\n" +
             "   底部矩形 + 中间矩形 + 左侧矩形 + 左上小矩形\n" +
-            "   = 2160 + 180 + 1296 + 684\n" +
-            "   = 4320 m²"
+            "   = 144 + 120 + 144 + 24\n" +
+            "   = 432 m²"
         );
     }
 } 

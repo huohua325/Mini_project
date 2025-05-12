@@ -9,6 +9,8 @@ import java.util.Random;
 import javax.swing.border.EmptyBorder;
 import java.util.HashSet;
 import java.util.Set;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelInterface {
     private JComboBox<String> calculationType;
@@ -20,8 +22,9 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     private JPanel drawingPanel;
     private CircleDrawer circleDrawer;
     
-    private Timer timer;
-    private int timeLeft = 180; // 3分钟
+    private Timer questionTimer; // 每道题的计时器
+    private static final int TIME_PER_QUESTION = 3 * 60; // 每道题3分钟时间限制（秒）
+    private int remainingTime; // 当前题目的剩余时间
     private int attempts = 0;
     private double currentValue;
     private boolean isRadius;
@@ -36,13 +39,20 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     
     public CircleCalculationPanel() {
         super("圆形计算");
+        // 初始化成员变量后，调用自定义UI设置方法
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(10, 10, 10, 10));
-        initializeUI();
+        setupCircleUI();
     }
     
     @Override
     public void initializeUI() {
+        // 只设置基本布局，不进行复杂初始化
+        setLayout(new BorderLayout(10, 10));
+    }
+    
+    // 将复杂UI初始化移到单独的方法中
+    private void setupCircleUI() {
         // 初始化组件
         initializeComponents();
         
@@ -51,9 +61,6 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         
         // 开始新的计算任务
         startNewCalculation();
-        
-        // 启动计时器
-        startTimer();
     }
     
     private void initializeComponents() {
@@ -70,6 +77,8 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         
         // 计时器
         timerLabel = new JLabel("剩余时间: 3:00");
+        timerLabel.setFont(new Font("微软雅黑", Font.BOLD, 16));
+        timerLabel.setForeground(Color.BLUE);
         
         // 公式显示
         formulaLabel = new JLabel();
@@ -152,6 +161,81 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         answerField.setText("");
         answerField.setEnabled(true);
         submitButton.setEnabled(true);
+        
+        // 开始当前题目的计时
+        startQuestionTimer();
+    }
+    
+    // 启动每道题的计时器
+    private void startQuestionTimer() {
+        // 停止正在运行的计时器（如果有）
+        if (questionTimer != null && questionTimer.isRunning()) {
+            questionTimer.stop();
+        }
+        
+        // 重置剩余时间
+        remainingTime = TIME_PER_QUESTION;
+        updateTimerLabel();
+        
+        // 创建并启动新的计时器
+        questionTimer = new Timer(1000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                remainingTime--;
+                updateTimerLabel();
+                
+                if (remainingTime <= 0) {
+                    questionTimer.stop();
+                    handleTimeUp();
+                }
+            }
+        });
+        questionTimer.start();
+    }
+    
+    // 更新计时器标签
+    private void updateTimerLabel() {
+        int minutes = remainingTime / 60;
+        int seconds = remainingTime % 60;
+        
+        // 当剩余时间少于1分钟时文字变红
+        if (remainingTime < 60) {
+            timerLabel.setForeground(Color.RED);
+        } else {
+            timerLabel.setForeground(Color.BLUE);
+        }
+        
+        timerLabel.setText(String.format("剩余时间: %d:%02d", minutes, seconds));
+    }
+    
+    // 处理时间用完的情况
+    private void handleTimeUp() {
+        JOptionPane.showMessageDialog(this,
+            "此题时间已到，将自动进入下一题。",
+            "时间提醒",
+            JOptionPane.WARNING_MESSAGE);
+        
+        // 当前题目视为答错
+        String formattedAnswer = df.format(correctAnswer);
+        String currentType = getCalculationType();
+        completedTypes.add(currentType); // 即使答错也标记为完成
+        
+        setFeedback("时间到！正确答案是: " + formattedAnswer + "\n" +
+                     "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
+        
+        // 检查是否完成所有类型
+        if (completedTypes.size() >= TOTAL_TYPES) {
+            JOptionPane.showMessageDialog(this,
+                "所有计算类型已完成。最终得分：" + score + "分（满分12分）",
+                "任务完成",
+                JOptionPane.INFORMATION_MESSAGE);
+            endTask();
+        } else {
+            // 延迟几秒后进入下一题
+            Timer delayTimer = new Timer(2000, e -> startNewCalculation());
+            delayTimer.setRepeats(false);
+            delayTimer.start();
+        }
     }
     
     private String getCalculationType() {
@@ -193,6 +277,22 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         }
     }
     
+    private void moveToNextQuestion() {
+        // 检查是否完成所有类型
+        if (completedTypes.size() >= TOTAL_TYPES) {
+            JOptionPane.showMessageDialog(this,
+                "所有计算类型已完成。最终得分：" + score + "分（满分12分）",
+                "任务完成",
+                JOptionPane.INFORMATION_MESSAGE);
+            endTask();
+        } else {
+            // 延迟几秒后进入下一题
+            Timer delayTimer = new Timer(2000, e -> startNewCalculation());
+            delayTimer.setRepeats(false);
+            delayTimer.start();
+        }
+    }
+    
     @Override
     public void handleSubmit() {
         try {
@@ -200,33 +300,34 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
             attempts++;
             
             if (Math.abs(userAnswer - correctAnswer) < 0.1) {
+                // 停止当前题目计时器
+                if (questionTimer != null && questionTimer.isRunning()) {
+                    questionTimer.stop();
+                }
+                
                 String currentType = getCalculationType();
                 completedTypes.add(currentType);
                 score += (4 - attempts); // 根据尝试次数给分
                 
-                if (completedTypes.size() >= TOTAL_TYPES) {
-                    setFeedback("恭喜！你已完成所有计算类型。最终得分：" + score + "分（满分12分）");
-                    endTask();
-                } else {
-                    setFeedback("回答正确！得分：" + (4 - attempts) + "分。\n" +
-                               "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
-                    startNewCalculation();
-                }
+                setFeedback("回答正确！得分：" + (4 - attempts) + "分。\n" +
+                           "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
+                
+                moveToNextQuestion();
             } else {
                 if (attempts >= 3) {
+                    // 停止当前题目计时器
+                    if (questionTimer != null && questionTimer.isRunning()) {
+                        questionTimer.stop();
+                    }
+                    
                     String formattedAnswer = df.format(correctAnswer);
                     String currentType = getCalculationType();
                     completedTypes.add(currentType); // 即使答错也标记为完成
                     
-                    if (completedTypes.size() >= TOTAL_TYPES) {
-                        setFeedback("本题答错次数过多。正确答案是: " + formattedAnswer + "\n" +
-                                  "所有计算类型已完成。最终得分：" + score + "分（满分12分）");
-                        endTask();
-                    } else {
-                        setFeedback("本题答错次数过多。正确答案是: " + formattedAnswer + "\n" +
-                                  "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
-                        startNewCalculation();
-                    }
+                    setFeedback("本题答错次数过多。正确答案是: " + formattedAnswer + "\n" +
+                              "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
+                    
+                    moveToNextQuestion();
                 } else {
                     setFeedback("回答错误，还有" + (3 - attempts) + "次机会。");
                 }
@@ -236,41 +337,22 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         }
     }
     
-    private void startTimer() {
-        timer = new Timer(1000, e -> {
-            timeLeft--;
-            int minutes = timeLeft / 60;
-            int seconds = timeLeft % 60;
-            timerLabel.setText(String.format("剩余时间: %d:%02d", minutes, seconds));
-            
-            if (timeLeft <= 0) {
-                ((Timer)e.getSource()).stop();
-                answerField.setEnabled(false);
-                submitButton.setEnabled(false);
-                setFeedback("时间到！本次练习结束。最终得分：" + score + "分");
-            }
-        });
-        timer.start();
-    }
-    
     @Override
     public void cleanup() {
-        if (timer != null) {
-            timer.stop();
+        if (questionTimer != null) {
+            questionTimer.stop();
         }
     }
     
     @Override
     public void reset() {
-        timeLeft = 180;
         score = 0;
         completedCalculations = 0;
         completedTypes.clear();
-        if (timer != null) {
-            timer.stop();
+        if (questionTimer != null) {
+            questionTimer.stop();
         }
         startNewCalculation();
-        startTimer();
     }
     
     @Override
@@ -281,13 +363,12 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     @Override
     public void startTask() {
         reset();
-        startTimer();
     }
 
     @Override
     public void pauseTask() {
-        if (timer != null) {
-            timer.stop();
+        if (questionTimer != null) {
+            questionTimer.stop();
         }
         answerField.setEnabled(false);
         submitButton.setEnabled(false);
@@ -295,8 +376,8 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
 
     @Override
     public void resumeTask() {
-        if (timer != null && timeLeft > 0) {
-            timer.start();
+        if (questionTimer != null && remainingTime > 0) {
+            questionTimer.start();
         }
         answerField.setEnabled(true);
         submitButton.setEnabled(true);

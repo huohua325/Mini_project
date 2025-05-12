@@ -8,12 +8,13 @@ import com.shapeville.gui.shapes.CompoundShapeDrawer;
 /**
  * T形状（形状8）的实现
  * 由两个矩形组成：
- * - 顶部矩形：36m × 36m
+ * - 顶部矩形：36m × 36m，偏右但不完全对齐
  * - 底部矩形：60m × 36m
  */
 public class TShape extends CompoundShapeDrawer {
     private final Map<String, Double> dimensions;
     private static final int FIXED_SIZE = 200;
+    private final double TOP_RECT_OFFSET = 5.0; // 上部矩形向左偏移的距离（米）
     
     public TShape() {
         dimensions = new HashMap<>();
@@ -42,42 +43,40 @@ public class TShape extends CompoundShapeDrawer {
         int topHeight = (int)(dimensions.get("topHeight") * scale);
         int bottomWidth = (int)(dimensions.get("bottomWidth") * scale);
         int bottomHeight = (int)(dimensions.get("bottomHeight") * scale);
+        int topOffset = (int)(TOP_RECT_OFFSET * scale); // 上部矩形的偏移量
         
-        // 计算起始位置
-        int topX = centerX - topWidth / 2;
-        int topY = centerY - (topHeight + bottomHeight) / 2;
+        // 计算起始位置 - 修正为倒T形状，上部矩形偏右但不完全对齐
         int bottomX = centerX - bottomWidth / 2;
-        int bottomY = topY + topHeight;
+        int bottomY = centerY - bottomHeight / 2;
+        int topX = bottomX + bottomWidth - topWidth - topOffset; // 上部矩形右侧有一定偏移
+        int topY = bottomY - topHeight; // 上部矩形在下部矩形上方
         
         try {
             // 创建形状路径
             Path2D.Double path = new Path2D.Double();
             
-            // 绘制顶部矩形
+            // 绘制形状
+            path.moveTo(bottomX, bottomY);
+            path.lineTo(bottomX + bottomWidth, bottomY);
+            path.lineTo(bottomX + bottomWidth, bottomY + bottomHeight);
+            path.lineTo(bottomX, bottomY + bottomHeight);
+            path.lineTo(bottomX, bottomY);
+            
+            // 添加上部矩形
             path.moveTo(topX, topY);
             path.lineTo(topX + topWidth, topY);
             path.lineTo(topX + topWidth, topY + topHeight);
             path.lineTo(topX, topY + topHeight);
             path.closePath();
             
-            // 绘制底部矩形
-            Path2D.Double bottomRect = new Path2D.Double();
-            bottomRect.moveTo(bottomX, bottomY);
-            bottomRect.lineTo(bottomX + bottomWidth, bottomY);
-            bottomRect.lineTo(bottomX + bottomWidth, bottomY + bottomHeight);
-            bottomRect.lineTo(bottomX, bottomY + bottomHeight);
-            bottomRect.closePath();
-            
             // 填充形状
             g.setColor(SHAPE_COLOR);
             g.fill(path);
-            g.fill(bottomRect);
             
             // 绘制轮廓
             g.setColor(LINE_COLOR);
             g.setStroke(new BasicStroke(2.0f));
             g.draw(path);
-            g.draw(bottomRect);
             
         } catch (Exception e) {
             System.err.println("绘制T形状时出错: " + e.getMessage());
@@ -98,11 +97,12 @@ public class TShape extends CompoundShapeDrawer {
         int topHeight = (int)(dimensions.get("topHeight") * scale);
         int bottomWidth = (int)(dimensions.get("bottomWidth") * scale);
         int bottomHeight = (int)(dimensions.get("bottomHeight") * scale);
+        int topOffset = (int)(TOP_RECT_OFFSET * scale); // 上部矩形的偏移量
         
-        int topX = centerX - topWidth / 2;
-        int topY = centerY - (topHeight + bottomHeight) / 2;
         int bottomX = centerX - bottomWidth / 2;
-        int bottomY = topY + topHeight;
+        int bottomY = centerY - bottomHeight / 2;
+        int topX = bottomX + bottomWidth - topWidth - topOffset; // 上部矩形右侧有一定偏移
+        int topY = bottomY - topHeight; // 上部矩形在下部矩形上方
         
         // 绘制顶部矩形尺寸
         drawDimensionLine(g, topX, topY - 20,

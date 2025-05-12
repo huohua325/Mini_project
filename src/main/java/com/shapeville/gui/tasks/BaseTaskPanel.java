@@ -7,7 +7,6 @@ import java.awt.*;
 public abstract class BaseTaskPanel extends JPanel {
     protected Timer timer;
     protected int attempts;
-    protected JTextArea feedbackArea;
     protected String taskName;
     protected java.util.List<Integer> attemptsPerTask;
     protected TaskWindow parentWindow;
@@ -17,24 +16,11 @@ public abstract class BaseTaskPanel extends JPanel {
         this.attempts = 0;
         this.attemptsPerTask = new java.util.ArrayList<>();
         setLayout(new BorderLayout());
-        initializeCommonComponents();
         initializeUI();
     }
     
     public void setParentWindow(TaskWindow window) {
         this.parentWindow = window;
-    }
-    
-    private void initializeCommonComponents() {
-        // 创建反馈区域
-        feedbackArea = new JTextArea();
-        feedbackArea.setEditable(false);
-        feedbackArea.setWrapStyleWord(true);
-        feedbackArea.setLineWrap(true);
-        feedbackArea.setFont(new Font("微软雅黑", Font.PLAIN, 14));
-        JScrollPane feedbackScroll = new JScrollPane(feedbackArea);
-        feedbackScroll.setPreferredSize(new Dimension(750, 100));
-        add(feedbackScroll, BorderLayout.SOUTH);
     }
     
     // 子类必须实现的方法
@@ -43,13 +29,21 @@ public abstract class BaseTaskPanel extends JPanel {
     public abstract void reset();
     protected abstract int calculateScore();
     
-    // 通用方法
+    // 通用方法 - 将反馈转发到TaskWindow
     protected void setFeedback(String message) {
-        feedbackArea.setText(message);
+        if (parentWindow != null) {
+            parentWindow.setFeedback(message);
+        } else {
+            System.out.println("警告: 无法设置反馈，parentWindow为null");
+        }
     }
     
     protected void appendFeedback(String message) {
-        feedbackArea.append(message + "\n");
+        if (parentWindow != null) {
+            parentWindow.appendFeedback(message);
+        } else {
+            System.out.println("警告: 无法添加反馈，parentWindow为null");
+        }
     }
     
     protected void incrementAttempts() {

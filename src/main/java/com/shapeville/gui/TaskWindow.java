@@ -11,17 +11,13 @@ public class TaskWindow extends JFrame {
     private String taskName;
     private JTextArea taskDescription;
     private JPanel inputPanel;
-    private JLabel timerLabel;
     private JTextArea feedbackArea;
-    private javax.swing.Timer timer;
-    private int seconds = 0;
     private TaskPanelInterface currentTask;
     
     public TaskWindow(String taskName) {
         this.taskName = taskName;
         initializeUI();
         setupTask();
-        startTimer();
     }
     
     private void initializeUI() {
@@ -49,9 +45,7 @@ public class TaskWindow extends JFrame {
         inputPanel.setLayout(new BorderLayout());
         mainPanel.add(inputPanel, BorderLayout.CENTER);
         
-        // 创建计时器标签
-        timerLabel = new JLabel("用时: 0:00");
-        timerLabel.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        // 计时器已经在各个任务面板中实现，这里不再使用
         
         // 创建反馈区域
         feedbackArea = new JTextArea();
@@ -64,7 +58,6 @@ public class TaskWindow extends JFrame {
         
         // 创建底部控制面板
         JPanel controlPanel = new JPanel(new BorderLayout());
-        controlPanel.add(timerLabel, BorderLayout.WEST);
         controlPanel.add(feedbackScroll, BorderLayout.CENTER);
         
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
@@ -103,25 +96,14 @@ public class TaskWindow extends JFrame {
             if (currentTask instanceof BaseTaskPanel) {
                 ((BaseTaskPanel) currentTask).setParentWindow(this);
             }
+        } else if (taskName.equals("扇形计算")) {
+            currentTask = new SectorCalculationPanel();
+            inputPanel.add((JPanel)currentTask, BorderLayout.CENTER);
+            if (currentTask instanceof BaseTaskPanel) {
+                ((BaseTaskPanel) currentTask).setParentWindow(this);
+            }
         }
         // 这里可以添加其他任务的设置
-    }
-    
-    private void startTimer() {
-        timer = new javax.swing.Timer(1000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                seconds++;
-                updateTimerLabel();
-            }
-        });
-        timer.start();
-    }
-    
-    private void updateTimerLabel() {
-        int minutes = seconds / 60;
-        int secs = seconds % 60;
-        timerLabel.setText(String.format("用时: %d:%02d", minutes, secs));
     }
     
     public void setTaskDescription(String description) {
@@ -161,9 +143,6 @@ public class TaskWindow extends JFrame {
     }
     
     public void cleanup() {
-        if (timer != null) {
-            timer.stop();
-        }
         if (currentTask != null) {
             currentTask.pauseTask();
         }
