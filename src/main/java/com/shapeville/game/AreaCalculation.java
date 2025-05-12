@@ -5,17 +5,25 @@ import java.util.*;
 public class AreaCalculation {
     // 形状类型
     public enum ShapeType {
-        RECTANGLE("矩形"), 
-        PARALLELOGRAM("平行四边形"), 
-        TRIANGLE("三角形"), 
-        TRAPEZIUM("梯形");
+        RECTANGLE("矩形", "rectangle"), 
+        PARALLELOGRAM("平行四边形", "parallelogram"), 
+        TRIANGLE("三角形", "triangle"), 
+        TRAPEZIUM("梯形", "trapezium");
 
         private final String chinese;
-        ShapeType(String chinese) {
+        private final String imageName;
+        
+        ShapeType(String chinese, String imageName) {
             this.chinese = chinese;
+            this.imageName = imageName;
         }
+        
         public String getChinese() {
             return chinese;
+        }
+        
+        public String getImageName() {
+            return imageName;
         }
     }
 
@@ -27,7 +35,7 @@ public class AreaCalculation {
     public AreaCalculation() {
         this.shapes = new ArrayList<>(Arrays.asList(ShapeType.values()));
         this.currentParams = new HashMap<>();
-        Collections.shuffle(shapes);
+        shuffleShapes();
     }
 
     public List<ShapeType> getShapes() {
@@ -86,14 +94,40 @@ public class AreaCalculation {
     public String getParamsString() {
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Double> entry : currentParams.entrySet()) {
-            if (sb.length() > 0) sb.append(", ");
-            sb.append(entry.getKey()).append(" = ").append(entry.getValue());
+            if (sb.length() > 0) {
+                sb.append(", ");
+            }
+            sb.append(entry.getKey()).append(" = ").append(String.format("%.1f", entry.getValue()));
         }
         return sb.toString();
     }
 
     public boolean checkAnswer(double answer) {
         return Math.abs(answer - correctArea) < 0.1;
+    }
+
+    public String getSubstitutionString(ShapeType shape) {
+        StringBuilder sb = new StringBuilder();
+        switch (shape) {
+            case RECTANGLE:
+                sb.append(String.format("面积 = 长 × 宽 = %.1f × %.1f = %.1f", 
+                    currentParams.get("长"), currentParams.get("宽"), correctArea));
+                break;
+            case PARALLELOGRAM:
+                sb.append(String.format("面积 = 底 × 高 = %.1f × %.1f = %.1f", 
+                    currentParams.get("底"), currentParams.get("高"), correctArea));
+                break;
+            case TRIANGLE:
+                sb.append(String.format("面积 = (底 × 高) ÷ 2 = (%.1f × %.1f) ÷ 2 = %.1f", 
+                    currentParams.get("底"), currentParams.get("高"), correctArea));
+                break;
+            case TRAPEZIUM:
+                sb.append(String.format("面积 = (上底 + 下底) × 高 ÷ 2 = (%.1f + %.1f) × %.1f ÷ 2 = %.1f", 
+                    currentParams.get("上底"), currentParams.get("下底"), 
+                    currentParams.get("高"), correctArea));
+                break;
+        }
+        return sb.toString();
     }
 
     // 命令行模式的入口方法

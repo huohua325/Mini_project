@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 public class ResultWindow extends JFrame {
     private final int score;
+    private final int maxScore;
     private final String feedback;
     private final String taskName;
     private Timer animationTimer;
@@ -15,9 +16,10 @@ public class ResultWindow extends JFrame {
     private JPanel starsPanel;
     private JProgressBar scoreProgress;
     
-    public ResultWindow(String taskName, int score, String feedback) {
+    public ResultWindow(String taskName, int score, int maxScore, String feedback) {
         this.taskName = taskName;
         this.score = score;
+        this.maxScore = maxScore;
         this.feedback = feedback;
         initializeUI();
         startScoreAnimation();
@@ -28,6 +30,7 @@ public class ResultWindow extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(700, 500);
         setLocationRelativeTo(null);
+        setAlwaysOnTop(true);
         
         // 创建主面板
         JPanel mainPanel = new JPanel();
@@ -79,14 +82,33 @@ public class ResultWindow extends JFrame {
             "详细反馈"
         ));
         
-        JTextArea feedbackArea = new JTextArea(feedback);
-        feedbackArea.setEditable(false);
-        feedbackArea.setWrapStyleWord(true);
-        feedbackArea.setLineWrap(true);
-        feedbackArea.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-        feedbackArea.setMargin(new Insets(10, 10, 10, 10));
+        // 创建反馈区域的滚动面板
+        JPanel feedbackContent = new JPanel();
+        feedbackContent.setLayout(new BoxLayout(feedbackContent, BoxLayout.Y_AXIS));
         
-        JScrollPane scrollPane = new JScrollPane(feedbackArea);
+        // 添加统计信息
+        if (taskName.equals("形状识别")) {
+            String[] lines = feedback.split("\n");
+            for (String line : lines) {
+                if (!line.trim().isEmpty()) {
+                    JLabel label = new JLabel(line);
+                    label.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+                    label.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+                    label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                    feedbackContent.add(label);
+                }
+            }
+        } else {
+            JTextArea feedbackArea = new JTextArea(feedback);
+            feedbackArea.setEditable(false);
+            feedbackArea.setWrapStyleWord(true);
+            feedbackArea.setLineWrap(true);
+            feedbackArea.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+            feedbackArea.setMargin(new Insets(10, 10, 10, 10));
+            feedbackContent.add(feedbackArea);
+        }
+        
+        JScrollPane scrollPane = new JScrollPane(feedbackContent);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         feedbackPanel.add(scrollPane, BorderLayout.CENTER);
         
@@ -171,7 +193,7 @@ public class ResultWindow extends JFrame {
         for (int i = 0; i < 5; i++) {
             JLabel star = new JLabel("★");
             star.setFont(new Font("Dialog", Font.PLAIN, 32));
-            star.setForeground(i < starCount ? Color.ORANGE : Color.LIGHT_GRAY);
+                star.setForeground(i < starCount ? Color.ORANGE : Color.LIGHT_GRAY);
             starsPanel.add(star);
         }
         starsPanel.revalidate();
@@ -184,25 +206,28 @@ public class ResultWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if (currentScore < score) {
                     currentScore += 1;
-                    scoreLabel.setText(String.valueOf(currentScore));
-                    scoreProgress.setValue(currentScore);
+                    // 显示实际分数和总分
+                    scoreLabel.setText(String.format("%d/%d", currentScore, maxScore));
+                    // 转换为百分制用于进度条和星星显示
+                    int percentageScore = maxScore > 0 ? (int)((double)currentScore / maxScore * 100) : 0;
+                    scoreProgress.setValue(percentageScore);
                     
                     // 更新星星
-                    int stars = currentScore >= 90 ? 5 : 
-                              currentScore >= 80 ? 4 : 
-                              currentScore >= 70 ? 3 : 
-                              currentScore >= 60 ? 2 : 1;
+                    int stars = percentageScore >= 90 ? 5 : 
+                               percentageScore >= 80 ? 4 : 
+                               percentageScore >= 70 ? 3 : 
+                               percentageScore >= 60 ? 2 : 1;
                     updateStars(stars);
                     
                     // 更新进度条颜色
-                    if (currentScore >= 90) {
-                        scoreProgress.setForeground(new Color(0, 153, 0));  // 深绿色
-                    } else if (currentScore >= 70) {
-                        scoreProgress.setForeground(new Color(0, 102, 204));  // 蓝色
-                    } else if (currentScore >= 60) {
-                        scoreProgress.setForeground(new Color(255, 153, 0));  // 橙色
-                    } else {
-                        scoreProgress.setForeground(new Color(255, 51, 51));  // 红色
+                    if (percentageScore >= 90) {
+                            scoreProgress.setForeground(new Color(0, 153, 0));  // 深绿色
+                    } else if (percentageScore >= 80) {
+                            scoreProgress.setForeground(new Color(0, 102, 204));  // 蓝色
+                    } else if (percentageScore >= 70) {
+                            scoreProgress.setForeground(new Color(255, 153, 0));  // 橙色
+                        } else {
+                            scoreProgress.setForeground(new Color(255, 51, 51));  // 红色
                     }
                 } else {
                     ((Timer)e.getSource()).stop();
@@ -225,23 +250,28 @@ public class ResultWindow extends JFrame {
     }
     
     private String getCompletionStatus() {
-        if (score >= 90) return "完美完成";
-        if (score >= 80) return "优秀完成";
-        if (score >= 70) return "良好完成";
-        if (score >= 60) return "基本完成";
-        return "需要改进";
+        // 转换为百分制进行评级
+        double percentageScore = maxScore > 0 ? (double)score / maxScore * 100 : 0;
+        if (percentageScore >= 90) return "完美完成";
+        if (percentageScore >= 80) return "优秀完成";
+        if (percentageScore >= 70) return "良好完成";
+        if (percentageScore >= 60) return "基本完成";
+            return "需要继续练习";
     }
     
     private String getAccuracyStatus() {
-        return String.format("%.1f%%", score);
+        // 显示实际得分和满分说明
+        return String.format("%d/%d (总分%d分)", score, maxScore, maxScore);
     }
     
     private String getPerformanceLevel() {
-        if (score >= 90) return "S级（卓越）";
-        if (score >= 80) return "A级（优秀）";
-        if (score >= 70) return "B级（良好）";
-        if (score >= 60) return "C级（及格）";
-        return "D级（不及格）";
+        // 转换为百分制进行评级
+        double percentageScore = maxScore > 0 ? (double)score / maxScore * 100 : 0;
+        if (percentageScore >= 90) return "S级（卓越）";
+        if (percentageScore >= 80) return "A级（优秀）";
+        if (percentageScore >= 70) return "B级（良好）";
+        if (percentageScore >= 60) return "C级（及格）";
+            return "D级（不及格）";
     }
     
     @Override

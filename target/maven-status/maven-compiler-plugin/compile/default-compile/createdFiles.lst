@@ -1,6 +1,7 @@
 com\shapeville\game\AngleCalculation.class
 com\shapeville\gui\tasks\CompoundShapeCalculationPanel.class
 com\shapeville\game\CircleCalculation$PracticeType.class
+com\shapeville\gui\tasks\AreaCalculationPanel$1.class
 com\shapeville\game\AreaCalculation$1.class
 com\shapeville\gui\tasks\SectorCalculationPanel.class
 com\shapeville\gui\TaskWindow.class
@@ -10,6 +11,7 @@ com\shapeville\game\CircleCalculation.class
 com\shapeville\game\SectorCalculation$Sector.class
 com\shapeville\gui\tasks\AreaCalculationPanel.class
 com\shapeville\gui\ResultWindow.class
+com\shapeville\gui\tasks\CircleCalculationPanel$1.class
 com\shapeville\utils\Utils.class
 com\shapeville\utils\DataManager.class
 com\shapeville\gui\tasks\BaseTaskPanel.class
@@ -18,14 +20,18 @@ com\shapeville\gui\tasks\AngleCalculationPanel.class
 com\shapeville\gui\TaskWindow$1.class
 com\shapeville\gui\UIManager$TaskStatus.class
 com\shapeville\gui\UIManager.class
+com\shapeville\gui\tasks\AreaCalculationPanel$2.class
 com\shapeville\model\UserProgress.class
 com\shapeville\gui\MainWindow.class
 com\shapeville\game\AreaCalculation.class
 com\shapeville\game\CompoundShapeCalculation.class
 com\shapeville\gui\MainWindow$1.class
+com\shapeville\gui\shapes\ShapeDrawer.class
 com\shapeville\game\CompoundShapeCalculation$CompoundShape.class
 com\shapeville\game\SectorCalculation.class
+com\shapeville\gui\shapes\CircleDrawer.class
 com\shapeville\gui\tasks\TaskPanelInterface.class
+com\shapeville\gui\tasks\CircleCalculationPanel.class
 com\shapeville\gui\tasks\ShapePanel.class
 com\shapeville\utils\ShapeDrawer.class
 com\shapeville\game\AreaCalculation$ShapeType.class

@@ -1,6 +1,8 @@
 package com.shapeville.game;
 
 import java.util.*;
+import com.shapeville.gui.shapes.ShapeRenderer;
+import com.shapeville.gui.shapes.compound.*;
 
 public class CompoundShapeCalculation {
     // 复合形状参数类
@@ -9,55 +11,143 @@ public class CompoundShapeCalculation {
         private final String description;
         private final double correctArea;
         private final String solution;
+        private final ShapeRenderer renderer;
 
-        public CompoundShape(String name, String description, double correctArea, String solution) {
+        public CompoundShape(String name, String description, double correctArea, 
+                           String solution, ShapeRenderer renderer) {
             this.name = name;
             this.description = description;
             this.correctArea = correctArea;
             this.solution = solution;
+            this.renderer = renderer;
         }
 
         public String getName() { return name; }
         public String getDescription() { return description; }
         public double getCorrectArea() { return correctArea; }
         public String getSolution() { return solution; }
+        public ShapeRenderer getRenderer() { return renderer; }
     }
 
     private final List<CompoundShape> shapes;
     private final Set<Integer> practiced;
 
     public CompoundShapeCalculation() {
+        System.out.println("开始创建CompoundShapeCalculation...");
         this.shapes = initializeShapes();
         this.practiced = new HashSet<>();
+        
+        if (shapes.isEmpty()) {
+            System.err.println("错误：初始化后形状列表为空");
+            throw new IllegalStateException("至少需要一个复合形状");
+        }
+        System.out.println("CompoundShapeCalculation创建完成，形状数量：" + shapes.size());
     }
 
     private List<CompoundShape> initializeShapes() {
-        return Arrays.asList(
-            new CompoundShape(
-                "复合形状1",
-                "由一个矩形(14x15)和一个三角形(底14,高5)组成",
-                14*15 + 0.5*14*5,
-                "矩形面积: 14x15=210, 三角形面积: 0.5x14x5=35, 总面积: 210+35=245"
-            ),
-            new CompoundShape(
-                "复合形状2",
-                "由一个正方形(边长10)和一个等腰三角形(底10,高8)组成",
-                10*10 + 0.5*10*8,
-                "正方形面积: 10x10=100, 三角形面积: 0.5x10x8=40, 总面积: 100+40=140"
-            ),
-            new CompoundShape(
-                "复合形状3",
-                "由两个相等的矩形(8x12)组成的L形",
-                8*12 + 8*12,
-                "第一个矩形: 8x12=96, 第二个矩形: 8x12=96, 总面积: 96+96=192"
-            ),
-            new CompoundShape(
-                "复合形状4",
-                "由一个圆形(半径6)和一个正方形(边长12)组成",
-                Math.PI*6*6 + 12*12,
-                "圆形面积: πx6²=113.1, 正方形面积: 12x12=144, 总面积: 113.1+144=257.1"
-            )
-        );
+        List<CompoundShape> shapeList = new ArrayList<>();
+        
+        try {
+            System.out.println("开始初始化形状...");
+            
+            // 1. 添加箭头形状
+            ArrowShape arrowShape = new ArrowShape();
+            shapeList.add(new CompoundShape(
+                "箭头形状",
+                "由一个矩形(14×14)和一个梯形(底14，顶5，高5)组成。\n计算总面积。",
+                arrowShape.calculateArea(),
+                arrowShape.getSolutionSteps(),
+                arrowShape
+            ));
+            
+            // 2. 添加T形状
+            TShape tShape = new TShape();
+            shapeList.add(new CompoundShape(
+                "T形状",
+                "由顶部矩形(36×36)和底部矩形(60×36)组成。\n计算总面积。",
+                tShape.calculateArea(),
+                tShape.getSolutionSteps(),
+                tShape
+            ));
+            
+            // 3. 添加梯形
+            TrapezoidShape trapezoidShape = new TrapezoidShape();
+            shapeList.add(new CompoundShape(
+                "梯形",
+                "底边20m，顶边9m，高11m，右斜边14m。\n计算总面积。",
+                trapezoidShape.calculateArea(),
+                trapezoidShape.getSolutionSteps(),
+                trapezoidShape
+            ));
+            
+            // 4. 添加阶梯形状
+            StairShape stairShape = new StairShape();
+            shapeList.add(new CompoundShape(
+                "阶梯形状",
+                "主矩形(20×21)减去两个缺口(11×11和10×10)。\n计算总面积。",
+                stairShape.calculateArea(),
+                stairShape.getSolutionSteps(),
+                stairShape
+            ));
+            
+            // 5. 添加阶梯状矩形
+            StepShape stepShape = new StepShape();
+            shapeList.add(new CompoundShape(
+                "阶梯状矩形",
+                "三个矩形组合：11×10，8×8，8×8。\n计算总面积。",
+                stepShape.calculateArea(),
+                stepShape.getSolutionSteps(),
+                stepShape
+            ));
+            
+            // 6. 添加双阶梯形状
+            DoubleStairShape doubleStairShape = new DoubleStairShape();
+            shapeList.add(new CompoundShape(
+                "双阶梯形状",
+                "主矩形(19×18)和右上矩形(16×16)减去缺口(16×16)。\n计算总面积。",
+                doubleStairShape.calculateArea(),
+                doubleStairShape.getSolutionSteps(),
+                doubleStairShape
+            ));
+            
+            // 7. 添加房屋形状
+            HouseShape houseShape = new HouseShape();
+            shapeList.add(new CompoundShape(
+                "房屋形状",
+                "底部矩形(14×5)和两个三角形(底14高12和底16高13)。\n计算总面积。",
+                houseShape.calculateArea(),
+                houseShape.getSolutionSteps(),
+                houseShape
+            ));
+            
+            // 8. 添加复杂阶梯
+            ComplexStairShape complexStairShape = new ComplexStairShape();
+            shapeList.add(new CompoundShape(
+                "复杂阶梯",
+                "四个矩形：24×6，10×12，12×12，2×12。\n计算总面积。",
+                complexStairShape.calculateArea(),
+                complexStairShape.getSolutionSteps(),
+                complexStairShape
+            ));
+            
+            // 9. 添加不规则四边形
+            IrregularShape irregularShape = new IrregularShape();
+            shapeList.add(new CompoundShape(
+                "不规则四边形",
+                "底边4m，左边4m，顶边16m，右斜边约17m。\n计算总面积。",
+                irregularShape.calculateArea(),
+                irregularShape.getSolutionSteps(),
+                irregularShape
+            ));
+            
+            System.out.println("所有形状初始化完成，共" + shapeList.size() + "个形状");
+            
+        } catch (Exception e) {
+            System.err.println("初始化形状时出错：" + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return shapeList;
     }
 
     public List<CompoundShape> getShapes() {

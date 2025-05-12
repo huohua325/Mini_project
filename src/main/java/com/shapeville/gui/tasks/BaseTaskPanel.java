@@ -1,5 +1,6 @@
 package com.shapeville.gui.tasks;
 
+import com.shapeville.gui.TaskWindow;
 import javax.swing.*;
 import java.awt.*;
 
@@ -9,6 +10,7 @@ public abstract class BaseTaskPanel extends JPanel {
     protected JTextArea feedbackArea;
     protected String taskName;
     protected java.util.List<Integer> attemptsPerTask;
+    protected TaskWindow parentWindow;
     
     public BaseTaskPanel(String taskName) {
         this.taskName = taskName;
@@ -17,6 +19,10 @@ public abstract class BaseTaskPanel extends JPanel {
         setLayout(new BorderLayout());
         initializeCommonComponents();
         initializeUI();
+    }
+    
+    public void setParentWindow(TaskWindow window) {
+        this.parentWindow = window;
     }
     
     private void initializeCommonComponents() {
