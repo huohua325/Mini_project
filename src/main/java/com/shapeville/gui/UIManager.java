@@ -3,32 +3,46 @@ package com.shapeville.gui;
 import javax.swing.*;
 import java.util.*;
 
+/**
+ * The UIManager class is responsible for managing the user interface, task states,
+ * and user progress in the Shapeville application. It follows the Singleton pattern
+ * to ensure only one instance exists throughout the application lifecycle.
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
+ */
 public class UIManager {
     private static UIManager instance;
     private MainWindow mainWindow;
     private JFrame currentWindow;
     private TaskWindow currentTaskWindow;
     
-    // 任务状态管理
+    /** Task state management */
     private Map<String, TaskStatus> taskStatusMap;
     private Map<String, Integer> taskScores;
     private Set<String> unlockedTasks;
     private int userLevel;
-    private boolean fullFeaturesEnabled = false;  // 添加完整功能模式标志
+    private boolean fullFeaturesEnabled = false;  // Flag for full feature mode
     
+    /** Basic tasks that are available from the start */
     private static final String[] BASIC_TASKS = {
         "形状识别", "角度识别", "面积计算", "圆形计算"
     };
     
+    /** Advanced tasks that need to be unlocked */
     private static final String[] ADVANCED_TASKS = {
         "复合形状", "扇形计算"
     };
     
     private boolean initialized = false;
-    
     private int sessionScore = 0;
     private String currentTask = null;
     
+    /**
+     * Private constructor to prevent direct instantiation.
+     * Initializes all data structures and sets initial user level.
+     */
     private UIManager() {
         taskStatusMap = new HashMap<>();
         taskScores = new HashMap<>();
@@ -37,21 +51,30 @@ public class UIManager {
         initializeTaskStatus();
     }
     
+    /**
+     * Initializes the status of all tasks.
+     * Basic tasks are unlocked by default, while advanced tasks are locked.
+     */
     private void initializeTaskStatus() {
-        // 初始化基础任务
+        // Initialize basic tasks
         for (String task : BASIC_TASKS) {
             taskStatusMap.put(task, TaskStatus.UNLOCKED);
             unlockedTasks.add(task);
             taskScores.put(task, 0);
         }
         
-        // 初始化高级任务（默认锁定）
+        // Initialize advanced tasks (locked by default)
         for (String task : ADVANCED_TASKS) {
             taskStatusMap.put(task, TaskStatus.LOCKED);
             taskScores.put(task, 0);
         }
     }
     
+    /**
+     * Gets the singleton instance of UIManager.
+     *
+     * @return The singleton instance of UIManager
+     */
     public static UIManager getInstance() {
         if (instance == null) {
             instance = new UIManager();
@@ -59,24 +82,29 @@ public class UIManager {
         return instance;
     }
     
+    /**
+     * Initializes the UI components. This method should be called only once.
+     */
     public void initialize() {
         if (initialized) {
-            return;  // 防止重复初始化
+            return;  // Prevent multiple initialization
         }
         SwingUtilities.invokeLater(() -> {
             mainWindow = new MainWindow();
             currentWindow = mainWindow;
             showMainWindow();
-            updateMainWindowStatus();
             initialized = true;
         });
     }
     
+    /**
+     * Shows the main window and resets session data.
+     */
     public void showMainWindow() {
         if (currentWindow != null && currentWindow != mainWindow) {
             currentWindow.dispose();
         }
-        // 返回主窗口时重置会话分数和当前任务
+        // Reset session score and current task when returning to main window
         sessionScore = 0;
         currentTask = null;
         mainWindow.setVisible(true);
@@ -84,6 +112,9 @@ public class UIManager {
         updateMainWindowStatus();
     }
     
+    /**
+     * Updates the main window's display status.
+     */
     private void updateMainWindowStatus() {
         if (mainWindow != null) {
             mainWindow.updateTaskStatus(taskStatusMap);
@@ -92,13 +123,17 @@ public class UIManager {
         }
     }
     
+    /**
+     * Switches to a specific task if it's unlocked.
+     *
+     * @param taskName The name of the task to switch to
+     */
     public void switchToTask(String taskName) {
         if (!isTaskUnlocked(taskName)) {
-            showTaskLockedMessage(taskName);
             return;
         }
         
-        // 切换任务时重置会话分数
+        // Reset session score when switching tasks
         sessionScore = 0;
         currentTask = taskName;
         
@@ -112,49 +147,62 @@ public class UIManager {
         currentTaskWindow.setVisible(true);
         currentWindow = currentTaskWindow;
         
-        // 更新任务状态为进行中
+        // Update task status to in progress
         taskStatusMap.put(taskName, TaskStatus.IN_PROGRESS);
         updateMainWindowStatus();
     }
     
+    /**
+     * Shows the result of a completed task and updates relevant statistics.
+     *
+     * @param taskName The name of the completed task
+     * @param score The score achieved in the task
+     * @param maxScore The maximum possible score for the task
+     * @param feedback Feedback message for the user
+     */
     public void showResult(String taskName, int score, int maxScore, String feedback) {
         if (currentWindow != null) {
             currentWindow.dispose();
         }
         
-        System.out.println("正在更新任务状态: " + taskName + ", 分数: " + score);
+        System.out.println("Updating task status: " + taskName + ", score: " + score);
         
-        // 更新任务状态和分数
+        // Update task status and score
         taskStatusMap.put(taskName, TaskStatus.COMPLETED);
         taskScores.put(taskName, Math.max(taskScores.getOrDefault(taskName, 0), score));
         
-        // 更新会话分数
+        // Update session score
         sessionScore = score;
         
-        // 检查是否可以解锁高级任务
+        // Check if advanced tasks can be unlocked
         checkAndUnlockTasks();
         
-        // 更新用户等级
+        // Update user level
         updateUserLevel();
         
-        // 更新主窗口状态
+        // Update main window status
         if (mainWindow != null) {
             SwingUtilities.invokeLater(() -> {
                 updateMainWindowStatus();
-                System.out.println("主窗口状态已更新");
+                System.out.println("Main window status updated");
             });
         }
         
-        // 显示结果窗口
+        // Show result window
         ResultWindow resultWindow = new ResultWindow(taskName, score, maxScore, feedback);
         resultWindow.setVisible(true);
         currentWindow = resultWindow;
         
-        System.out.println("结果窗口已显示，任务状态：" + taskStatusMap.get(taskName));
+        System.out.println("Result window displayed, task status: " + taskStatusMap.get(taskName));
     }
     
+    /**
+     * Checks and updates the unlock status of advanced tasks.
+     * In full feature mode, all tasks are unlocked.
+     * In normal mode, advanced tasks are unlocked when all basic tasks score ≥ 70.
+     */
     private void checkAndUnlockTasks() {
-        // 在完整功能模式下，所有任务都解锁
+        // In full feature mode, all tasks are unlocked
         if (fullFeaturesEnabled) {
             for (String task : ADVANCED_TASKS) {
                 taskStatusMap.put(task, TaskStatus.UNLOCKED);
@@ -163,221 +211,277 @@ public class UIManager {
             return;
         }
         
-        // 正常模式下的解锁逻辑
+        // Normal mode unlock logic
         boolean canUnlockAdvanced = true;
-        int totalBasicScore = 0;
         
-        // 检查基础任务的完成情况和总分
+        // Check basic tasks completion and scores
         for (String task : BASIC_TASKS) {
             int score = taskScores.getOrDefault(task, 0);
-            totalBasicScore += score;
-            if (score < 70) {  // 每个基础任务至少需要70分
+            if (score < 70) {  // Each basic task needs at least 70 points
                 canUnlockAdvanced = false;
                 break;
             }
         }
         
-        // 更新高级任务的状态
+        // Update advanced tasks status
         for (String task : ADVANCED_TASKS) {
-        if (canUnlockAdvanced) {
-                if (taskStatusMap.get(task) == TaskStatus.LOCKED) {
-                    taskStatusMap.put(task, TaskStatus.UNLOCKED);
-                    unlockedTasks.add(task);
-                }
+            TaskStatus newStatus = canUnlockAdvanced ? TaskStatus.UNLOCKED : TaskStatus.LOCKED;
+            taskStatusMap.put(task, newStatus);
+            if (canUnlockAdvanced) {
+                unlockedTasks.add(task);
             } else {
-                if (!unlockedTasks.contains(task)) {
-                    taskStatusMap.put(task, TaskStatus.LOCKED);
-                }
+                unlockedTasks.remove(task); // Update unlock status when full mode is disabled
             }
         }
     }
     
+    /**
+     * Updates the user's level based on total score and completed tasks.
+     */
     private void updateUserLevel() {
         int totalScore = calculateTotalScore();
         int completedTasks = countCompletedTasks();
         
-        if (totalScore >= 540 && completedTasks >= 6) { // 90分 * 6个任务
-            userLevel = 4; // 专家
-        } else if (totalScore >= 420 && completedTasks >= 5) { // 70分 * 6个任务
-            userLevel = 3; // 高级
-        } else if (totalScore >= 300 && completedTasks >= 4) { // 60分 * 5个任务
-            userLevel = 2; // 中级
+        if (totalScore >= 540 && completedTasks >= 6) { // 90 points * 6 tasks
+            userLevel = 4; // Expert
+        } else if (totalScore >= 420 && completedTasks >= 5) { // 70 points * 6 tasks
+            userLevel = 3; // Advanced
+        } else if (totalScore >= 280 && completedTasks >= 4) { // 70 points * 4 tasks
+            userLevel = 2; // Intermediate
         } else {
-            userLevel = 1; // 初学者
+            userLevel = 1; // Beginner
         }
     }
     
+    /**
+     * Gets the title corresponding to the current user level.
+     *
+     * @return The user level title
+     */
     private String getUserLevelTitle() {
         switch (userLevel) {
-            case 4: return "专家";
-            case 3: return "高级学习者";
-            case 2: return "中级学习者";
-            default: return "初学者";
+            case 4: return "Expert";
+            case 3: return "Advanced Learner";
+            case 2: return "Intermediate Learner";
+            default: return "Beginner";
         }
     }
     
+    /**
+     * Checks if a task is unlocked.
+     *
+     * @param taskName The name of the task to check
+     * @return true if the task is unlocked, false otherwise
+     */
     public boolean isTaskUnlocked(String taskName) {
-        // 在完整功能模式下，所有任务都可访问
         if (fullFeaturesEnabled) {
             return true;
         }
         return unlockedTasks.contains(taskName);
     }
     
-    private void showTaskLockedMessage(String taskName) {
-        JOptionPane.showMessageDialog(
-            mainWindow,
-            "需要完成所有基础任务并获得至少70分才能解锁此任务！",
-            taskName + " - 未解锁",
-            JOptionPane.INFORMATION_MESSAGE
-        );
-    }
-    
+    /**
+     * Gets the description for a specific task.
+     *
+     * @param taskName The name of the task
+     * @return The task description
+     */
     private String getTaskDescription(String taskName) {
         switch (taskName) {
             case "形状识别":
-                return "请识别下面显示的2D和3D形状。\n" +
-                       "观察形状的特征，选择正确的形状名称。";
+                return "Identify the 2D and 3D shapes shown below.\n" +
+                       "Observe the features of the shapes and select the correct shape name.";
             case "角度识别":
-                return "请观察下面的角度，判断它是锐角、直角、钝角、平角还是优角。\n" +
-                       "记住：\n" +
-                       "- 锐角：小于90度\n" +
-                       "- 直角：等于90度\n" +
-                       "- 钝角：大于90度且小于180度\n" +
-                       "- 平角：等于180度\n" +
-                       "- 优角：大于180度且小于360度\n\n" +
-                       "通关条件：成功识别出任意4种不同类型的角度即可完成任务。\n" +
-                       "每种角度有3次答题机会，答对得分规则：\n" +
-                       "- 第1次答对：3分\n" +
-                       "- 第2次答对：2分\n" +
-                       "- 第3次答对：1分";
+                return "Observe the angle shown and determine if it's acute, right, obtuse, straight, or reflex.\n" +
+                       "Remember:\n" +
+                       "- Acute angle: less than 90 degrees\n" +
+                       "- Right angle: exactly 90 degrees\n" +
+                       "- Obtuse angle: greater than 90 degrees but less than 180 degrees\n" +
+                       "- Straight angle: exactly 180 degrees\n" +
+                       "- Reflex angle: greater than 180 degrees but less than 360 degrees\n\n" +
+                       "Completion requirement: Successfully identify any 4 different types of angles.\n" +
+                       "Each angle type has 3 attempts, scoring rules:\n" +
+                       "- 1st correct attempt: 3 points\n" +
+                       "- 2nd correct attempt: 2 points\n" +
+                       "- 3rd correct attempt: 1 point";
             case "面积计算":
-                return "在本任务中，你需要计算四种基本形状的面积：矩形、平行四边形、三角形和梯形。\n\n" +
-                       "任务说明：\n" +
-                       "- 系统会随机生成1到20之间的输入值（如长度、宽度、高度等）\n" +
-                       "- 你有3分钟的时间来完成计算\n" +
-                       "- 每个形状有3次答题机会\n" +
-                       "- 答对得分规则：\n" +
-                       "  · 第1次答对：3分\n" +
-                       "  · 第2次答对：2分\n" +
-                       "  · 第3次答对：1分\n\n" +
-                       "注意：\n" +
-                       "- 答案需要保留1位小数\n" +
-                       "- 答错3次后，系统会显示正确答案和计算过程\n" +
-                       "- 你可以随时点击\"返回主页\"按钮结束任务";
+                return "In this task, you'll calculate the areas of four basic shapes: rectangle, parallelogram, triangle, and trapezoid.\n\n" +
+                       "Task details:\n" +
+                       "- System generates random input values between 1 and 20 (length, width, height, etc.)\n" +
+                       "- You have 3 minutes to complete the calculations\n" +
+                       "- Each shape has 3 attempts\n" +
+                       "- Scoring rules:\n" +
+                       "  · 1st correct attempt: 3 points\n" +
+                       "  · 2nd correct attempt: 2 points\n" +
+                       "  · 3rd correct attempt: 1 point\n\n" +
+                       "Note:\n" +
+                       "- Answers should be rounded to 1 decimal place\n" +
+                       "- After 3 wrong attempts, the system will show the correct answer and calculation process\n" +
+                       "- You can click \"Return to Home\" button to end the task at any time";
             case "圆形计算":
-                return "在本任务中，你需要完成圆形的周长和面积计算，包括以下四种计算方式：\n\n" +
-                       "1. 已知半径求面积 (A = πr²)\n" +
-                       "2. 已知直径求面积 (A = π(d/2)²)\n" +
-                       "3. 已知半径求周长 (C = 2πr)\n" +
-                       "4. 已知直径求周长 (C = πd)\n\n" +
-                       "任务说明：\n" +
-                       "- 系统会随机生成1到20之间的半径或直径值\n" +
-                       "- 你有3分钟的时间完成所有四种计算方式\n" +
-                       "- 每道题有3次答题机会\n" +
-                       "- 答对得分规则：\n" +
-                       "  · 第1次答对：3分\n" +
-                       "  · 第2次答对：2分\n" +
-                       "  · 第3次答对：1分\n" +
-                       "- 如果某道题3次都答错，该题得0分\n" +
-                       "- 需要完成所有四种计算方式才能结束任务\n\n" +
-                       "注意：\n" +
-                       "- 答案需要保留1位小数\n" +
-                       "- π取3.14159\n" +
-                       "- 答错3次后，系统会显示正确答案和计算过程";
+                return "In this task, you'll perform circle calculations using four different methods:\n\n" +
+                       "1. Area from radius (A = πr²)\n" +
+                       "2. Area from diameter (A = π(d/2)²)\n" +
+                       "3. Circumference from radius (C = 2πr)\n" +
+                       "4. Circumference from diameter (C = πd)\n\n" +
+                       "Task details:\n" +
+                       "- System generates random radius or diameter values between 1 and 20\n" +
+                       "- You have 3 minutes to complete all four calculation methods\n" +
+                       "- Each question has 3 attempts\n" +
+                       "- Scoring rules:\n" +
+                       "  · 1st correct attempt: 3 points\n" +
+                       "  · 2nd correct attempt: 2 points\n" +
+                       "  · 3rd correct attempt: 1 point\n" +
+                       "- Zero points if all 3 attempts are wrong\n" +
+                       "- Must complete all four calculation methods to finish the task\n\n" +
+                       "Note:\n" +
+                       "- Answers should be rounded to 1 decimal place\n" +
+                       "- Use π = 3.14159\n" +
+                       "- After 3 wrong attempts, the system will show the correct answer and calculation process";
             case "复合形状":
-                return "在本任务中，你需要计算由多个基本形状组成的复合形状的面积。\n\n" +
-                       "任务说明：\n" +
-                       "1. 系统会提供9个不同的复合形状供你练习\n" +
-                       "2. 每个形状都标注了详细的尺寸信息\n" +
-                       "3. 你需要：\n" +
-                       "   - 分析形状的组成部分\n" +
-                       "   - 运用基本形状的面积公式\n" +
-                       "   - 计算最终的总面积\n\n" +
-                       "规则说明：\n" +
-                       "- 每个形状有3次答题机会\n" +
-                       "- 答对得分规则：\n" +
-                       "  · 第1次答对：3分\n" +
-                       "  · 第2次答对：2分\n" +
-                       "  · 第3次答对：1分\n" +
-                       "- 答案需要保留1位小数\n" +
-                       "- 3次答错后会显示详细解答\n" +
-                       "- 完成所有9个形状或点击返回主页可结束任务";
+                return "In this task, you'll calculate the areas of shapes composed of multiple basic shapes.\n\n" +
+                       "Task details:\n" +
+                       "1. System provides 9 different compound shapes for practice\n" +
+                       "2. Each shape includes detailed dimension information\n" +
+                       "3. You need to:\n" +
+                       "   - Analyze the component shapes\n" +
+                       "   - Apply basic area formulas\n" +
+                       "   - Calculate the total area\n\n" +
+                       "Rules:\n" +
+                       "- Each shape has 3 attempts\n" +
+                       "- Scoring rules:\n" +
+                       "  · 1st correct attempt: 3 points\n" +
+                       "  · 2nd correct attempt: 2 points\n" +
+                       "  · 3rd correct attempt: 1 point\n" +
+                       "- Answers should be rounded to 1 decimal place\n" +
+                       "- Detailed solution shown after 3 wrong attempts\n" +
+                       "- Task ends after completing all 9 shapes or clicking return to home";
             case "扇形计算":
-                return "计算扇形的面积和弧长。\n" +
-                       "记住：扇形面积 = (πr²×角度)/360°，弧长 = (2πr×角度)/360°";
+                return "Calculate the area and arc length of sectors.\n" +
+                       "Remember: Sector area = (πr²×angle)/360°, Arc length = (2πr×angle)/360°";
             default:
-                return "任务说明加载中...";
+                return "Loading task description...";
         }
     }
     
+    /**
+     * Calculates the overall progress percentage.
+     *
+     * @return Progress percentage (0-100)
+     */
     private int calculateOverallProgress() {
         int totalTasks = BASIC_TASKS.length + ADVANCED_TASKS.length;
         int completedTasks = countCompletedTasks();
         int totalPossibleScore = totalTasks * 100;
         int currentTotalScore = calculateTotalScore();
         
-        // 进度计算考虑完成的任务数和总分
+        // Progress calculation considers both completed tasks and total score
         return (int) ((completedTasks * 50.0 / totalTasks) + (currentTotalScore * 50.0 / totalPossibleScore));
     }
     
+    /**
+     * Calculates the total score across all tasks.
+     *
+     * @return The total score
+     */
     private int calculateTotalScore() {
         return taskScores.values().stream().mapToInt(Integer::intValue).sum();
     }
     
+    /**
+     * Counts the number of completed tasks.
+     *
+     * @return The number of completed tasks
+     */
     private int countCompletedTasks() {
         return (int) taskStatusMap.values().stream()
             .filter(status -> status == TaskStatus.COMPLETED)
             .count();
     }
     
+    /**
+     * Gets the current session score.
+     *
+     * @return The current session score
+     */
     public int getSessionScore() {
         return sessionScore;
     }
     
+    /**
+     * Gets the name of the current task.
+     *
+     * @return The current task name
+     */
     public String getCurrentTask() {
         return currentTask;
     }
     
+    /**
+     * Adds points to the current session score and updates the task's high score if necessary.
+     *
+     * @param points The points to add
+     */
     public void addToSessionScore(int points) {
         this.sessionScore += points;
         updateMainWindowStatus();
         
-        // 同时更新总分记录
+        // Update total score record
         if (currentTask != null) {
             taskScores.put(currentTask, Math.max(taskScores.getOrDefault(currentTask, 0), sessionScore));
         }
     }
     
+    /**
+     * Gets a copy of the task scores map.
+     *
+     * @return A copy of the task scores map
+     */
     public Map<String, Integer> getTaskScores() {
         return new HashMap<>(taskScores);
     }
     
+    /**
+     * Gets a copy of the task status map.
+     *
+     * @return A copy of the task status map
+     */
     public Map<String, TaskStatus> getTaskStatusMap() {
         return new HashMap<>(taskStatusMap);
     }
     
+    /**
+     * Enables or disables the full features mode.
+     *
+     * @param enabled true to enable full features mode, false to disable
+     */
     public void setFullFeaturesEnabled(boolean enabled) {
         this.fullFeaturesEnabled = enabled;
         if (enabled) {
-            // 在完整功能模式下，解锁所有任务
+            // Unlock all tasks in full feature mode
             for (String task : ADVANCED_TASKS) {
                 taskStatusMap.put(task, TaskStatus.UNLOCKED);
                 unlockedTasks.add(task);
             }
         } else {
-            // 切换回正常模式，重新检查任务解锁状态
+            // Recheck task unlock status when returning to normal mode
             checkAndUnlockTasks();
         }
-        // 更新主窗口状态
+        // Update main window status
         updateMainWindowStatus();
     }
     
-    // 任务状态枚举
+    /**
+     * Enum representing the possible states of a task.
+     */
     public enum TaskStatus {
-        LOCKED,        // 未解锁
-        UNLOCKED,      // 已解锁
-        IN_PROGRESS,   // 进行中
-        COMPLETED      // 已完成
+        /** Task is locked and cannot be accessed */
+        LOCKED,
+        /** Task is unlocked and ready to start */
+        UNLOCKED,
+        /** Task is currently being attempted */
+        IN_PROGRESS,
+        /** Task has been completed */
+        COMPLETED
     }
 }

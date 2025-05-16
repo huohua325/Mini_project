@@ -11,12 +11,29 @@ import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * A panel for compound shape calculations in the Shapeville application.
+ * This panel allows users to practice calculating areas of compound shapes
+ * through an interactive interface with visual shape representation.
+ *
+ * Features:
+ * - Interactive shape selection
+ * - Visual representation of compound shapes
+ * - Real-time feedback
+ * - Multiple attempts for each calculation
+ * - Score tracking and timed exercises
+ * - Detailed solution steps
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
+ */
 public class CompoundShapeCalculationPanel extends BaseTaskPanel implements TaskPanelInterface {
-    private static final int MAX_ATTEMPTS = 3;  // 每题最多3次尝试机会
-    private static final int TIME_PER_QUESTION = 5 * 60; // 每道题5分钟时间限制（秒）
+    private static final int MAX_ATTEMPTS = 3;  // Maximum 3 attempts per question
+    private static final int TIME_PER_QUESTION = 5 * 60; // 5 minutes time limit per question (seconds)
     private final CompoundShapeCalculation compoundCalculation;
     private int currentShapeIndex = 0;
-    private List<Boolean> correctAnswers;  // 记录每题是否答对
+    private List<Boolean> correctAnswers;  // Records whether each question was answered correctly
     private JLabel shapeLabel;
     private JTextArea descriptionArea;
     private JTextField answerField;
@@ -24,30 +41,32 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
     private JTextArea solutionArea;
     private JComboBox<String> shapeSelector;
     private ShapeDisplayPanel shapeDisplayPanel;
-    private Timer questionTimer; // 每道题的计时器
-    private int remainingTime;   // 当前题目的剩余时间
-    private JLabel timerLabel;   // 计时器显示标签
-    private JButton nextButton; // 添加"下一题"按钮
+    private Timer questionTimer;
+    private int remainingTime;
+    private JLabel timerLabel;
+    private JButton nextButton;
     
+    /**
+     * Constructs a new CompoundShapeCalculationPanel.
+     * Initializes the compound shape calculation game and sets up the UI components.
+     */
     public CompoundShapeCalculationPanel() {
-        super("复合形状计算");
+        super("Compound Shape Calculation");
         try {
             this.compoundCalculation = new CompoundShapeCalculation();
             this.correctAnswers = new ArrayList<>();
             
-            // 确保形状列表已经初始化
             if (this.compoundCalculation.getShapes().isEmpty()) {
-                throw new IllegalStateException("形状列表为空");
+                throw new IllegalStateException("Shape list is empty");
             }
             
-            // 在确认有形状后再初始化UI
             initializeUI();
         } catch (IllegalStateException e) {
             JOptionPane.showMessageDialog(this,
-                "初始化复合形状失败：" + e.getMessage(),
-                "错误",
+                "Failed to initialize compound shapes: " + e.getMessage(),
+                "Error",
                 JOptionPane.ERROR_MESSAGE);
-            throw e;  // 重新抛出异常，让上层处理
+            throw e;
         }
     }
     
@@ -55,36 +74,36 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
     public void initializeUI() {
         if (compoundCalculation == null || compoundCalculation.getShapes().isEmpty()) {
             setLayout(new BorderLayout());
-            JLabel errorLabel = new JLabel("暂无可用的复合形状", SwingConstants.CENTER);
-            errorLabel.setFont(new Font("微软雅黑", Font.BOLD, 16));
+            JLabel errorLabel = new JLabel("No compound shapes available", SwingConstants.CENTER);
+            errorLabel.setFont(new Font("Arial", Font.BOLD, 16));
             add(errorLabel, BorderLayout.CENTER);
             return;
         }
         
-        // 首先初始化基本组件
-        submitButton = new JButton("提交答案");
+        // Initialize basic components
+        submitButton = new JButton("Submit Answer");
         answerField = new JTextField(15);
         shapeLabel = new JLabel("", SwingConstants.CENTER);
         descriptionArea = new JTextArea(3, 30);
         solutionArea = new JTextArea(4, 30);
-        nextButton = new JButton("下一题"); 
-        nextButton.setVisible(false); // 初始时不可见
-        nextButton.addActionListener(e -> goToNextQuestion()); // 添加下一题的动作
+        nextButton = new JButton("Next Question");
+        nextButton.setVisible(false);
+        nextButton.addActionListener(e -> goToNextQuestion());
         
-        // 设置布局
+        // Set layout
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // 创建顶部面板
+        // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
         
-        // 添加计时器标签
-        timerLabel = new JLabel("剩余时间: 5:00", SwingConstants.RIGHT);
-        timerLabel.setFont(new Font("微软雅黑", Font.BOLD, 16));
+        // Add timer label
+        timerLabel = new JLabel("Time Remaining: 5:00", SwingConstants.RIGHT);
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         timerLabel.setForeground(Color.BLUE);
         topPanel.add(timerLabel, BorderLayout.EAST);
         
-        // 创建形状选择器
+        // Create shape selector
         List<CompoundShape> shapes = compoundCalculation.getShapes();
         String[] shapeNames = shapes.stream()
                                   .map(CompoundShape::getName)
@@ -99,91 +118,88 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
         });
         topPanel.add(shapeSelector, BorderLayout.NORTH);
         
-        // 设置形状标签
-        shapeLabel.setFont(new Font("微软雅黑", Font.BOLD, 24));
+        shapeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         topPanel.add(shapeLabel, BorderLayout.CENTER);
         
         add(topPanel, BorderLayout.NORTH);
         
-        // 创建中央面板
+        // Create center panel
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         
-        // 创建形状显示面板
+        // Create shape display panel
         shapeDisplayPanel = new ShapeDisplayPanel();
         
-        // 创建显示容器
+        // Create display container
         JPanel displayContainer = new JPanel(new BorderLayout());
-        displayContainer.setBorder(BorderFactory.createTitledBorder("形状显示"));
+        displayContainer.setBorder(BorderFactory.createTitledBorder("Shape Display"));
         displayContainer.setBackground(Color.WHITE);
         
-        // 创建滚动面板并添加形状显示面板
+        // Create scroll pane
         JScrollPane scrollPane = new JScrollPane(shapeDisplayPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         scrollPane.getViewport().setBackground(Color.WHITE);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         
-        // 设置首选大小
         Dimension displaySize = new Dimension(500, 400);
         shapeDisplayPanel.setPreferredSize(displaySize);
         displayContainer.setPreferredSize(displaySize);
         
-        // 添加滚动面板到显示容器
         displayContainer.add(scrollPane, BorderLayout.CENTER);
         centerPanel.add(displayContainer, BorderLayout.CENTER);
         
-        // 创建右侧信息面板
+        // Create info panel
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         
-        // 设置描述区域
+        // Set description area
         descriptionArea.setEditable(false);
         descriptionArea.setWrapStyleWord(true);
         descriptionArea.setLineWrap(true);
-        descriptionArea.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        descriptionArea.setFont(new Font("Arial", Font.PLAIN, 16));
         descriptionArea.setBackground(new Color(240, 240, 240));
         JScrollPane descriptionScroll = new JScrollPane(descriptionArea);
-        descriptionScroll.setBorder(BorderFactory.createTitledBorder("形状描述"));
+        descriptionScroll.setBorder(BorderFactory.createTitledBorder("Shape Description"));
         infoPanel.add(descriptionScroll);
         
-        // 创建答案输入区域
+        // Create answer input area
         JPanel answerPanel = new JPanel();
         submitButton.addActionListener(e -> handleSubmit());
         
-        answerPanel.add(new JLabel("请输入面积（保留1位小数）："));
+        answerPanel.add(new JLabel("Enter area (1 decimal place): "));
         answerPanel.add(answerField);
         answerPanel.add(submitButton);
-        answerPanel.add(nextButton); // 添加下一题按钮到面板
+        answerPanel.add(nextButton);
         infoPanel.add(Box.createVerticalStrut(20));
         infoPanel.add(answerPanel);
         
-        // 设置解答区域
+        // Set solution area
         solutionArea.setEditable(false);
         solutionArea.setWrapStyleWord(true);
         solutionArea.setLineWrap(true);
-        solutionArea.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        solutionArea.setFont(new Font("Arial", Font.PLAIN, 14));
         solutionArea.setBackground(new Color(240, 240, 240));
         JScrollPane solutionScroll = new JScrollPane(solutionArea);
-        solutionScroll.setBorder(BorderFactory.createTitledBorder("解题步骤"));
+        solutionScroll.setBorder(BorderFactory.createTitledBorder("Solution Steps"));
         infoPanel.add(Box.createVerticalStrut(20));
         infoPanel.add(solutionScroll);
         
         centerPanel.add(infoPanel, BorderLayout.EAST);
         add(centerPanel, BorderLayout.CENTER);
         
-        // 显示第一个形状
         showCurrentShape();
         
-        // 设置初始反馈信息
-        setFeedback("请输入答案并点击提交按钮。");
+        setFeedback("Please enter your answer and click Submit.");
         
-        // 确保所有组件都可见
         setVisible(true);
         revalidate();
         repaint();
     }
     
+    /**
+     * Displays the current shape and updates all related UI components.
+     */
     private void showCurrentShape() {
         List<CompoundShape> shapes = compoundCalculation.getShapes();
         
@@ -192,23 +208,21 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
             
             shapeLabel.setText(shape.getName());
             descriptionArea.setText(shape.getDescription());
-            solutionArea.setText("");  // 清空解答
-            solutionArea.setVisible(true); // 确保解答区域可见
+            solutionArea.setText("");
+            solutionArea.setVisible(true);
             answerField.setText("");
-            answerField.setEnabled(true); // 确保输入框可用
+            answerField.setEnabled(true);
             answerField.requestFocus();
-            submitButton.setEnabled(true); // 确保提交按钮可用
-            nextButton.setVisible(false); // 隐藏下一题按钮
+            submitButton.setEnabled(true);
+            nextButton.setVisible(false);
             shapeSelector.setSelectedIndex(currentShapeIndex);
             
-            // 设置形状并强制重绘
             if (shapeDisplayPanel != null) {
                 shapeDisplayPanel.setCurrentShape(shape.getRenderer());
                 shapeDisplayPanel.setVisible(true);
                 shapeDisplayPanel.revalidate();
                 shapeDisplayPanel.repaint();
                 
-                // 确保父容器也被重绘
                 Container parent = shapeDisplayPanel.getParent();
                 if (parent != null) {
                     parent.revalidate();
@@ -216,25 +230,23 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
                 }
             }
             
-            // 开始当前题目的计时
             startQuestionTimer();
         } else {
             endTask();
         }
     }
     
-    // 启动每道题的计时器
+    /**
+     * Starts the timer for the current question.
+     */
     private void startQuestionTimer() {
-        // 停止正在运行的计时器（如果有）
         if (questionTimer != null && questionTimer.isRunning()) {
             questionTimer.stop();
         }
         
-        // 重置剩余时间
         remainingTime = TIME_PER_QUESTION;
         updateTimerLabel();
         
-        // 创建并启动新的计时器
         questionTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -250,101 +262,99 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
         questionTimer.start();
     }
     
-    // 更新计时器标签
+    /**
+     * Updates the timer label with the current remaining time.
+     */
     private void updateTimerLabel() {
         int minutes = remainingTime / 60;
         int seconds = remainingTime % 60;
         
-        // 当剩余时间少于1分钟时文字变红
         if (remainingTime < 60) {
             timerLabel.setForeground(Color.RED);
         } else {
             timerLabel.setForeground(Color.BLUE);
         }
         
-        timerLabel.setText(String.format("剩余时间: %d:%02d", minutes, seconds));
+        timerLabel.setText(String.format("Time Remaining: %d:%02d", minutes, seconds));
     }
     
-    // 处理时间用完的情况
+    /**
+     * Handles the case when time runs out for the current question.
+     */
     private void handleTimeUp() {
         JOptionPane.showMessageDialog(this,
-            "此题时间已到。请查看解题步骤，然后点击下一题继续。",
-            "时间提醒",
+            "Time's up! Please review the solution steps and click Next to continue.",
+            "Time Alert",
             JOptionPane.WARNING_MESSAGE);
         
-        // 直接显示解题步骤
         CompoundShape shape = compoundCalculation.getShapes().get(currentShapeIndex);
         String solution = shape.getSolution();
         if (solution == null || solution.isEmpty()) {
-            solution = "此题暂无详细解题步骤";
+            solution = "No detailed solution steps available for this question";
         }
         solutionArea.setText(solution);
         solutionArea.revalidate();
         solutionArea.repaint();
         
-        // 当前题目视为3次回答错误
         completedCurrentQuestion(false);
     }
     
-    // 标记当前题目完成并进入下一题
+    /**
+     * Marks the current question as completed and prepares for the next question.
+     * @param correct Whether the question was answered correctly
+     */
     private void completedCurrentQuestion(boolean correct) {
-        // 停止当前题目计时器
         if (questionTimer != null && questionTimer.isRunning()) {
             questionTimer.stop();
         }
         
-        // 记录答题结果
         correctAnswers.add(correct);
         
-        // 显示解题步骤
         CompoundShape shape = compoundCalculation.getShapes().get(currentShapeIndex);
         String feedback = "";
         if (!correct) {
-            feedback = "时间到或三次回答错误。正确答案是：" + String.format("%.1f", shape.getCorrectArea()) + 
-                       "\n本题得分：0分\n让我们看看详细的解题步骤：";
+            feedback = "Time's up or three incorrect attempts. The correct answer is: " + 
+                      String.format("%.1f", shape.getCorrectArea()) + 
+                      "\nPoints earned: 0\nLet's review the solution steps:";
         } else {
             int currentAttempts = getAttempts();
             int points = currentAttempts == 1 ? 6 : 
                         currentAttempts == 2 ? 4 : 
                         currentAttempts == 3 ? 2 : 0;
-            feedback = String.format("答案正确！\n本题得分：%d分\n让我们看看详细的解题步骤：", points);
+            feedback = String.format("Correct answer!\nPoints earned: %d\nLet's review the solution steps:", points);
         }
         setFeedback(feedback);
         
-        // 确保解题步骤不为空
         String solution = shape.getSolution();
         if (solution == null || solution.isEmpty()) {
-            solution = "此题暂无详细解题步骤";
+            solution = "No detailed solution steps available for this question";
         }
         solutionArea.setText(solution);
         
-        // 强制更新UI以确保解题步骤显示
         solutionArea.revalidate();
         solutionArea.repaint();
         
-        // 标记当前形状已练习
         compoundCalculation.addPracticed(currentShapeIndex);
         addAttemptToList();
         
-        // 检查是否完成所有形状
         if (compoundCalculation.isComplete()) {
             JOptionPane.showMessageDialog(this, 
-                "您已完成所有复合形状的练习。", 
-                "任务完成", 
+                "You have completed all compound shape exercises.", 
+                "Task Complete", 
                 JOptionPane.INFORMATION_MESSAGE);
             endTask();
             return;
         }
         
-        // 禁用提交按钮和输入框，显示下一题按钮
         submitButton.setEnabled(false);
         answerField.setEnabled(false);
         nextButton.setVisible(true);
     }
     
-    // 添加进入下一题的方法
+    /**
+     * Moves to the next question in the exercise.
+     */
     private void goToNextQuestion() {
-        // 找到下一个未完成的形状
         do {
             currentShapeIndex++;
             if (currentShapeIndex >= compoundCalculation.getShapes().size()) {
@@ -353,17 +363,17 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
             }
         } while (compoundCalculation.getPracticed().contains(currentShapeIndex));
         
-        // 重置按钮状态和尝试次数
         submitButton.setEnabled(true);
         answerField.setEnabled(true);
         nextButton.setVisible(false);
         resetAttempts();
         
-        // 显示新题目
         showCurrentShape();
     }
     
-    // 形状显示面板内部类
+    /**
+     * Internal panel for displaying compound shapes.
+     */
     private static class ShapeDisplayPanel extends JPanel {
         private ShapeRenderer currentShape;
         private static final int MARGIN = 40;
@@ -379,9 +389,7 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
         public void setCurrentShape(ShapeRenderer shape) {
             this.currentShape = shape;
             
-            // 如果形状改变，可能需要调整面板大小
             if (shape != null) {
-                // 为形状预留足够的空间
                 int width = Math.max(500, getPreferredSize().width);
                 int height = Math.max(400, getPreferredSize().height);
                 setPreferredSize(new Dimension(width, height));
@@ -394,7 +402,6 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
         @Override
         public Dimension getPreferredSize() {
             if (currentShape != null) {
-                // 根据形状的实际大小调整面板大小
                 return new Dimension(500 + 2 * MARGIN, 400 + 2 * MARGIN);
             }
             return new Dimension(500, 400);
@@ -404,23 +411,19 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             
-            // 清除背景
             g.setColor(getBackground());
             g.fillRect(0, 0, getWidth(), getHeight());
             
             if (currentShape != null) {
                 Graphics2D g2d = (Graphics2D) g.create();
                 try {
-                    // 设置绘图质量
                     g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                     g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
                     g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
                     
-                    // 计算绘制区域
                     int drawingWidth = getWidth() - 2 * MARGIN;
                     int drawingHeight = getHeight() - 2 * MARGIN;
                     
-                    // 创建绘制区域
                     g2d.translate(MARGIN, MARGIN);
                     currentShape.draw(g2d, drawingWidth, drawingHeight);
                     currentShape.drawDimensions(g2d, drawingWidth, drawingHeight);
@@ -431,8 +434,8 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
                 }
             } else {
                 g.setColor(Color.GRAY);
-                g.setFont(new Font("微软雅黑", Font.PLAIN, 16));
-                String message = "暂无形状显示";
+                g.setFont(new Font("Arial", Font.PLAIN, 16));
+                String message = "No shape to display";
                 FontMetrics fm = g.getFontMetrics();
                 int x = (getWidth() - fm.stringWidth(message)) / 2;
                 int y = (getHeight() + fm.getHeight()) / 2;
@@ -450,64 +453,56 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
             incrementAttempts();
             
             if (compoundCalculation.checkAnswer(currentShapeIndex, answer)) {
-                // 答对了，记录正确答案
-                // 根据尝试次数显示不同的得分反馈
                 int currentAttempts = getAttempts();
                 int points = currentAttempts == 1 ? 6 : 
                             currentAttempts == 2 ? 4 : 
                             currentAttempts == 3 ? 2 : 0;
-                String feedback = String.format("太棒了！答案正确！\n本题得分：%d分", points);
+                String feedback = String.format("Excellent! Correct answer!\nPoints earned: %d", points);
                 setFeedback(feedback);
                 
-                // 显示解题步骤
                 CompoundShape shape = compoundCalculation.getShapes().get(currentShapeIndex);
                 String solution = shape.getSolution();
                 if (solution == null || solution.isEmpty()) {
-                    solution = "此题暂无详细解题步骤";
+                    solution = "No detailed solution steps available for this question";
                 }
                 solutionArea.setText(solution);
                 solutionArea.revalidate();
                 solutionArea.repaint();
                 
-                // 禁用提交按钮和输入框
                 submitButton.setEnabled(false);
                 answerField.setEnabled(false);
                 
-                // 完成当前题目，标记为正确
                 completedCurrentQuestion(true);
                 
             } else if (!hasRemainingAttempts()) {
-                // 三次都答错了，记录错误答案
                 CompoundShape shape = compoundCalculation.getShapes().get(currentShapeIndex);
-                String feedback = "很遗憾，三次机会已用完。正确答案是：" + String.format("%.1f", shape.getCorrectArea()) + 
-                           "\n本题得分：0分\n让我们看看详细的解题步骤：";
+                String feedback = "No more attempts. The correct answer is: " + 
+                                String.format("%.1f", shape.getCorrectArea()) + 
+                                "\nPoints earned: 0\nLet's review the solution steps:";
                 setFeedback(feedback);
                 
-                // 提前显示解题步骤，确保即使completedCurrentQuestion有问题也能显示
                 String solution = shape.getSolution();
                 if (solution == null || solution.isEmpty()) {
-                    solution = "此题暂无详细解题步骤";
+                    solution = "No detailed solution steps available for this question";
                 }
                 solutionArea.setText(solution);
                 solutionArea.revalidate();
                 solutionArea.repaint();
                 
-                // 禁用提交按钮和输入框
                 submitButton.setEnabled(false);
                 answerField.setEnabled(false);
                 
-                // 完成当前题目，标记为错误
                 completedCurrentQuestion(false);
                 
             } else {
                 int remainingAttempts = getRemainingAttempts();
                 int nextPoints = remainingAttempts == 2 ? 4 : 2;
-                String feedback = String.format("答案不正确，请再试一次。\n还剩%d次机会，答对可得%d分。", 
+                String feedback = String.format("Incorrect answer. Try again.\n%d attempts remaining, next correct answer worth %d points.", 
                                         remainingAttempts, nextPoints);
                 setFeedback(feedback);
             }
         } catch (NumberFormatException e) {
-            setFeedback("请输入有效的数字！");
+            setFeedback("Please enter a valid number!");
         }
     }
     
@@ -516,14 +511,14 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
         currentShapeIndex = 0;
         resetAttempts();
         attemptsPerTask.clear();
-        correctAnswers.clear();  // 清空答题记录
+        correctAnswers.clear();
         compoundCalculation.reset();
         showCurrentShape();
     }
     
     /**
-     * 获取当前题目的尝试次数
-     * @return 当前尝试次数
+     * Gets the number of attempts made for the current question.
+     * @return The current number of attempts
      */
     private int getAttempts() {
         return MAX_ATTEMPTS - getRemainingAttempts();
@@ -532,21 +527,19 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
     @Override
     protected int calculateScore() {
         int totalScore = 0;
-        // 只计算答对的题目的分数
         for (int i = 0; i < attemptsPerTask.size(); i++) {
-            if (i < correctAnswers.size() && correctAnswers.get(i)) {  // 只有答对的题目才计分
+            if (i < correctAnswers.size() && correctAnswers.get(i)) {
                 int attempts = attemptsPerTask.get(i);
-                if (attempts == 1) totalScore += 6;      // 第一次就答对得6分
-                else if (attempts == 2) totalScore += 4; // 第二次答对得4分
-                else if (attempts == 3) totalScore += 2; // 第三次答对得2分
+                if (attempts == 1) totalScore += 6;
+                else if (attempts == 2) totalScore += 4;
+                else if (attempts == 3) totalScore += 2;
             }
         }
-        return totalScore;  // 直接返回实际得分，不转换为百分比
+        return totalScore;
     }
     
     @Override
     public void startTask() {
-        // 重置状态
         currentShapeIndex = 0;
         showCurrentShape();
     }
@@ -563,7 +556,6 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
             shapeSelector.setEnabled(false);
         }
         
-        // 暂停计时器
         if (questionTimer != null && questionTimer.isRunning()) {
             questionTimer.stop();
         }
@@ -581,7 +573,6 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
             shapeSelector.setEnabled(true);
         }
         
-        // 恢复计时器
         if (questionTimer != null && !questionTimer.isRunning() && remainingTime > 0) {
             questionTimer.start();
         }
@@ -589,16 +580,14 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
     
     @Override
     public void endTask() {
-        // 停止计时器
         if (questionTimer != null && questionTimer.isRunning()) {
             questionTimer.stop();
         }
         
         if (parentWindow != null) {
             int score = calculateScore();
-            int maxScore = compoundCalculation.getShapes().size() * 6;  // 每题满分6分
+            int maxScore = compoundCalculation.getShapes().size() * 6;
             
-            // 显示结果
             parentWindow.showResult(score, maxScore);
         }
     }
@@ -610,7 +599,6 @@ public class CompoundShapeCalculationPanel extends BaseTaskPanel implements Task
     
     @Override
     public String getFeedback() {
-        // 返回包含总分信息的字符串
-        return "复合形状计算 - 当前得分：" + calculateScore();
+        return "Compound Shape Calculation - Current Score: " + calculateScore();
     }
 }

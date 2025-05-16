@@ -12,6 +12,22 @@ import java.util.Set;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * A panel for circle-related calculations in the Shapeville application.
+ * This panel allows users to practice calculating circle areas and circumferences
+ * through an interactive interface with visual circle representation.
+ *
+ * Features:
+ * - Interactive calculation selection (area/circumference)
+ * - Visual representation of circles
+ * - Real-time feedback
+ * - Multiple attempts for each calculation
+ * - Score tracking and timed exercises
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
+ */
 public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelInterface {
     private JComboBox<String> calculationType;
     private JLabel valueLabel;
@@ -22,9 +38,9 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     private JPanel drawingPanel;
     private CircleDrawer circleDrawer;
     
-    private Timer questionTimer; // 每道题的计时器
-    private static final int TIME_PER_QUESTION = 3 * 60; // 每道题3分钟时间限制（秒）
-    private int remainingTime; // 当前题目的剩余时间
+    private Timer questionTimer;
+    private static final int TIME_PER_QUESTION = 3 * 60; // 3 minutes time limit per question (in seconds)
+    private int remainingTime;
     private int attempts = 0;
     private double currentValue;
     private boolean isRadius;
@@ -34,12 +50,15 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     private int score = 0;
     private int completedCalculations = 0;
     private Set<String> completedTypes = new HashSet<>();
-    private static final int TOTAL_TYPES = 4; // 总共四种计算类型
+    private static final int TOTAL_TYPES = 4; // Total calculation types
     private boolean isArea;
     
+    /**
+     * Constructs a new CircleCalculationPanel.
+     * Initializes the circle calculation game and sets up the UI components.
+     */
     public CircleCalculationPanel() {
-        super("圆形计算");
-        // 初始化成员变量后，调用自定义UI设置方法
+        super("Circle Calculation");
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setupCircleUI();
@@ -47,44 +66,40 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     
     @Override
     public void initializeUI() {
-        // 只设置基本布局，不进行复杂初始化
         setLayout(new BorderLayout(10, 10));
     }
     
-    // 将复杂UI初始化移到单独的方法中
+    /**
+     * Sets up the main UI components for the circle calculation task.
+     * Creates and arranges all necessary UI elements including the circle display,
+     * control panel, and input components.
+     */
     private void setupCircleUI() {
-        // 初始化组件
         initializeComponents();
-        
-        // 设置布局
         setupLayout();
-        
-        // 开始新的计算任务
         startNewCalculation();
     }
     
+    /**
+     * Initializes all UI components with their default values and settings.
+     */
     private void initializeComponents() {
-        // 计算类型选择
-        String[] types = {"面积计算", "周长计算"};
+        String[] types = {"Area Calculation", "Circumference Calculation"};
         calculationType = new JComboBox<>(types);
         calculationType.addActionListener(e -> startNewCalculation());
         
-        // 输入区域
         valueLabel = new JLabel();
         answerField = new JTextField(10);
-        submitButton = new JButton("提交答案");
+        submitButton = new JButton("Submit Answer");
         submitButton.addActionListener(e -> handleSubmit());
         
-        // 计时器
-        timerLabel = new JLabel("剩余时间: 3:00");
-        timerLabel.setFont(new Font("微软雅黑", Font.BOLD, 16));
+        timerLabel = new JLabel("Time Remaining: 3:00");
+        timerLabel.setFont(new Font("Arial", Font.BOLD, 16));
         timerLabel.setForeground(Color.BLUE);
         
-        // 公式显示
         formulaLabel = new JLabel();
         formulaLabel.setHorizontalAlignment(SwingConstants.CENTER);
         
-        // 绘图区域
         drawingPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -94,47 +109,47 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                 }
             }
         };
-        drawingPanel.setPreferredSize(new Dimension(300, 250)); // 调整为更合适的大小
+        drawingPanel.setPreferredSize(new Dimension(300, 250));
         drawingPanel.setBackground(Color.WHITE);
         
-        // 创建CircleDrawer实例
         circleDrawer = new CircleDrawer();
     }
     
+    /**
+     * Sets up the layout of all UI components in the panel.
+     */
     private void setupLayout() {
-        // 顶部面板
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.add(calculationType);
         topPanel.add(timerLabel);
         add(topPanel, BorderLayout.NORTH);
         
-        // 中间面板（绘图区域）
-        drawingPanel.setPreferredSize(new Dimension(500, 500)); // 增加绘图区域的大小
+        drawingPanel.setPreferredSize(new Dimension(500, 500));
         JScrollPane scrollPane = new JScrollPane(drawingPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
         
-        // 底部面板
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottomPanel.add(valueLabel);
         bottomPanel.add(answerField);
         bottomPanel.add(submitButton);
         add(bottomPanel, BorderLayout.SOUTH);
         
-        // 右侧面板（公式显示）
         JPanel rightPanel = new JPanel(new BorderLayout());
         rightPanel.add(formulaLabel, BorderLayout.NORTH);
         add(rightPanel, BorderLayout.EAST);
     }
     
+    /**
+     * Starts a new calculation by generating new values and updating the UI.
+     */
     private void startNewCalculation() {
         attempts = 0;
         isRadius = random.nextBoolean();
         isArea = random.nextBoolean();
         currentValue = 1 + random.nextInt(20);
         
-        // 如果当前类型已完成，重新选择
         String currentType = getCalculationType();
         while (completedTypes.contains(currentType)) {
             isRadius = random.nextBoolean();
@@ -142,42 +157,35 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
             currentType = getCalculationType();
         }
         
-        // 更新UI显示
-        calculationType.setSelectedItem(isArea ? "面积计算" : "周长计算");
-        String valueType = isRadius ? "半径" : "直径";
-        valueLabel.setText("已知" + valueType + ": " + currentValue + " ");
+        calculationType.setSelectedItem(isArea ? "Area Calculation" : "Circumference Calculation");
+        String valueType = isRadius ? "Radius" : "Diameter";
+        valueLabel.setText("Given " + valueType + ": " + currentValue + " ");
         
-        // 更新公式显示
         updateFormulaDisplay();
         
-        // 更新绘图
         circleDrawer.setValues(currentValue, isRadius);
         drawingPanel.repaint();
         
-        // 计算正确答案
         calculateCorrectAnswer();
         
-        // 重置输入框
         answerField.setText("");
         answerField.setEnabled(true);
         submitButton.setEnabled(true);
         
-        // 开始当前题目的计时
         startQuestionTimer();
     }
     
-    // 启动每道题的计时器
+    /**
+     * Starts the timer for the current question.
+     */
     private void startQuestionTimer() {
-        // 停止正在运行的计时器（如果有）
         if (questionTimer != null && questionTimer.isRunning()) {
             questionTimer.stop();
         }
         
-        // 重置剩余时间
         remainingTime = TIME_PER_QUESTION;
         updateTimerLabel();
         
-        // 创建并启动新的计时器
         questionTimer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -193,74 +201,84 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         questionTimer.start();
     }
     
-    // 更新计时器标签
+    /**
+     * Updates the timer label with the current remaining time.
+     */
     private void updateTimerLabel() {
         int minutes = remainingTime / 60;
         int seconds = remainingTime % 60;
         
-        // 当剩余时间少于1分钟时文字变红
         if (remainingTime < 60) {
             timerLabel.setForeground(Color.RED);
         } else {
             timerLabel.setForeground(Color.BLUE);
         }
         
-        timerLabel.setText(String.format("剩余时间: %d:%02d", minutes, seconds));
+        timerLabel.setText(String.format("Time Remaining: %d:%02d", minutes, seconds));
     }
     
-    // 处理时间用完的情况
+    /**
+     * Handles the case when time runs out for the current question.
+     */
     private void handleTimeUp() {
         JOptionPane.showMessageDialog(this,
-            "此题时间已到，将自动进入下一题。",
-            "时间提醒",
+            "Time's up! Moving to the next question.",
+            "Time Alert",
             JOptionPane.WARNING_MESSAGE);
         
-        // 当前题目视为答错
         String formattedAnswer = df.format(correctAnswer);
         String currentType = getCalculationType();
-        completedTypes.add(currentType); // 即使答错也标记为完成
+        completedTypes.add(currentType);
         
-        setFeedback("时间到！正确答案是: " + formattedAnswer + "\n" +
-                     "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
+        setFeedback("Time's up! The correct answer was: " + formattedAnswer + "\n" +
+                     "Completed " + completedTypes.size() + "/" + TOTAL_TYPES + " calculation types.");
         
-        // 检查是否完成所有类型
         if (completedTypes.size() >= TOTAL_TYPES) {
             JOptionPane.showMessageDialog(this,
-                "所有计算类型已完成。最终得分：" + score + "分（满分12分）",
-                "任务完成",
+                "All calculation types completed. Final score: " + score + " points (out of 12)",
+                "Task Complete",
                 JOptionPane.INFORMATION_MESSAGE);
             endTask();
         } else {
-            // 延迟几秒后进入下一题
             Timer delayTimer = new Timer(2000, e -> startNewCalculation());
             delayTimer.setRepeats(false);
             delayTimer.start();
         }
     }
     
+    /**
+     * Gets the current calculation type as a string.
+     * @return The current calculation type
+     */
     private String getCalculationType() {
-        return (isRadius ? "半径" : "直径") + (isArea ? "面积" : "周长");
+        return (isRadius ? "Radius" : "Diameter") + (isArea ? "Area" : "Circumference");
     }
     
+    /**
+     * Updates the formula display based on the current calculation type.
+     */
     private void updateFormulaDisplay() {
-        boolean isArea = calculationType.getSelectedItem().toString().equals("面积计算");
+        boolean isArea = calculationType.getSelectedItem().toString().equals("Area Calculation");
         if (isArea) {
             if (isRadius) {
-                formulaLabel.setText("<html>面积公式：<br>A = πr²<br>r = " + currentValue + "<br>(请使用π = 3.14)</html>");
+                formulaLabel.setText("<html>Area Formula:<br>A = πr²<br>r = " + currentValue + "<br>(Use π = 3.14)</html>");
             } else {
-                formulaLabel.setText("<html>面积公式：<br>A = π(d/2)²<br>d = " + currentValue + "<br>(请使用π = 3.14)</html>");
+                formulaLabel.setText("<html>Area Formula:<br>A = π(d/2)²<br>d = " + currentValue + "<br>(Use π = 3.14)</html>");
             }
         } else {
             if (isRadius) {
-                formulaLabel.setText("<html>周长公式：<br>C = 2πr<br>r = " + currentValue + "<br>(请使用π = 3.14)</html>");
+                formulaLabel.setText("<html>Circumference Formula:<br>C = 2πr<br>r = " + currentValue + "<br>(Use π = 3.14)</html>");
             } else {
-                formulaLabel.setText("<html>周长公式：<br>C = πd<br>d = " + currentValue + "<br>(请使用π = 3.14)</html>");
+                formulaLabel.setText("<html>Circumference Formula:<br>C = πd<br>d = " + currentValue + "<br>(Use π = 3.14)</html>");
             }
         }
     }
     
+    /**
+     * Calculates the correct answer for the current problem.
+     */
     private void calculateCorrectAnswer() {
-        boolean isArea = calculationType.getSelectedItem().toString().equals("面积计算");
+        boolean isArea = calculationType.getSelectedItem().toString().equals("Area Calculation");
         if (isArea) {
             if (isRadius) {
                 correctAnswer = 3.14 * currentValue * currentValue;
@@ -277,16 +295,17 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         }
     }
     
+    /**
+     * Moves to the next question or ends the task if all types are completed.
+     */
     private void moveToNextQuestion() {
-        // 检查是否完成所有类型
         if (completedTypes.size() >= TOTAL_TYPES) {
             JOptionPane.showMessageDialog(this,
-                "所有计算类型已完成。最终得分：" + score + "分（满分12分）",
-                "任务完成",
+                "All calculation types completed. Final score: " + score + " points (out of 12)",
+                "Task Complete",
                 JOptionPane.INFORMATION_MESSAGE);
             endTask();
         } else {
-            // 延迟几秒后进入下一题
             Timer delayTimer = new Timer(2000, e -> startNewCalculation());
             delayTimer.setRepeats(false);
             delayTimer.start();
@@ -300,40 +319,38 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
             attempts++;
             
             if (Math.abs(userAnswer - correctAnswer) < 0.1) {
-                // 停止当前题目计时器
                 if (questionTimer != null && questionTimer.isRunning()) {
                     questionTimer.stop();
                 }
                 
                 String currentType = getCalculationType();
                 completedTypes.add(currentType);
-                score += (4 - attempts); // 根据尝试次数给分
+                score += (4 - attempts);
                 
-                setFeedback("回答正确！得分：" + (4 - attempts) + "分。\n" +
-                           "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
+                setFeedback("Correct! Points earned: " + (4 - attempts) + "\n" +
+                           "Completed " + completedTypes.size() + "/" + TOTAL_TYPES + " calculation types.");
                 
                 moveToNextQuestion();
             } else {
                 if (attempts >= 3) {
-                    // 停止当前题目计时器
                     if (questionTimer != null && questionTimer.isRunning()) {
                         questionTimer.stop();
                     }
                     
                     String formattedAnswer = df.format(correctAnswer);
                     String currentType = getCalculationType();
-                    completedTypes.add(currentType); // 即使答错也标记为完成
+                    completedTypes.add(currentType);
                     
-                    setFeedback("本题答错次数过多。正确答案是: " + formattedAnswer + "\n" +
-                              "已完成 " + completedTypes.size() + "/" + TOTAL_TYPES + " 种计算类型。");
+                    setFeedback("Too many incorrect attempts. The correct answer was: " + formattedAnswer + "\n" +
+                              "Completed " + completedTypes.size() + "/" + TOTAL_TYPES + " calculation types.");
                     
                     moveToNextQuestion();
                 } else {
-                    setFeedback("回答错误，还有" + (3 - attempts) + "次机会。");
+                    setFeedback("Incorrect. " + (3 - attempts) + " attempts remaining.");
                 }
             }
         } catch (NumberFormatException e) {
-            setFeedback("请输入有效的数字！");
+            setFeedback("Please enter a valid number!");
         }
     }
     
@@ -387,7 +404,7 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     public void endTask() {
         cleanup();
         if (parentWindow != null) {
-            parentWindow.showResult(calculateScore(), 12); // 总分12分
+            parentWindow.showResult(calculateScore(), 12);
         }
     }
 
@@ -399,16 +416,16 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     @Override
     public String getFeedback() {
         StringBuilder feedback = new StringBuilder();
-        feedback.append("圆形计算练习结果：\n");
-        feedback.append("完成计算类型数量：").append(completedTypes.size()).append("/").append(TOTAL_TYPES).append("\n");
-        feedback.append("总得分：").append(score).append("/12分\n\n");
+        feedback.append("Circle Calculation Exercise Results:\n");
+        feedback.append("Completed calculation types: ").append(completedTypes.size()).append("/").append(TOTAL_TYPES).append("\n");
+        feedback.append("Total score: ").append(score).append("/12 points\n\n");
         
         if (score >= 10) {
-            feedback.append("表现优秀！你已经很好地掌握了圆形的面积和周长计算。");
+            feedback.append("Excellent! You have mastered circle area and circumference calculations.");
         } else if (score >= 6) {
-            feedback.append("表现不错！继续练习可以做得更好。");
+            feedback.append("Good job! Keep practicing to improve further.");
         } else {
-            feedback.append("需要更多练习来提高计算能力。建议复习圆形的面积和周长公式。");
+            feedback.append("More practice needed. Review the formulas for circle area and circumference.");
         }
         
         return feedback.toString();

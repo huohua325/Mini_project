@@ -1,133 +1,133 @@
-# Shapeville - 几何学习乐园
+# Shapeville - Geometry Learning Playground
 
-一个基于Java Swing的几何图形计算与识别应用程序，旨在通过互动教学帮助用户学习几何知识。
+A Java Swing-based geometric calculation and recognition application designed to help users learn geometry through interactive teaching.
 
-## 目录
-- [Shapeville - 几何学习乐园](#shapeville---几何学习乐园)
-  - [目录](#目录)
-  - [项目描述](#项目描述)
-  - [功能特点](#功能特点)
-  - [技术栈](#技术栈)
-  - [系统要求](#系统要求)
-  - [安装与运行](#安装与运行)
-    - [方法一：使用Maven](#方法一使用maven)
-    - [方法二：直接运行](#方法二直接运行)
-    - [方法三：使用IDE](#方法三使用ide)
-  - [项目结构](#项目结构)
-  - [详细模块说明](#详细模块说明)
-    - [Main 模块](#main-模块)
-    - [Model 模块](#model-模块)
-    - [Game 模块](#game-模块)
-    - [GUI 模块](#gui-模块)
-      - [核心窗口类](#核心窗口类)
-      - [任务面板模块 (tasks)](#任务面板模块-tasks)
-      - [形状渲染模块 (shapes)](#形状渲染模块-shapes)
-  - [工作流程与数据流向](#工作流程与数据流向)
-    - [1. 垂直数据流](#1-垂直数据流)
-    - [2. 水平数据流](#2-水平数据流)
-    - [3. 关键数据交互点](#3-关键数据交互点)
-    - [4. 窗口与任务面板的协作关系](#4-窗口与任务面板的协作关系)
-  - [学习计划与使用方法](#学习计划与使用方法)
-    - [学习建议](#学习建议)
-    - [使用方法](#使用方法)
-  - [开发者文档](#开发者文档)
-    - [开发环境设置](#开发环境设置)
-    - [各模块开发指南](#各模块开发指南)
-      - [Model 模块开发](#model-模块开发)
-      - [Game 模块开发](#game-模块开发)
-      - [GUI 模块开发](#gui-模块开发)
-    - [添加新功能](#添加新功能)
-    - [测试指南](#测试指南)
-    - [最佳实践](#最佳实践)
-  - [许可证](#许可证)
-  - [联系方式](#联系方式)
+## Table of Contents
+- [Shapeville - Geometry Learning Playground](#shapeville---geometry-learning-playground)
+  - [Table of Contents](#table-of-contents)
+  - [Project Description](#project-description)
+  - [Features](#features)
+  - [Technology Stack](#technology-stack)
+  - [System Requirements](#system-requirements)
+  - [Installation and Running](#installation-and-running)
+    - [Method 1: Using Maven](#method-1-using-maven)
+    - [Method 2: Direct Run](#method-2-direct-run)
+    - [Method 3: Using IDE](#method-3-using-ide)
+  - [Project Structure](#project-structure)
+  - [Module Details](#module-details)
+    - [Main Module](#main-module)
+    - [Model Module](#model-module)
+    - [Game Module](#game-module)
+    - [GUI Module](#gui-module)
+      - [Core Window Classes](#core-window-classes)
+      - [Task Panel Module (tasks)](#task-panel-module-tasks)
+      - [Shape Rendering Module (shapes)](#shape-rendering-module-shapes)
+  - [Workflow and Data Flow](#workflow-and-data-flow)
+    - [1. Vertical Data Flow](#1-vertical-data-flow)
+    - [2. Horizontal Data Flow](#2-horizontal-data-flow)
+    - [3. Key Data Interaction Points](#3-key-data-interaction-points)
+    - [4. Window and Task Panel Collaboration](#4-window-and-task-panel-collaboration)
+  - [Learning Plan and Usage](#learning-plan-and-usage)
+    - [Learning Suggestions](#learning-suggestions)
+    - [Usage Instructions](#usage-instructions)
+  - [Developer Documentation](#developer-documentation)
+    - [Development Environment Setup](#development-environment-setup)
+    - [Module Development Guidelines](#module-development-guidelines)
+      - [Model Module Development](#model-module-development)
+      - [Game Module Development](#game-module-development)
+      - [GUI Module Development](#gui-module-development)
+    - [Adding New Features](#adding-new-features)
+    - [Testing Guidelines](#testing-guidelines)
+    - [Best Practices](#best-practices)
+  - [License](#license)
+  - [Contact](#contact)
 
-## 项目描述
+## Project Description
 
-Shapeville是一个交互式的几何学习应用程序，使用Java Swing构建用户界面。该应用程序融合了游戏性和教育性，通过一系列由简到难的任务，帮助用户掌握各种几何概念和计算方法。
+Shapeville is an interactive geometry learning application built with Java Swing. The application combines gaming elements with educational content, helping users master various geometric concepts and calculation methods through a series of progressively challenging tasks.
 
-从基本的角度识别、形状识别，到复杂的面积计算和扇形计算，Shapeville为用户提供了全面、系统的几何学习体验。应用程序记录用户的学习进度，根据完成情况解锁新的内容，并提供即时反馈和评分，帮助用户了解自己的掌握程度。
+From basic angle recognition and shape identification to complex area calculations and sector computations, Shapeville provides a comprehensive and systematic geometry learning experience. The application tracks user progress, unlocks new content based on completion status, and provides immediate feedback and scoring to help users understand their mastery level.
 
-Shapeville不仅是一个学习工具，也是一个挑战自我的平台，通过星级评价和等级提升，激励用户不断精进自己的几何知识和计算能力。
+Shapeville is not just a learning tool but also a platform for self-challenge, motivating users to continuously improve their geometric knowledge and calculation abilities through star ratings and level progression.
 
-## 功能特点
+## Features
 
-项目提供了丰富多样的几何学习任务，包括：
+The project offers diverse geometry learning tasks, including:
 
-- **形状识别**：认识和辨别各种2D和3D几何形状
-- **角度计算**：学习辨别和测量不同类型的角度（锐角、直角、钝角、平角、优角）
-- **面积计算**：掌握计算基本几何形状面积的方法
-- **圆形计算**：学习圆的周长、面积计算
-- **复合图形计算**：计算由多个基本形状组成的复杂图形的面积
-- **扇形计算**：学习和应用扇形的面积、弧长计算公式
+- **Shape Recognition**: Identify and distinguish various 2D and 3D geometric shapes
+- **Angle Calculation**: Learn to identify and measure different types of angles (acute, right, obtuse, straight, reflex)
+- **Area Calculation**: Master methods for calculating areas of basic geometric shapes
+- **Circle Calculation**: Learn circle circumference and area calculations
+- **Compound Shape Calculation**: Calculate areas of complex figures composed of multiple basic shapes
+- **Sector Calculation**: Learn and apply sector area and arc length calculation formulas
 
-系统功能特点：
+System features:
 
-- **渐进式学习体系**：任务按难度分级，从基础到高级
-- **即时反馈机制**：每道题目均提供即时评价和正确答案
-- **进度追踪**：记录用户的学习进度和成绩
-- **等级系统**：根据完成任务的数量和得分评定用户等级
-- **解锁机制**：完成基础任务后解锁高级任务
-- **成绩评定**：通过星级和百分比评价用户表现
-- **数据持久化**：保存用户进度和成绩
-- **直观的图形界面**：采用现代化UI设计，操作简单直观
+- **Progressive Learning System**: Tasks are graded by difficulty, from basic to advanced
+- **Immediate Feedback**: Each question provides instant evaluation and correct answers
+- **Progress Tracking**: Records user learning progress and scores
+- **Level System**: Evaluates user levels based on task completion and scores
+- **Unlock Mechanism**: Advanced tasks unlock after completing basic tasks
+- **Performance Rating**: Evaluates user performance through star ratings and percentages
+- **Data Persistence**: Saves user progress and scores
+- **Intuitive GUI**: Modern UI design with simple and intuitive operations
 
-## 技术栈
+## Technology Stack
 
-- **Java 17**：核心编程语言
-- **Swing**：GUI框架，用于构建用户界面
-- **Java2D**：用于绘制各种几何图形
-- **Maven**：项目管理和构建工具
-- **JUnit 5**：单元测试框架
-- **Gson**：JSON数据处理库，用于数据持久化
+- **Java 17**：Core programming language
+- **Swing**：GUI framework, used to build user interface
+- **Java2D**：Used to draw various geometric shapes
+- **Maven**：Project management and build tool
+- **JUnit 5**：Unit test framework
+- **Gson**：JSON data processing library, used for data persistence
 
-## 系统要求
+## System Requirements
 
-- **JDK 17** 或更高版本
-- **Maven 3.6.x** 或更高版本
-- **内存**：至少512MB可用RAM
-- **存储**：至少100MB可用磁盘空间
-- **显示**：分辨率不低于1024x768的显示器
+- **JDK 17** or higher
+- **Maven 3.6.x** or higher
+- **Memory**：At least 512MB available RAM
+- **Storage**：At least 100MB available disk space
+- **Display**：Resolution not less than 1024x768
 
-## 安装与运行
+## Installation and Running
 
-### 方法一：使用Maven
+### Method 1: Using Maven
 
-1. 克隆项目到本地：
+1. Clone project to local:
    ```bash
    git clone https://github.com/yourusername/shapeville.git
    cd shapeville
    ```
 
-2. 使用Maven编译项目：
+2. Use Maven to compile project:
 ```bash
 mvn clean package
 ```
 
-3. 运行编译好的JAR文件：
+3. Run compiled JAR file:
    ```bash
    java -jar target/shapeville-1.0-SNAPSHOT.jar
    ```
 
-### 方法二：直接运行
+### Method 2: Direct Run
 
-1. 确保安装了Java 17或更高版本：
+1. Ensure Java 17 or higher is installed:
    ```bash
    java -version
    ```
 
-2. 使用Maven执行：
+2. Use Maven to execute:
 ```bash
 mvn exec:java -Dexec.mainClass="com.shapeville.Main"
 ```
 
-### 方法三：使用IDE
+### Method 3: Using IDE
 
-1. 在IDE中导入项目（推荐使用IntelliJ IDEA或Eclipse）
-2. 确保配置了JDK 17
-3. 运行`com.shapeville.Main`类的`main`方法
+1. Import project in IDE (recommended IntelliJ IDEA or Eclipse)
+2. Ensure JDK 17 is configured
+3. Run `com.shapeville.Main` class's `main` method
 
-## 项目结构
+## Project Structure
 
 ```
 shapeville/
@@ -136,74 +136,74 @@ shapeville/
 │       ├── java/
 │       │   └── com/
 │       │       └── shapeville/
-│       │           ├── Main.java                        # 程序入口
-│       │           ├── game/                            # 游戏逻辑模块
-│       │           │   ├── AngleCalculation.java        # 角度计算逻辑
-│       │           │   ├── AreaCalculation.java         # 面积计算逻辑
-│       │           │   ├── CircleCalculation.java       # 圆形计算逻辑
-│       │           │   ├── CompoundShapeCalculation.java # 复合形状计算
-│       │           │   ├── SectorCalculation.java       # 扇形计算逻辑
-│       │           │   └── ShapeRecognition.java        # 形状识别逻辑
-│       │           ├── gui/                             # 用户界面模块
-│       │           │   ├── MainWindow.java              # 主窗口
-│       │           │   ├── TaskWindow.java              # 任务窗口
-│       │           │   ├── ResultWindow.java            # 结果窗口
-│       │           │   ├── UIManager.java               # UI管理器
-│       │           │   ├── tasks/                       # 任务面板
-│       │           │   │   ├── TaskPanelInterface.java  # 任务面板接口
-│       │           │   │   ├── BaseTaskPanel.java       # 任务面板基类
-│       │           │   │   ├── AngleCalculationPanel.java # 角度计算面板
-│       │           │   │   ├── AreaCalculationPanel.java # 面积计算面板
-│       │           │   │   ├── CircleCalculationPanel.java # 圆形计算面板
-│       │           │   │   ├── CompoundShapeCalculationPanel.java # 复合形状面板
-│       │           │   │   ├── SectorCalculationPanel.java # 扇形计算面板
-│       │           │   │   └── ShapePanel.java          # 形状识别面板
-│       │           │   └── shapes/                      # 形状渲染
-│       │           │       ├── ShapeRenderer.java       # 形状渲染接口
-│       │           │       ├── CompoundShapeDrawer.java # 复合形状绘制基类
-│       │           │       ├── ShapeDrawer.java         # 基本形状绘制工具类
-│       │           │       ├── CircleDrawer.java        # 圆形绘制专用类
-│       │           │       └── compound/                # 复合形状实现
-│       │           │           ├── ArrowShape.java      # 箭头形状
-│       │           │           ├── ComplexStairShape.java # 复杂阶梯形状
-│       │           │           ├── DoubleStairShape.java # 双阶梯形状
-│       │           │           ├── HouseShape.java      # 房屋形状
-│       │           │           ├── IrregularShape.java  # 不规则形状
-│       │           │           ├── StairShape.java      # 阶梯形状
-│       │           │           ├── StepShape.java       # 台阶形状
-│       │           │           ├── TrapezoidShape.java  # 梯形
-│       │           │           └── TShape.java          # T形状
-│       │           ├── model/                           # 数据模型
-│       │           │   ├── Shape2D.java                 # 2D形状枚举
-│       │           │   └── Shape3D.java                 # 3D形状枚举
-│       │           └── utils/                           # 工具类
-│       │               ├── DataManager.java             # 数据管理工具
-│       │               ├── ShapeDrawer.java             # 形状绘制工具（与gui/shapes中的同名文件功能重叠）
-│       │               └── Utils.java                   # 通用工具方法
-│       └── resources/                                   # 资源文件
-│           ├── data/                                    # 数据文件
-│           └── images/                                  # 图像资源
-│               ├── 2d/                                  # 2D形状图像
-│               └── 3d/                                  # 3D形状图像
-├── pom.xml                                              # Maven项目配置
-└── README.md                                            # 项目说明文档
+│       │           ├── Main.java                        # Program entry point
+│       │           ├── game/                            # Game logic module
+│       │           │   ├── AngleCalculation.java        # Angle calculation logic
+│       │           │   ├── AreaCalculation.java         # Area calculation logic
+│       │           │   ├── CircleCalculation.java       # Circle calculation logic
+│       │           │   ├── CompoundShapeCalculation.java # Compound shape calculation
+│       │           │   ├── SectorCalculation.java       # Sector calculation logic
+│       │           │   └── ShapeRecognition.java        # Shape recognition logic
+│       │           ├── gui/                             # User interface module
+│       │           │   ├── MainWindow.java              # Main window
+│       │           │   ├── TaskWindow.java              # Task window
+│       │           │   ├── ResultWindow.java            # Result window
+│       │           │   ├── UIManager.java               # UI manager
+│       │           │   ├── tasks/                       # Task panel
+│       │           │   │   ├── TaskPanelInterface.java  # Task panel interface
+│       │           │   │   ├── BaseTaskPanel.java       # Task panel base class
+│       │           │   │   ├── AngleCalculationPanel.java # Angle calculation panel
+│       │           │   │   ├── AreaCalculationPanel.java # Area calculation panel
+│       │           │   │   ├── CircleCalculationPanel.java # Circle calculation panel
+│       │           │   │   ├── CompoundShapeCalculationPanel.java # Compound shape panel
+│       │           │   │   ├── SectorCalculationPanel.java # Sector calculation panel
+│       │           │   │   └── ShapePanel.java          # Shape recognition panel
+│       │           │   └── shapes/                      # Shape rendering
+│       │           │       ├── ShapeRenderer.java       # Shape rendering interface
+│       │           │       ├── CompoundShapeDrawer.java # Compound shape drawing base class
+│       │           │       ├── ShapeDrawer.java         # Basic shape drawing tool class
+│       │           │       ├── CircleDrawer.java        # Circle drawing dedicated class
+│       │           │       └── compound/                # Compound shape implementation
+│       │           │           ├── ArrowShape.java      # Arrow shape
+│       │           │           ├── ComplexStairShape.java # Complex stair shape
+│       │           │           ├── DoubleStairShape.java # Double stair shape
+│       │           │           ├── HouseShape.java      # House shape
+│       │           │           ├── IrregularShape.java  # Irregular shape
+│       │           │           ├── StairShape.java      # Stair shape
+│       │           │           ├── StepShape.java       # Step shape
+│       │           │           ├── TrapezoidShape.java  # Trapezoid shape
+│       │           │           └── TShape.java          # T shape
+│       │           ├── model/                           # Data model
+│       │           │   ├── Shape2D.java                 # 2D shape enumeration
+│       │           │   └── Shape3D.java                 # 3D shape enumeration
+│       │           └── utils/                           # Tool class
+│       │               ├── DataManager.java             # Data management tool
+│       │               ├── ShapeDrawer.java             # Shape drawing tool (duplicated with gui/shapes's same name file)
+│       │               └── Utils.java                   # General tool method
+│       └── resources/                                   # Resource file
+│           ├── data/                                    # Data file
+│           └── images/                                  # Image resource
+│               ├── 2d/                                  # 2D shape image
+│               └── 3d/                                  # 3D shape image
+├── pom.xml                                              # Maven project configuration
+└── README.md                                            # Project description document
 ```
 
-## 详细模块说明
+## Module Details
 
-### Main 模块
+### Main Module
 
-`Main.java` 是应用程序的入口点，负责初始化图形界面并启动应用程序。主要功能：
+`Main.java` is the program's entry point, responsible for initializing the graphical interface and starting the program. Main functions:
 
-- 设置系统外观为本地系统外观
-- 通过`UIManager`初始化并显示图形界面
-- 在EDT线程中运行UI代码，确保UI线程安全
+- Set system appearance to local system appearance
+- Initialize and display GUI through `UIManager`
+- Run UI code in EDT thread to ensure UI thread safety
 
 ```java
 public static void main(String[] args) {
     SwingUtilities.invokeLater(() -> {
         try {
-            // 设置系统外观
+            // Set system appearance
             javax.swing.UIManager.setLookAndFeel(
                 javax.swing.UIManager.getSystemLookAndFeelClassName()
             );
@@ -211,383 +211,381 @@ public static void main(String[] args) {
             e.printStackTrace();
         }
         
-        // 初始化并显示GUI
+        // Initialize and display GUI
         UIManager.getInstance().initialize();
     });
 }
 ```
 
-### Model 模块
+### Model Module
 
-model模块定义了应用程序中使用的形状枚举类型，是系统的数据模型层。
+model module defines the shape enumeration types used in the system, which is the data model layer of the system.
 
 - **Shape2D.java**
-  - 定义了系统支持的所有二维几何形状的枚举
-  - 每个形状包含英文和中文名称
-  - 提供获取形状名称的方法
-  - 包括圆形、矩形、三角形、椭圆、八边形等11种形状
+  - Defines the enumeration of all 2D geometric shapes supported by the system
+  - Each shape contains English and Chinese names
+  - Provides a method to get the shape name
+  - Includes 11 shapes such as circle, rectangle, triangle, ellipse, octagon, etc.
 
 - **Shape3D.java**
-  - 定义了系统支持的所有三维几何形状的枚举
-  - 每个形状包含英文和中文名称
-  - 提供获取形状名称的方法
-  - 包括立方体、长方体、圆柱体、球体等8种形状
+  - Defines the enumeration of all 3D geometric shapes supported by the system
+  - Each shape contains English and Chinese names
+  - Provides a method to get the shape name
+  - Includes 8 shapes such as cube, rectangular prism, cylinder, sphere, etc.
 
-### Game 模块
+### Game Module
 
-game模块是Shapeville的核心业务逻辑层，负责处理各种几何任务的计算、验证和评分功能。该模块与UI层分离，专注于数据处理和计算逻辑。
+game module is the core business logic layer of Shapeville, responsible for calculating, verifying, and scoring various geometric tasks. This module is separated from the UI layer and focuses on data processing and calculation logic.
 
 - **AngleCalculation.java**
-  - 角度识别与计算的核心逻辑
-  - 生成随机角度并判定类型（锐角、直角、钝角等）
-  - 验证用户答案并记录尝试次数
-  - 跟踪已识别的角度类型和完成进度
+  - Core logic for angle recognition and calculation
+  - Generates random angles and determines their type (acute, right, obtuse, etc.)
+  - Verifies user answers and records attempt times
+  - Tracks recognized angle types and completion progress
 
 - **AreaCalculation.java**
-  - 基本几何形状面积计算的核心逻辑
-  - 支持矩形、三角形、平行四边形、梯形等形状
-  - 生成随机参数并提供面积计算公式
-  - 验证用户计算结果的正确性
+  - Core logic for calculating areas of basic geometric shapes
+  - Supports shapes such as rectangle, triangle, parallelogram, trapezoid, etc.
+  - Generates random parameters and provides area calculation formulas
+  - Verifies the correctness of user calculation results
 
 - **CircleCalculation.java**
-  - 圆形相关计算的专用模块
-  - 支持半径/直径与周长/面积之间的计算
-  - 生成随机参数并提供公式
-  - 验证用户答案并评分
+  - Dedicated module for calculating related to circles
+  - Supports calculations between radius/diameter and circumference/area
+  - Generates random parameters and provides formulas
+  - Verifies user answers and scores
 
 - **CompoundShapeCalculation.java**
-  - 复合形状计算的核心逻辑
-  - 管理9种预定义的复合形状（箭头、T形、梯形等）
-  - 提供形状的详细描述和计算步骤
-  - 验证用户的面积计算结果
+  - Core logic for calculating compound shapes
+  - Manages 9 predefined compound shapes (arrow, T-shape, trapezoid, etc.)
+  - Provides detailed descriptions and calculation steps
+  - Verifies user area calculation results
 
 - **SectorCalculation.java**
-  - 扇形计算的专用模块
-  - 提供扇形面积和弧长计算
-  - 管理预定义的扇形集合
-  - 验证用户计算结果并提供公式
+  - Dedicated module for calculating sectors
+  - Provides sector area and arc length calculation
+  - Manages predefined sector collection
+  - Verifies user calculation results and provides formulas
 
 - **ShapeRecognition.java**
-  - 形状识别的核心逻辑
-  - 管理2D和3D形状库
-  - 随机选择形状进行识别测试
-  - 验证用户的识别结果
+  - Core logic for shape recognition
+  - Manages 2D and 3D shape library
+  - Randomly selects shapes for recognition test
+  - Verifies user recognition results
 
-### GUI 模块
+### GUI Module
 
-GUI模块是Shapeville的用户界面层，负责所有视觉呈现和用户交互功能。它采用MVC架构，使用Java Swing实现了现代化的用户界面。
+GUI module is the user interface layer of Shapeville, responsible for all visual presentation and user interaction functions. It uses the MVC architecture and implements a modernized user interface with Java Swing.
 
-#### 核心窗口类
+#### Core Window Classes
 
 - **UIManager.java**
-  - GUI模块的核心控制器（单例模式）
-  - 管理所有窗口的创建、切换和交互
-  - 跟踪任务状态（锁定、解锁、进行中、完成）
-  - 处理任务解锁条件和用户进度计算
+  - GUI module's core controller (singleton mode)
+  - Manages creation, switching, and interaction of all windows
+  - Tracks task status (locked, unlocked, in progress, completed)
+  - Handles task unlocking conditions and user progress calculation
 
 - **MainWindow.java**
-  - 应用程序的主入口窗口
-  - 显示所有可用学习任务和用户进度
-  - 管理任务按钮状态和等级显示
-  - 提供总体学习进度的可视化展示
+  - Main entry window of the application
+  - Displays all available learning tasks and user progress
+  - Manages task button status and level display
+  - Provides overall learning progress visualization
 
 - **TaskWindow.java**
-  - 任务执行的容器窗口
-  - 加载并显示具体任务的界面
-  - 处理任务完成事件和反馈显示
-  - 与UIManager通信报告任务结果
+  - Container window for task execution
+  - Loads and displays the interface of specific tasks
+  - Handles task completion events and feedback display
+  - Communicates with UIManager to report task results
 
 - **ResultWindow.java**
-  - 任务结果展示窗口
-  - 动画显示得分和星级评价
-  - 展示详细反馈和成绩分析
-  - 提供后续操作选择
+  - Task result display window
+  - Animated display of score and star rating
+  - Displays detailed feedback and score analysis
+  - Provides subsequent operation selection
 
-#### 任务面板模块 (tasks)
+#### Task Panel Module (tasks)
 
-任务面板模块是GUI的核心交互层，负责向用户呈现各种几何学习任务的界面，处理用户输入，并提供反馈。
+Task panel module is the core interactive layer of GUI, responsible for presenting various geometric learning tasks to users, processing user input, and providing feedback.
 
 - **TaskPanelInterface.java**
-  - 定义任务面板的基本接口方法
-  - 包括开始、暂停、恢复、结束任务等生命周期方法
-  - 定义获取分数和反馈的方法
+  - Defines basic interface methods for task panels
+  - Includes start, pause, resume, end task lifecycle methods
+  - Defines methods to get score and feedback
 
 - **BaseTaskPanel.java**
-  - 所有任务面板的抽象基类
-  - 实现通用功能如尝试次数管理、反馈显示等
-  - 定义子类必须实现的抽象方法
+  - Abstract base class for all task panels
+  - Implements common functions such as attempt times management and feedback display
+  - Defines abstract methods that must be implemented by subclasses
 
-- **任务专用面板**
-  - **AngleCalculationPanel.java**: 角度识别与计算任务面板
-  - **AreaCalculationPanel.java**: 基本形状面积计算任务面板
-  - **CircleCalculationPanel.java**: 圆形计算任务面板
-  - **CompoundShapeCalculationPanel.java**: 复合形状计算任务面板
-  - **SectorCalculationPanel.java**: 扇形计算任务面板
-  - **ShapePanel.java**: 形状识别任务面板
+- **Task Dedicated Panels**
+  - **AngleCalculationPanel.java**: Angle recognition and calculation task panel
+  - **AreaCalculationPanel.java**: Basic shape area calculation task panel
+  - **CircleCalculationPanel.java**: Circle calculation task panel
+  - **CompoundShapeCalculationPanel.java**: Compound shape calculation task panel
+  - **SectorCalculationPanel.java**: Sector calculation task panel
+  - **ShapePanel.java**: Shape recognition task panel
 
-#### 形状渲染模块 (shapes)
+#### Shape Rendering Module (shapes)
 
-形状渲染模块负责各种几何图形的可视化绘制，确保用户能够直观地理解几何概念。
+Shape rendering module is responsible for visualizing various geometric shapes, ensuring that users can understand geometric concepts intuitively.
 
 - **ShapeRenderer.java**
-  - 核心渲染接口，定义所有形状绘制器必须实现的方法
-  - 提供绘制形状、显示尺寸和计算面积等方法
+  - Core rendering interface, defining methods that all shape renderers must implement
+  - Provides methods for drawing shapes, displaying dimensions, and calculating areas
 
 - **CompoundShapeDrawer.java**
-  - 复合形状绘制的基类
-  - 提供绘图上下文初始化、缩放计算和尺寸标注功能
-  - 定义通用颜色和样式常量
+  - Base class for drawing compound shapes
+  - Provides initialization of drawing context, scaling calculation, and dimension annotation
+  - Defines common color and style constants
 
-- **ShapeDrawer.java**和**CircleDrawer.java**
-  - 绘制基本几何形状的工具类
-  - 提供矩形、三角形、平行四边形等形状的绘制方法
-  - CircleDrawer专门处理圆形的绘制
+- **ShapeDrawer.java** and **CircleDrawer.java**
+  - Tool class for drawing basic geometric shapes
+  - Provides drawing methods for shapes such as rectangle, triangle, parallelogram, etc.
+  - CircleDrawer is specifically used for drawing circles
 
-- **compound/ 目录**
-  - 包含9种复合形状的具体实现
-  - 每种形状都继承自CompoundShapeDrawer并实现ShapeRenderer接口
-  - 实现自动缩放和详细尺寸标注
-  - 包含精确的面积计算和解题步骤
+- **compound/ directory**
+  - Contains specific implementations of 9 compound shapes
+  - Each shape inherits from CompoundShapeDrawer and implements ShapeRenderer interface
+  - Implements automatic scaling and detailed dimension annotation
+  - Contains accurate area calculation and solution steps
 
+## Workflow and Data Flow
 
-## 工作流程与数据流向
+The project uses layered architecture, with clear data flow:
 
-项目采用分层架构，数据流向清晰：
+### 1. Vertical Data Flow
 
-### 1. 垂直数据流
-
-- **自上而下**：
+- **Top-down**：
   ```
-  Main → UIManager → 具体窗口 → 业务逻辑 → 数据模型
+  Main → UIManager → Specific window → Business logic → Data model
   ```
-  - 用户交互从UI层开始
-  - 通过UIManager进行统一管理
-  - 传递到具体的业务逻辑层
-  - 最终影响数据模型
+  - User interaction starts from UI layer
+  - Through UIManager for unified management
+  - Passes to specific business logic layer
+  - Finally affects data model
 
-- **自下而上**：
+- **Bottom-up**：
   ```
-  数据模型 → 业务逻辑 → 具体窗口 → UIManager → Main
+  Data model → Business logic → Specific window → UIManager → Main
   ```
-  - 数据模型的更新
-  - 触发业务逻辑处理
-  - 通过UI层展示结果
-  - 最终反馈给用户
+  - Updates data model
+  - Triggers business logic processing
+  - Through UI layer to display results
+  - Finally feedback to user
 
-### 2. 水平数据流
+### 2. Horizontal Data Flow
 
-- **核心计算流程**：
+- **Core calculation process**：
   ```
-  用户输入 → 数据验证 → 计算处理 → 结果展示
+  User input → Data verification → Calculation processing → Result display
   ```
-  - 用户通过GUI输入数据
-  - 系统进行数据验证
-  - 调用game模块进行计算
-  - 在ResultWindow展示结果
+  - User inputs data through GUI
+  - System performs data verification
+  - Calls game module for calculation
+  - Displays result in ResultWindow
 
-- **进度跟踪流程**：
+- **Progress tracking process**：
   ```
-  用户操作 → 进度更新  → 界面更新
+  User operation → Progress update → UI update
   ```
-  - 记录用户操作
-  - 更新进度数据
-  - 更新UI显示
+  - Records user operations
+  - Updates progress data
+  - Updates UI display
 
-### 3. 关键数据交互点
+### 3. Key Data Interaction Points
 
-- **UI与业务逻辑交互**：
-  - TaskWindow与具体计算模块的交互
-  - ResultWindow与数据模型的交互
-  - MainWindow与UIManager的交互
+- **UI and business logic interaction**：
+  - Interaction between TaskWindow and specific calculation module
+  - Interaction between ResultWindow and data model
+  - Interaction between MainWindow and UIManager
 
+### 4. Window and Task Panel Collaboration
 
-### 4. 窗口与任务面板的协作关系
+- `MainWindow` is the user's main entry point, responsible for task selection and progress display. When a user clicks a task button, `UIManager` switches to the corresponding `TaskWindow` based on task unlocking status.
+- `TaskWindow` is responsible for executing specific tasks, with actual interaction and judging logic implemented by panels in `tasks` folder. After completing a task, `TaskWindow` calls `UIManager.showResult` to pop out `ResultWindow` to display score and feedback.
+- `ResultWindow` displays task results and allows users to return to main interface or re-challenge tasks.
+- `UIManager` acts as a global scheduler, maintaining all task status, score, unlocking logic, and level evaluation, responsible for window creation, switching, and destruction.
 
-- `MainWindow` 是用户的主入口，负责任务选择和进度展示。用户点击任务按钮后，`UIManager` 会根据任务解锁状态切换到对应的 `TaskWindow`。
-- `TaskWindow` 负责具体任务的执行，实际的交互和判题逻辑由 `tasks` 文件夹下的面板类实现。任务完成后，`TaskWindow` 会调用 `UIManager.showResult` 弹出 `ResultWindow` 展示成绩和反馈。
-- `ResultWindow` 展示任务结果，并可引导用户返回主界面或重新挑战任务。
-- `UIManager` 作为全局调度者，维护所有任务的状态、分数、解锁逻辑和等级评定，负责窗口的创建、切换和销毁。
+## Learning Plan and Usage
 
-## 学习计划与使用方法
+### Learning Suggestions
 
-### 学习建议
+1. **Progressive Learning**：Complete all basic tasks first, then challenge advanced tasks
+2. **Repeat Practice**：For difficult tasks, you can try multiple times to get familiar with concepts and calculation methods
+3. **Focus on Feedback**：After completing a task, carefully check feedback and score analysis to find out shortcomings
+4. **Comprehensive Learning**：Try all types of tasks to improve geometric abilities
 
-1. **循序渐进**：先完成所有基础任务，再挑战高级任务
-2. **重复练习**：对于难度较大的任务，可多次尝试以熟悉概念和计算方法
-3. **关注反馈**：任务完成后认真查看反馈和成绩分析，找出不足之处
-4. **全面学习**：尝试所有类型的任务，全面提升几何能力
+### Usage Instructions
 
-### 使用方法
+1. **Start Application**：Run the program, the main window will display all available tasks
+2. **Select Task**：Click the task button to start a specific task
+   - Basic tasks are unlocked by default
+   - Advanced tasks require completion of all basic tasks and at least 70 points to unlock
+3. **Execute Task**：
+   - Read task description
+   - Complete task requirements based on prompts
+   - Submit answers to get feedback
+   - Check result analysis after task completion
+4. **Check Results**：After task completion, the following will be displayed:
+   - Score and star rating
+   - Detailed task feedback
+   - Score analysis and performance rating
+5. **Continue Learning**：Based on results, choose:
+   - Return to main interface to select new tasks
+   - Re-attempt current task
+   - End learning session
 
-1. **启动应用**：运行程序后，将显示主窗口，展示所有可用任务
-2. **选择任务**：点击任务按钮开始特定任务
-   - 基础任务默认解锁
-   - 高级任务需完成所有基础任务并获得至少70分才能解锁
-3. **执行任务**：
-   - 阅读任务说明
-   - 根据提示完成任务要求
-   - 提交答案获取反馈
-   - 任务完成后查看结果分析
-4. **查看结果**：任务完成后会显示:
-   - 得分和星级评价
-   - 详细的任务反馈
-   - 成绩分析和表现评级
-5. **继续学习**：根据结果选择:
-   - 返回主界面选择新任务
-   - 重新尝试当前任务
-   - 结束学习会话
+## Developer Documentation
 
-## 开发者文档
+### Development Environment Setup
 
-### 开发环境设置
+1. Ensure JDK 17 and Maven are installed
+2. Clone repository to local
+3. Import project in IDE (recommended IntelliJ IDEA or Eclipse)
+4. Ensure Maven correctly loads all dependencies
 
-1. 确保安装了JDK 17和Maven
-2. 克隆仓库到本地
-3. 使用IDE导入项目（推荐IntelliJ IDEA或Eclipse）
-4. 确保Maven正确加载所有依赖
+### Module Development Guidelines
 
-### 各模块开发指南
+#### Model Module Development
 
-#### Model 模块开发
+1. **Add New 2D Shape**
+   - Add new shape enumeration value in `Shape2D.java`
+   - Provide English and Chinese names as parameters
+   - Ensure support is added in corresponding drawing module
 
-1. **添加新的二维形状**
-   - 在`Shape2D.java`中的枚举列表中添加新的形状枚举值
-   - 提供英文名称和中文名称作为参数
-   - 确保在相应的绘制模块中也添加支持
+2. **Add New 3D Shape**
+   - Add new shape enumeration value in `Shape3D.java`
+   - Provide English and Chinese names as parameters
+   - Ensure support is added in corresponding drawing module
 
-2. **添加新的三维形状**
-   - 在`Shape3D.java`中的枚举列表中添加新的形状枚举值
-   - 提供英文名称和中文名称作为参数
-   - 确保在相应的绘制模块中也添加支持
+3. **Best Practices**
+   - Use enumeration type instead of string to represent shape, improving type safety
+   - Use `getChinese()` and `getEnglish()` methods when multi-language support is needed
+   - Ensure new shape is synchronized in all related modules when adding new shape
 
-3. **最佳实践**
-   - 使用枚举类型而非字符串来表示形状，提高类型安全性
-   - 需要多语言支持时使用`getChinese()`和`getEnglish()`方法
-   - 添加新形状时确保在所有相关模块中同步更新
+#### Game Module Development
 
-#### Game 模块开发
+1. **General Design Pattern**
+   - Task progress tracking: Each module implements tracking user progress mechanism
+   - Attempt times management: Limits user attempt times
+   - Score system: Calculates score based on attempt times
+   - Command line interaction: Provides independent command line interaction mode (convenient for testing)
 
-1. **通用设计模式**
-   - 任务进度跟踪：各模块都实现了跟踪用户进度的机制
-   - 尝试次数管理：限制用户尝试次数
-   - 评分系统：根据尝试次数计算得分
-   - 命令行交互：提供独立的命令行交互模式（便于测试）
+2. **Add New Shape**
+   - Add basic shape: Update `AreaCalculation.ShapeType` and related calculation methods
+   - Add compound shape: Create new shape class and register in `CompoundShapeCalculation`
 
-2. **添加新的形状**
-   - 添加基本形状：更新`AreaCalculation.ShapeType`和相关计算方法
-   - 添加复合形状：创建新的形状类并在`CompoundShapeCalculation`中注册
+3. **Extend Calculation Function**
+   - Add new methods to existing classes
+   - Create new calculation task class (naming format: `[Calculation Type]Calculation.java`)
 
-3. **扩展计算功能**
-   - 向现有类添加新方法
-   - 创建全新的计算任务类（命名格式：`[计算类型]Calculation.java`）
+4. **Improve Score System**
+   - Add time factor
+   - Implement difficulty coefficient
+   - Increase continuous correct reward
 
-4. **改进评分系统**
-   - 添加时间因素
-   - 实现难度系数
-   - 增加连续答对奖励
+#### GUI Module Development
 
-#### GUI 模块开发
+1. **Add New Window**
+   - Create new class inheriting from JFrame
+   - Add new window management method in UIManager
 
-1. **添加新窗口**
-   - 创建继承自JFrame的新类
-   - 在UIManager中添加管理新窗口的方法
+2. **Add New Task Type**
+   - Create new task panel class (inheriting BaseTaskPanel and implementing TaskPanelInterface)
+   - Register new task in UIManager
+   - Update TaskWindow.setupTask() method
+   - Add new task button in MainWindow
 
-2. **添加新任务类型**
-   - 创建新的任务面板类（继承BaseTaskPanel并实现TaskPanelInterface）
-   - 在UIManager中注册新任务
-   - 更新TaskWindow.setupTask()方法
-   - 在MainWindow中添加新任务按钮
+3. **Create New Basic Shape**
+   - Add new static method in ShapeDrawer class
+   - Implement filling, border, and dimension annotation
 
-3. **创建新的基本形状**
-   - 在ShapeDrawer类中添加新的静态方法
-   - 实现填充、边框和尺寸标注
+4. **Create New Compound Shape**
+   - Create new class in compound package (inheriting CompoundShapeDrawer)
+   - Implement necessary interface methods (drawing, calculating area, etc.)
+   - Register new shape in CompoundShapeCalculation
 
-4. **创建新的复合形状**
-   - 在compound包中创建新类（继承CompoundShapeDrawer）
-   - 实现必要的接口方法（绘制、计算面积等）
-   - 在CompoundShapeCalculation中注册新形状
+5. **Rendering Hint**
+   - Use Java2D anti-aliasing feature to improve drawing quality
+   - Ensure shape is appropriately scaled to fit different panel sizes
+   - Use consistent color scheme and line style
+   - Consider using double buffering technology to avoid flickering
 
-5. **渲染提示**
-   - 使用Java2D的抗锯齿功能提高绘图质量
-   - 确保形状适当缩放以适应不同大小的面板
-   - 使用一致的颜色方案和线条样式
-   - 考虑使用双缓冲技术避免闪烁
+### Adding New Features
 
-### 添加新功能
+If you need to add new task types, you need to complete the following steps:
 
-如需添加新的任务类型，需要完成以下步骤：
+1. **Plan Function**
+   - Clearly define task goals and user interaction process
+   - Design data model and calculation logic
 
-1. **规划功能**
-   - 明确任务目标和用户交互流程
-   - 设计数据模型和计算逻辑
+2. **Implement Business Logic**
+   - Create new business logic class in `game` package
+   - Implement necessary calculation and verification methods
+   - Add progress tracking and scoring functionality
 
-2. **实现业务逻辑**
-   - 在`game`包中创建新的业务逻辑类
-   - 实现必要的计算和验证方法
-   - 添加进度跟踪和评分功能
+3. **Create User Interface**
+   - Create corresponding task panel class in `gui.tasks` package
+   - Design reasonable UI layout and interaction elements
+   - Implement interaction with business logic layer
 
-3. **创建用户界面**
-   - 在`gui.tasks`包中创建对应的任务面板类
-   - 设计合理的UI布局和交互元素
-   - 实现与业务逻辑层的交互
+4. **Integrate into System**
+   - Register new task in `UIManager`
+   - Update `TaskWindow.setupTask()` method
+   - Add new task button in `MainWindow`
+   - Update task unlocking logic
 
-4. **集成到系统**
-   - 在`UIManager`中注册新任务
-   - 更新`TaskWindow.setupTask()`方法
-   - 在`MainWindow`中添加新任务按钮
-   - 更新任务解锁逻辑
+5. **Test and Optimize**
+   - Perform unit tests and integration tests
+   - Collect user feedback and optimize experience
 
-5. **测试与优化**
-   - 进行单元测试和集成测试
-   - 收集用户反馈并优化体验
+### Testing Guidelines
 
-### 测试指南
+1. **Unit Test**
+   - Use JUnit 5 to create test class
+   - Test area calculation formula
+   - Test angle type determination logic
+   - Test answer verification and scoring mechanism
 
-1. **单元测试**
-   - 使用JUnit 5创建测试类
-   - 测试形状的面积计算公式
-   - 测试角度类型判定逻辑
-   - 测试答案验证和评分机制
+2. **Integration Test**
+   - Test interaction between windows
+   - Test task completion process
+   - Test data persistence functionality
 
-2. **集成测试**
-   - 测试窗口间的交互
-   - 测试任务完成流程
-   - 测试数据持久化功能
+3. **UI Test**
+   - Test display effect under various screen resolutions
+   - Test user interface responsiveness
+   - Verify exception handling and error prompt
 
-3. **UI测试**
-   - 测试各种屏幕分辨率下的显示效果
-   - 测试用户界面的响应性
-   - 验证异常处理和错误提示
+### Best Practices
 
-### 最佳实践
+1. **Code Organization**
+   - Maintain clear separation between layers
+   - Follow single responsibility principle
+   - Use consistent naming conventions
 
-1. **代码组织**
-   - 保持各层之间的清晰分离
-   - 遵循单一职责原则
-   - 使用一致的命名规范
+2. **UI Development**
+   - Use thread-safe way to update UI (SwingUtilities.invokeLater)
+   - Use layout manager reasonably
+   - Implement correct resource release
 
-2. **UI开发**
-   - 使用线程安全的方式更新UI（SwingUtilities.invokeLater）
-   - 合理使用布局管理器
-   - 实现资源的正确释放
+3. **Performance Optimization**
+   - Use delayed initialization strategy
+   - Cache frequently used resources
+   - Avoid unnecessary object creation
+   - Use double buffering technology to optimize drawing performance
 
-3. **性能优化**
-   - 使用延迟初始化策略
-   - 缓存频繁使用的资源
-   - 避免不必要的对象创建
-   - 使用双缓冲技术优化绘图性能
+4. **Extensible Design**
+   - Use interfaces and abstract classes to improve flexibility
+   - Follow design patterns (singleton, template method, strategy, etc.)
+   - Reserve future feature expansion points
 
-4. **扩展性设计**
-   - 使用接口和抽象类提高灵活性
-   - 遵循设计模式（单例、模板方法、策略等）
-   - 预留未来功能的扩展点
-
-## 许可证
+## License
 
 [MIT License](LICENSE)
 
-## 联系方式
+## Contact
 
-项目维护者: [HuoHua325]  
+Project maintainer: [HuoHua325]  
 Email: []  
 GitHub: []

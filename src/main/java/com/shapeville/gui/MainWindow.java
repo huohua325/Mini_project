@@ -14,8 +14,8 @@ public class MainWindow extends JFrame {
     private JLabel levelLabel;
     private Map<String, JButton> taskButtons;
     private Map<String, Boolean> taskCompletionStatus;
-    private boolean fullFeaturesEnabled = false;  // 是否启用完整功能模式
-    private JToggleButton featureToggleButton;    // 功能切换按钮
+    private boolean fullFeaturesEnabled = false;  
+    private JToggleButton featureToggleButton;
     
     public MainWindow() {
         taskButtons = new HashMap<>();
@@ -24,7 +24,7 @@ public class MainWindow extends JFrame {
     }
     
     private void initializeUI() {
-        setTitle("Shapeville - 几何学习乐园");
+        setTitle("Shapeville");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(null);

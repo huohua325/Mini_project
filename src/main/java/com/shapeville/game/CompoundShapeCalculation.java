@@ -4,8 +4,27 @@ import java.util.*;
 import com.shapeville.gui.shapes.ShapeRenderer;
 import com.shapeville.gui.shapes.compound.*;
 
+/**
+ * Manages the compound shape calculation exercises in the Shapeville application.
+ * This class handles the initialization, management, and evaluation of compound shape
+ * exercises, including both GUI and command-line interfaces.
+ *
+ * The class provides functionality for:
+ * - Initializing various compound shapes with their properties
+ * - Managing user progress through exercises
+ * - Evaluating user answers
+ * - Tracking practice attempts
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
+ */
 public class CompoundShapeCalculation {
-    // 复合形状参数类
+    /**
+     * Inner class representing a compound shape with its properties and rendering information.
+     * Each compound shape contains a name, description, correct area value, solution steps,
+     * and a renderer for visual representation.
+     */
     public static class CompoundShape {
         private final String name;
         private final String description;
@@ -13,6 +32,15 @@ public class CompoundShapeCalculation {
         private final String solution;
         private final ShapeRenderer renderer;
 
+        /**
+         * Constructs a new CompoundShape with the specified properties.
+         *
+         * @param name The name of the compound shape
+         * @param description The description of the shape's components and measurements
+         * @param correctArea The correct area value for the shape
+         * @param solution The detailed solution steps for calculating the area
+         * @param renderer The renderer for visual representation of the shape
+         */
         public CompoundShape(String name, String description, double correctArea, 
                            String solution, ShapeRenderer renderer) {
             this.name = name;
@@ -22,150 +50,205 @@ public class CompoundShapeCalculation {
             this.renderer = renderer;
         }
 
+        /**
+         * Gets the name of the compound shape.
+         * @return The shape's name
+         */
         public String getName() { return name; }
+
+        /**
+         * Gets the description of the compound shape.
+         * @return The shape's description
+         */
         public String getDescription() { return description; }
+
+        /**
+         * Gets the correct area value for the compound shape.
+         * @return The correct area value
+         */
         public double getCorrectArea() { return correctArea; }
+
+        /**
+         * Gets the solution steps for calculating the area.
+         * @return The detailed solution steps
+         */
         public String getSolution() { return solution; }
+
+        /**
+         * Gets the shape renderer for visual representation.
+         * @return The shape renderer
+         */
         public ShapeRenderer getRenderer() { return renderer; }
     }
 
     private final List<CompoundShape> shapes;
     private final Set<Integer> practiced;
 
+    /**
+     * Constructs a new CompoundShapeCalculation instance.
+     * Initializes the shapes list and practiced set.
+     * @throws IllegalStateException if no shapes are initialized
+     */
     public CompoundShapeCalculation() {
-        System.out.println("开始创建CompoundShapeCalculation...");
+        System.out.println("Initializing CompoundShapeCalculation...");
         this.shapes = initializeShapes();
         this.practiced = new HashSet<>();
         
         if (shapes.isEmpty()) {
-            System.err.println("错误：初始化后形状列表为空");
-            throw new IllegalStateException("至少需要一个复合形状");
+            System.err.println("Error: Shape list is empty after initialization");
+            throw new IllegalStateException("At least one compound shape is required");
         }
-        System.out.println("CompoundShapeCalculation创建完成，形状数量：" + shapes.size());
+        System.out.println("CompoundShapeCalculation initialized with " + shapes.size() + " shapes");
     }
 
+    /**
+     * Initializes the list of compound shapes with their properties.
+     * @return A list of initialized compound shapes
+     */
     private List<CompoundShape> initializeShapes() {
         List<CompoundShape> shapeList = new ArrayList<>();
         
         try {
-            System.out.println("开始初始化形状...");
+            System.out.println("Initializing shapes...");
             
-            // 1. 添加箭头形状
+            // 1. Arrow Shape
             ArrowShape arrowShape = new ArrowShape();
             shapeList.add(new CompoundShape(
-                "箭头形状",
-                "由一个矩形(14×14)和一个梯形(底14，顶5，高5)组成。\n计算总面积。",
+                "Arrow Shape",
+                "Composed of a rectangle (14×14) and a trapezoid (base 14, top 5, height 5).\nCalculate the total area.",
                 arrowShape.calculateArea(),
                 arrowShape.getSolutionSteps(),
                 arrowShape
             ));
             
-            // 2. 添加T形状
+            // 2. T Shape
             TShape tShape = new TShape();
             shapeList.add(new CompoundShape(
-                "T形状",
-                "由顶部矩形(36×36)和底部矩形(60×36)组成。\n计算总面积。",
+                "T Shape",
+                "Composed of a top rectangle (36×36) and a bottom rectangle (60×36).\nCalculate the total area.",
                 tShape.calculateArea(),
                 tShape.getSolutionSteps(),
                 tShape
             ));
             
-            // 3. 添加梯形
+            // 3. Trapezoid
             TrapezoidShape trapezoidShape = new TrapezoidShape();
             shapeList.add(new CompoundShape(
-                "梯形",
-                "底边20m，顶边9m，高11m，右斜边14m。\n计算总面积。",
+                "Trapezoid",
+                "Base 20m, top 9m, height 11m, right side 14m.\nCalculate the total area.",
                 trapezoidShape.calculateArea(),
                 trapezoidShape.getSolutionSteps(),
                 trapezoidShape
             ));
             
-            // 4. 添加阶梯形状
+            // 4. Stair Shape
             StairShape stairShape = new StairShape();
             shapeList.add(new CompoundShape(
-                "阶梯形状",
-                "主矩形(20×21)减去两个缺口(11×11和10×10)。\n计算总面积。",
+                "Stair Shape",
+                "Main rectangle (20×21) minus two cutouts (11×11 and 10×10).\nCalculate the total area.",
                 stairShape.calculateArea(),
                 stairShape.getSolutionSteps(),
                 stairShape
             ));
             
-            // 5. 添加阶梯状矩形
+            // 5. Step Rectangle
             StepShape stepShape = new StepShape();
             shapeList.add(new CompoundShape(
-                "阶梯状矩形",
-                "三个矩形组合：11×10，8×8，8×8。\n计算总面积。",
+                "Step Rectangle",
+                "Combination of three rectangles: 11×10, 8×8, 8×8.\nCalculate the total area.",
                 stepShape.calculateArea(),
                 stepShape.getSolutionSteps(),
                 stepShape
             ));
             
-            // 6. 添加双阶梯形状
+            // 6. Double Stair Shape
             DoubleStairShape doubleStairShape = new DoubleStairShape();
             shapeList.add(new CompoundShape(
-                "双阶梯形状",
-                "主矩形(19×18)和右上矩形(16×16)减去缺口(16×16)。\n计算总面积。",
+                "Double Stair Shape",
+                "Main rectangle (19×18) and top-right rectangle (16×16) minus cutout (16×16).\nCalculate the total area.",
                 doubleStairShape.calculateArea(),
                 doubleStairShape.getSolutionSteps(),
                 doubleStairShape
             ));
             
-            // 7. 添加房屋形状
+            // 7. House Shape
             HouseShape houseShape = new HouseShape();
             shapeList.add(new CompoundShape(
-                "房屋形状",
-                "底部矩形(14×5)和两个三角形(底14高12和底16高13)。\n计算总面积。",
+                "House Shape",
+                "Bottom rectangle (14×5) and two triangles (base 14 height 12 and base 16 height 13).\nCalculate the total area.",
                 houseShape.calculateArea(),
                 houseShape.getSolutionSteps(),
                 houseShape
             ));
             
-            // 8. 添加复杂阶梯
+            // 8. Complex Stair
             ComplexStairShape complexStairShape = new ComplexStairShape();
             shapeList.add(new CompoundShape(
-                "复杂阶梯",
-                "四个矩形：24×6，10×12，12×12，2×12。\n计算总面积。",
+                "Complex Stair",
+                "Four rectangles: 24×6, 10×12, 12×12, 2×12.\nCalculate the total area.",
                 complexStairShape.calculateArea(),
                 complexStairShape.getSolutionSteps(),
                 complexStairShape
             ));
             
-            // 9. 添加不规则四边形
+            // 9. Irregular Quadrilateral
             IrregularShape irregularShape = new IrregularShape();
             shapeList.add(new CompoundShape(
-                "不规则四边形",
-                "底边4m，左边4m，顶边16m，右斜边约17m。\n计算总面积。",
+                "Irregular Quadrilateral",
+                "Base 4m, left side 4m, top 16m, right diagonal approx. 17m.\nCalculate the total area.",
                 irregularShape.calculateArea(),
                 irregularShape.getSolutionSteps(),
                 irregularShape
             ));
             
-            System.out.println("所有形状初始化完成，共" + shapeList.size() + "个形状");
+            System.out.println("All shapes initialized, total count: " + shapeList.size());
             
         } catch (Exception e) {
-            System.err.println("初始化形状时出错：" + e.getMessage());
+            System.err.println("Error initializing shapes: " + e.getMessage());
             e.printStackTrace();
         }
         
         return shapeList;
     }
 
+    /**
+     * Gets the list of all compound shapes.
+     * @return The list of compound shapes
+     */
     public List<CompoundShape> getShapes() {
         return shapes;
     }
 
+    /**
+     * Gets the set of indices of practiced shapes.
+     * @return The set of practiced shape indices
+     */
     public Set<Integer> getPracticed() {
         return practiced;
     }
 
+    /**
+     * Adds a shape index to the set of practiced shapes.
+     * @param index The index of the practiced shape
+     */
     public void addPracticed(int index) {
         practiced.add(index);
     }
 
+    /**
+     * Checks if all shapes have been practiced.
+     * @return true if all shapes have been practiced, false otherwise
+     */
     public boolean isComplete() {
         return practiced.size() >= shapes.size();
     }
 
+    /**
+     * Checks if the provided answer is correct for the given shape.
+     * @param shapeIndex The index of the shape to check
+     * @param answer The user's answer
+     * @return true if the answer is within acceptable margin of error, false otherwise
+     */
     public boolean checkAnswer(int shapeIndex, double answer) {
         if (shapeIndex < 0 || shapeIndex >= shapes.size()) {
             return false;
@@ -173,17 +256,23 @@ public class CompoundShapeCalculation {
         return Math.abs(answer - shapes.get(shapeIndex).getCorrectArea()) < 0.1;
     }
 
+    /**
+     * Resets the practice progress, clearing all practiced shapes.
+     */
     public void reset() {
         practiced.clear();
     }
 
-    // 命令行模式的入口方法
+    /**
+     * Starts the command-line interface for compound shape calculation practice.
+     * @return A list of attempts taken for each completed shape
+     */
     public List<Integer> startCompoundShapeCalculation() {
         List<Integer> attemptsPerShape = new ArrayList<>();
         
         try (Scanner scanner = new Scanner(System.in)) {
             while (!isComplete()) {
-                System.out.println("请选择要练习的复合形状（1-" + shapes.size() + "），或输入0返回主菜单：");
+                System.out.println("Choose a compound shape to practice (1-" + shapes.size() + "), or enter 0 to return to main menu:");
                 for (int i = 0; i < shapes.size(); i++) {
                     if (!practiced.contains(i)) {
                         System.out.println((i+1) + ". " + shapes.get(i).getName());
@@ -196,11 +285,11 @@ public class CompoundShapeCalculation {
                 try {
                     idx = Integer.parseInt(choice) - 1;
                 } catch (Exception e) {
-                    System.out.println("无效输入，请重新选择。\n");
+                    System.out.println("Invalid input, please try again.\n");
                     continue;
                 }
                 if (idx < 0 || idx >= shapes.size() || practiced.contains(idx)) {
-                    System.out.println("无效输入，请重新选择。\n");
+                    System.out.println("Invalid input, please try again.\n");
                     continue;
                 }
                 
@@ -209,27 +298,27 @@ public class CompoundShapeCalculation {
                 boolean correct = false;
                 
                 while (attempts < 3) {
-                    System.out.println("描述：" + shape.getDescription());
-                    System.out.print("请输入该复合形状的面积（保留1位小数）：");
+                    System.out.println("Description: " + shape.getDescription());
+                    System.out.print("Enter the area of the compound shape (1 decimal place): ");
                     String answerStr = scanner.nextLine();
                     try {
                         double answer = Double.parseDouble(answerStr);
                         if (checkAnswer(idx, answer)) {
-                            System.out.println("回答正确！\n");
+                            System.out.println("Correct answer!\n");
                             correct = true;
                             break;
                         } else {
-                            System.out.println("回答错误，请再试一次。");
+                            System.out.println("Incorrect answer, please try again.");
                         }
                     } catch (Exception e) {
-                        System.out.println("输入无效，请输入数字。");
+                        System.out.println("Invalid input, please enter a number.");
                     }
                     attempts++;
                 }
                 
                 if (!correct) {
-                    System.out.println("正确答案是: " + String.format("%.1f", shape.getCorrectArea()));
-                    System.out.println("详细解法：" + shape.getSolution());
+                    System.out.println("The correct answer is: " + String.format("%.1f", shape.getCorrectArea()));
+                    System.out.println("Detailed solution: " + shape.getSolution());
                 }
                 System.out.println();
                 
@@ -238,7 +327,7 @@ public class CompoundShapeCalculation {
             }
         }
         
-        System.out.println("复合形状面积计算任务结束，返回主菜单。\n");
+        System.out.println("Compound shape calculation practice completed, returning to main menu.\n");
         return attemptsPerShape;
     }
 }
