@@ -39,6 +39,8 @@ public class ResultWindow extends JFrame {
         this.feedback = feedback;
         initializeUI();
         startScoreAnimation();
+        setLocationRelativeTo(null);  // Center the window on screen
+        setVisible(true);  // Make the window visible
     }
     
     /**
@@ -48,7 +50,6 @@ public class ResultWindow extends JFrame {
         setTitle("Shapeville - Task Results");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(700, 500);
-        setLocationRelativeTo(null);
         setAlwaysOnTop(true);
         
         // Create main panel
@@ -161,6 +162,10 @@ public class ResultWindow extends JFrame {
         
         JButton exitButton = createStyledButton("Exit", new Color(255, 51, 51));
         exitButton.addActionListener(e -> {
+            // Create a custom JOptionPane with English buttons
+            javax.swing.UIManager.put("OptionPane.yesButtonText", "Yes");
+            javax.swing.UIManager.put("OptionPane.noButtonText", "No");
+            
             int choice = JOptionPane.showConfirmDialog(
                 this,
                 "Are you sure you want to exit?",
@@ -168,6 +173,7 @@ public class ResultWindow extends JFrame {
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE
             );
+            
             if (choice == JOptionPane.YES_OPTION) {
                 dispose();
                 System.exit(0);

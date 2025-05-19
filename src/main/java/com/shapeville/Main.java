@@ -1,5 +1,7 @@
 package com.shapeville;
 
+import javax.swing.*;
+import java.util.Locale;
 import com.shapeville.gui.UIManager;
 import javax.swing.SwingUtilities;
 
@@ -20,6 +22,15 @@ public class Main {
      * @param args Command line arguments (not used)
      */
     public static void main(String[] args) {
+        // Set default locale for all UI components
+        Locale.setDefault(new Locale("en", "US"));
+        JComponent.setDefaultLocale(new Locale("en", "US"));
+        javax.swing.UIManager.put("OptionPane.yesButtonText", "Yes");
+        javax.swing.UIManager.put("OptionPane.noButtonText", "No");
+        javax.swing.UIManager.put("OptionPane.okButtonText", "OK");
+        javax.swing.UIManager.put("OptionPane.cancelButtonText", "Cancel");
+        
+        // Start the application
         SwingUtilities.invokeLater(() -> {
             try {
                 // Set system look and feel

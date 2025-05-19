@@ -51,7 +51,6 @@ public class ShapePanel extends BaseTaskPanel {
     private Map<JComponent, Boolean> componentStates;
     
     /** Number of shapes to test for both 2D and 3D modes */
-    private static final int SHAPES_PER_TEST = 4;
     private volatile boolean isEnding = false;
     
     /**
@@ -62,14 +61,13 @@ public class ShapePanel extends BaseTaskPanel {
         super("Shape Recognition");
         
         this.shapeRecognition = new ShapeRecognition();
-        shapes2D = new ArrayList<>(Arrays.asList(Shape2D.values()));
-        shapes3D = new ArrayList<>(Arrays.asList(Shape3D.values()));
+        shapes2D = new ArrayList<>();
+        shapes3D = new ArrayList<>();
         attemptsPerTask = new ArrayList<>();
         correctAnswers = new ArrayList<>();
         componentStates = new HashMap<>();
         
-        Collections.shuffle(shapes2D);
-        Collections.shuffle(shapes3D);
+        initializeShapes();
         
         setupShapeUI();
     }
@@ -84,21 +82,28 @@ public class ShapePanel extends BaseTaskPanel {
         attemptsPerTask.clear();
         correctAnswers.clear();
         
-        shapes2D.addAll(Arrays.asList(Shape2D.values()));
-        shapes3D.addAll(Arrays.asList(Shape3D.values()));
+        // Get all available shapes
+        Shape2D[] all2DShapes = Shape2D.values();
+        Shape3D[] all3DShapes = Shape3D.values();
+        
+        // Add all shapes without limiting the quantity
+        shapes2D.addAll(Arrays.asList(all2DShapes));
+        shapes3D.addAll(Arrays.asList(all3DShapes));
+        
+        // Shuffle the order
         Collections.shuffle(shapes2D);
         Collections.shuffle(shapes3D);
         
-        if (shapes2D.size() > SHAPES_PER_TEST) {
-            shapes2D = new ArrayList<>(shapes2D.subList(0, SHAPES_PER_TEST));
-        }
-        if (shapes3D.size() > SHAPES_PER_TEST) {
-            shapes3D = new ArrayList<>(shapes3D.subList(0, SHAPES_PER_TEST));
+        // Initialize attempts and correct answers lists for current mode's shape count
+        int totalShapes = is2DMode ? shapes2D.size() : shapes3D.size();
+        for (int i = 0; i < totalShapes; i++) {
+            attemptsPerTask.add(0);
+            correctAnswers.add(false);
         }
         
         currentShapeIndex = 0;
         isEnding = false;
-        logger.info("Initialized shapes: " + SHAPES_PER_TEST + " shapes per test mode");
+        logger.info("Initialized shapes: " + totalShapes + " shapes for " + (is2DMode ? "2D" : "3D") + " mode");
     }
     
     /**
@@ -261,20 +266,24 @@ public class ShapePanel extends BaseTaskPanel {
      * @param shape the shape to display
      */
     private void updateShapeDisplay(Object shape) {
-            String chinese = is2DMode ? ((Shape2D)shape).getChinese() : ((Shape3D)shape).getChinese();
-            String english = is2DMode ? ((Shape2D)shape).getEnglish() : ((Shape3D)shape).getEnglish();
-            
+        String english = is2DMode ? ((Shape2D)shape).getEnglish() : ((Shape3D)shape).getEnglish();
+        
+        // Update prompt text only when showing new shape
         shapeLabel.setText("Identify this " + (is2DMode ? "2D" : "3D") + " shape:");
-            displayShapeImage(english.toLowerCase() + ".png", is2DMode);
-            answerField.setText("");
-            answerField.requestFocus();
-            
+        displayShapeImage(english.toLowerCase() + ".png", is2DMode);
+        answerField.setText("");
+        answerField.requestFocus();
+        
         String remainingMessage = shapeRecognition.getRemainingTypesMessage(is2DMode);
+        // Convert Chinese messages to English
         String englishMessage = remainingMessage.replace("还需要识别", "Need to identify")
-                                              .replace("种不同的", "more different ")
-                                              .replace("形状", "shapes")
-                                              .replace("已完成所有形状类型的识别！", "All shape types have been identified!");
-        updateFeedback(englishMessage);
+                                          .replace("种不同的", "more different ")
+                                          .replace("形状", "shapes")
+                                          .replace("已完成所有形状类型的识别！", "All shape types have been identified!");
+        // Update feedback area instead of shapeLabel
+        if (parentWindow != null) {
+            parentWindow.setFeedback(englishMessage);
+        }
     }
     
     /**
@@ -331,11 +340,10 @@ public class ShapePanel extends BaseTaskPanel {
      * @param message the feedback message to display
      */
     private void updateFeedback(String message) {
-        if (message == null || message.isEmpty()) {
-            shapeLabel.setText("Identify the shape:");
-        } else {
-            shapeLabel.setText(message);
-    }
+        // Update feedback area only
+        if (parentWindow != null) {
+            parentWindow.setFeedback(message);
+        }
     }
     
     /**
@@ -386,46 +394,61 @@ public class ShapePanel extends BaseTaskPanel {
      * @param correctAnswer the correct answer
      */
     private void handleAnswerResult(boolean correct, String correctAnswer) {
+        // Ensure current index is valid
+        if (currentShapeIndex < 0 || (is2DMode && currentShapeIndex >= shapes2D.size()) || 
+            (!is2DMode && currentShapeIndex >= shapes3D.size())) {
+            endTask();
+            return;
+        }
+        
+        // Ensure list size is sufficient
+        while (currentShapeIndex >= attemptsPerTask.size()) {
+            attemptsPerTask.add(0);
+            correctAnswers.add(false);
+        }
+        
         if (correct) {
             updateFeedback("Correct! Well done!");
-            handleCorrectAnswer();
-        } else {
-            int remainingAttempts = 3 - attemptsPerTask.get(currentShapeIndex);
-            if (remainingAttempts > 0) {
-                updateFeedback("Incorrect. Try again! (" + remainingAttempts + " attempts left)");
+            correctAnswers.set(currentShapeIndex, true);
+            
+            // Check if all shapes are completed
+            if (isTaskComplete()) {
+                endTask();
+                return;
+            }
+            
+            // Move to next shape
+            currentShapeIndex++;
+            if (currentShapeIndex < (is2DMode ? shapes2D.size() : shapes3D.size())) {
+                resetAttempts();
+                showCurrentShape();
             } else {
-                handleMaxAttemptsReached(correctAnswer);
+                endTask();
+            }
+        } else {
+            // Handle incorrect answer
+            int attempts = attemptsPerTask.get(currentShapeIndex);
+            attempts++;
+            attemptsPerTask.set(currentShapeIndex, attempts);
+            
+            if (attempts < 3) {
+                updateFeedback("Incorrect. Try again! (" + (3 - attempts) + " attempts remaining)");
+            } else {
+                updateFeedback("The correct answer is: " + correctAnswer);
+                correctAnswers.set(currentShapeIndex, false);
+                
+                // Move to next shape
+                currentShapeIndex++;
+                if (currentShapeIndex < (is2DMode ? shapes2D.size() : shapes3D.size())) {
+                    resetAttempts();
+                    Timer timer = new Timer(2000, e -> showCurrentShape());
+                    timer.setRepeats(false);
+                    timer.start();
+                } else {
+                    endTask();
+                }
             }
         }
-    }
-    
-    /**
-     * Handles a correct answer submission.
-     */
-    private void handleCorrectAnswer() {
-        updateFeedback("Correct! Well done!");
-            correctAnswers.add(true);
-            addAttemptToList();
-            currentShapeIndex++;
-            resetAttempts();
-            
-        if (isTaskComplete()) {
-                endTask();
-        } else {
-            showCurrentShape();
-        }
-    }
-    
-    /**
-     * Handles when maximum attempts are reached without a correct answer.
-     * @param correctAnswer the correct answer to show
-     */
-    private void handleMaxAttemptsReached(String correctAnswer) {
-        updateFeedback("The correct answer was: " + correctAnswer);
-        currentShapeIndex++;
-        Timer timer = new Timer(2000, e -> showCurrentShape());
-        timer.setRepeats(false);
-        timer.start();
     }
     
     /**
@@ -617,21 +640,21 @@ public class ShapePanel extends BaseTaskPanel {
     /**
      * Adds the current attempt count to the list.
      */
-    private void addAttemptToList() {
-        if (currentShapeIndex >= attemptsPerTask.size()) {
-            attemptsPerTask.add(1);
-        } else {
-            attemptsPerTask.set(currentShapeIndex, attemptsPerTask.get(currentShapeIndex) + 1);
+    protected void addAttemptToList() {
+        while (currentShapeIndex >= attemptsPerTask.size()) {
+            attemptsPerTask.add(0);
         }
+        attemptsPerTask.set(currentShapeIndex, attemptsPerTask.get(currentShapeIndex) + 1);
     }
     
     /**
      * Resets the attempts for the current shape.
      */
-    private void resetAttempts() {
-        if (currentShapeIndex >= attemptsPerTask.size()) {
+    protected void resetAttempts() {
+        while (currentShapeIndex >= attemptsPerTask.size()) {
             attemptsPerTask.add(0);
-        } else {
+        }
+        if (currentShapeIndex < attemptsPerTask.size()) {
             attemptsPerTask.set(currentShapeIndex, 0);
         }
     }

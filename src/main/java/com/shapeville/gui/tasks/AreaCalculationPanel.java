@@ -44,6 +44,7 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
     private Map<String, Double> currentParams;
     private int attemptCount = 0;
     private static final int MAX_ATTEMPTS = 3;
+    private Map<ShapeType, Integer> shapeAttempts = new HashMap<>();
 
     /**
      * Constructs a new AreaCalculationPanel.
@@ -283,10 +284,12 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
         try {
             double answer = Double.parseDouble(answerField.getText());
             attemptCount++;
+            ShapeType currentShape = areaCalculation.getShapes().get(currentShapeIndex);
             
             if (areaCalculation.checkAnswer(answer)) {
-                completedShapes.add(areaCalculation.getShapes().get(currentShapeIndex));
-                substitutionLabel.setText(areaCalculation.getSubstitutionString(areaCalculation.getShapes().get(currentShapeIndex)));
+                completedShapes.add(currentShape);
+                shapeAttempts.put(currentShape, attemptCount);
+                substitutionLabel.setText(areaCalculation.getSubstitutionString(currentShape));
                 substitutionLabel.setVisible(true);
                 setFeedback("Correct! Please select another shape to continue. Complete all four shapes to finish.");
                 shapeDisplayPanel.repaint();
@@ -298,12 +301,13 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
                 }
             } else {
                 if (attemptCount >= MAX_ATTEMPTS) {
-                    substitutionLabel.setText(areaCalculation.getSubstitutionString(areaCalculation.getShapes().get(currentShapeIndex)));
+                    substitutionLabel.setText(areaCalculation.getSubstitutionString(currentShape));
                     substitutionLabel.setVisible(true);
                     setFeedback("No more attempts. The correct answer is: " + String.format("%.1f", areaCalculation.getCorrectArea()) + 
                                "\nPlease select another shape to continue.");
                     shapeDisplayPanel.repaint();
-                    completedShapes.add(areaCalculation.getShapes().get(currentShapeIndex));
+                    completedShapes.add(currentShape);
+                    shapeAttempts.put(currentShape, MAX_ATTEMPTS + 1);
                     lockCurrentShape();
                     
                     if (completedShapes.size() >= areaCalculation.getShapes().size()) {
@@ -348,12 +352,30 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
     }
 
     /**
-     * Calculates the final score based on completed shapes.
+     * Calculates the final score based on completed shapes and number of attempts.
+     * Scoring rules:
+     * - Correct on first attempt: 3 points
+     * - Correct on second attempt: 2 points
+     * - Correct on third attempt: 1 point
+     * - Failed all attempts: 0 points
+     * 
      * @return The calculated score
      */
     @Override
     protected int calculateScore() {
-        return completedShapes.size() * 3;  // 3 points per correct shape
+        int totalScore = 0;
+        for (Map.Entry<ShapeType, Integer> entry : shapeAttempts.entrySet()) {
+            int attempts = entry.getValue();
+            if (attempts == 1) {
+                totalScore += 3;  // First attempt correct
+            } else if (attempts == 2) {
+                totalScore += 2;  // Second attempt correct
+            } else if (attempts == 3) {
+                totalScore += 1;  // Third attempt correct
+            }
+            // No points if all attempts failed (attempts > 3)
+        }
+        return totalScore;
     }
 
     /**
@@ -454,6 +476,7 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
         isEnding = false;
         completedShapes.clear();
         currentParams.clear();
+        shapeAttempts.clear();
         showSelectedShape();
         timer.restart();
     }

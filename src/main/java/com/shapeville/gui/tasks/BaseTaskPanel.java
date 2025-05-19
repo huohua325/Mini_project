@@ -118,8 +118,6 @@ public abstract class BaseTaskPanel extends JPanel implements TaskPanelInterface
     protected void setFeedback(String message) {
         if (parentWindow != null) {
             parentWindow.setFeedback(message);
-        } else {
-            System.out.println("Warning: Cannot set feedback, parentWindow is null");
         }
     }
     
@@ -131,8 +129,6 @@ public abstract class BaseTaskPanel extends JPanel implements TaskPanelInterface
     protected void appendFeedback(String message) {
         if (parentWindow != null) {
             parentWindow.appendFeedback(message);
-        } else {
-            System.out.println("Warning: Cannot append feedback, parentWindow is null");
         }
     }
     

@@ -4,41 +4,50 @@ import java.awt.Graphics2D;
 import java.util.Map;
 
 /**
- * 复合形状渲染接口
- * 定义了所有复合形状必须实现的方法
+ * Interface for compound shape rendering.
+ * Defines the required methods that all compound shapes must implement.
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
  */
 public interface ShapeRenderer {
     /**
-     * 绘制形状
-     * @param g 图形上下文
-     * @param width 可用宽度
-     * @param height 可用高度
+     * Draws the shape in the specified graphics context.
+     *
+     * @param g The graphics context to draw on
+     * @param width The available width for drawing
+     * @param height The available height for drawing
      */
     void draw(Graphics2D g, int width, int height);
     
     /**
-     * 绘制尺寸标注
-     * @param g 图形上下文
-     * @param width 可用宽度
-     * @param height 可用高度
+     * Draws the dimension annotations for the shape.
+     *
+     * @param g The graphics context to draw on
+     * @param width The available width for drawing
+     * @param height The available height for drawing
      */
     void drawDimensions(Graphics2D g, int width, int height);
     
     /**
-     * 获取形状的所有尺寸
-     * @return 尺寸映射表
+     * Gets all dimensions of the shape.
+     *
+     * @return A map containing dimension names and their values
      */
     Map<String, Double> getDimensions();
     
     /**
-     * 计算形状面积
-     * @return 面积
+     * Calculates the area of the shape.
+     *
+     * @return The calculated area
      */
     double calculateArea();
     
     /**
-     * 获取解题步骤说明
-     * @return 解题步骤文本
+     * Gets the solution steps for solving the shape's area.
+     *
+     * @return A text description of the solution steps
      */
     String getSolutionSteps();
 } 

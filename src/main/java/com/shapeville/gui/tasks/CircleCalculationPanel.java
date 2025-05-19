@@ -59,6 +59,7 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
      */
     public CircleCalculationPanel() {
         super("Circle Calculation");
+        System.out.println("CircleCalculationPanel constructor called");
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setupCircleUI();
@@ -234,10 +235,6 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                      "Completed " + completedTypes.size() + "/" + TOTAL_TYPES + " calculation types.");
         
         if (completedTypes.size() >= TOTAL_TYPES) {
-            JOptionPane.showMessageDialog(this,
-                "All calculation types completed. Final score: " + score + " points (out of 12)",
-                "Task Complete",
-                JOptionPane.INFORMATION_MESSAGE);
             endTask();
         } else {
             Timer delayTimer = new Timer(2000, e -> startNewCalculation());
@@ -300,10 +297,6 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
      */
     private void moveToNextQuestion() {
         if (completedTypes.size() >= TOTAL_TYPES) {
-            JOptionPane.showMessageDialog(this,
-                "All calculation types completed. Final score: " + score + " points (out of 12)",
-                "Task Complete",
-                JOptionPane.INFORMATION_MESSAGE);
             endTask();
         } else {
             Timer delayTimer = new Timer(2000, e -> startNewCalculation());
@@ -317,6 +310,7 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         try {
             double userAnswer = Double.parseDouble(answerField.getText());
             attempts++;
+            incrementAttempts();
             
             if (Math.abs(userAnswer - correctAnswer) < 0.1) {
                 if (questionTimer != null && questionTimer.isRunning()) {
@@ -326,6 +320,7 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                 String currentType = getCalculationType();
                 completedTypes.add(currentType);
                 score += (4 - attempts);
+                attemptsPerTask.add(attempts);
                 
                 setFeedback("Correct! Points earned: " + (4 - attempts) + "\n" +
                            "Completed " + completedTypes.size() + "/" + TOTAL_TYPES + " calculation types.");
@@ -340,6 +335,7 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                     String formattedAnswer = df.format(correctAnswer);
                     String currentType = getCalculationType();
                     completedTypes.add(currentType);
+                    attemptsPerTask.add(attempts);
                     
                     setFeedback("Too many incorrect attempts. The correct answer was: " + formattedAnswer + "\n" +
                               "Completed " + completedTypes.size() + "/" + TOTAL_TYPES + " calculation types.");
@@ -366,6 +362,7 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         score = 0;
         completedCalculations = 0;
         completedTypes.clear();
+        attemptsPerTask.clear();
         if (questionTimer != null) {
             questionTimer.stop();
         }
@@ -402,9 +399,13 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
 
     @Override
     public void endTask() {
+        System.out.println("CircleCalculationPanel endTask called");
         cleanup();
         if (parentWindow != null) {
+            System.out.println("Showing result - Score: " + calculateScore() + "/12");
             parentWindow.showResult(calculateScore(), 12);
+        } else {
+            System.out.println("Warning: parentWindow is null!");
         }
     }
 
@@ -416,8 +417,15 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     @Override
     public String getFeedback() {
         StringBuilder feedback = new StringBuilder();
-        feedback.append("Circle Calculation Exercise Results:\n");
-        feedback.append("Completed calculation types: ").append(completedTypes.size()).append("/").append(TOTAL_TYPES).append("\n");
+        feedback.append("Circle Calculation Exercise Results:\n\n");
+        
+        int taskNum = 1;
+        for (Integer attempts : attemptsPerTask) {
+            feedback.append(String.format("Task %d: %d attempts\n", taskNum++, attempts));
+        }
+        
+        feedback.append("\nCompleted calculation types: ").append(completedTypes.size())
+                .append("/").append(TOTAL_TYPES).append("\n");
         feedback.append("Total score: ").append(score).append("/12 points\n\n");
         
         if (score >= 10) {

@@ -4,8 +4,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Locale;
 import com.shapeville.gui.UIManager.TaskStatus;
 
+/**
+ * The MainWindow class represents the main graphical user interface of the Shapeville application.
+ * It provides a central hub for accessing various geometric learning tasks and displays user progress.
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
+ */
 public class MainWindow extends JFrame {
     private JProgressBar progressBar;
     private JPanel buttonPanel;
@@ -17,83 +26,102 @@ public class MainWindow extends JFrame {
     private boolean fullFeaturesEnabled = false;  
     private JToggleButton featureToggleButton;
     
+    /** Task display names mapping */
+    private static final Map<String, String> TASK_DISPLAY_NAMES = Map.of(
+        "形状识别", "Shape Recognition",
+        "角度识别", "Angle Recognition",
+        "面积计算", "Area Calculation",
+        "圆形计算", "Circle Calculation",
+        "复合形状", "Compound Shapes",
+        "扇形计算", "Sector Calculation"
+    );
+    
+    /**
+     * Constructs a new MainWindow and initializes the user interface components.
+     */
     public MainWindow() {
+        JOptionPane.setDefaultLocale(new Locale("en", "US"));
         taskButtons = new HashMap<>();
         taskCompletionStatus = new HashMap<>();
         initializeUI();
     }
     
+    /**
+     * Initializes the user interface components of the main window.
+     * Sets up the layout, buttons, progress bar, and other UI elements.
+     */
     private void initializeUI() {
         setTitle("Shapeville");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(900, 700);
         setLocationRelativeTo(null);
         
-        // 创建主面板
+        // Create main panel
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // 创建顶部面板
+        // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout(10, 10));
         
-        // 创建欢迎标签
-        JLabel welcomeLabel = new JLabel("欢迎来到Shapeville几何学习乐园！", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("微软雅黑", Font.BOLD, 28));
+        // Create welcome label
+        JLabel welcomeLabel = new JLabel("Welcome to Shapeville Geometry Learning Park!", SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
         welcomeLabel.setForeground(new Color(51, 51, 153));
         
-        // 创建等级标签
-        levelLabel = new JLabel("当前等级：初学者", SwingConstants.RIGHT);
-        levelLabel.setFont(new Font("微软雅黑", Font.PLAIN, 16));
+        // Create level label
+        levelLabel = new JLabel("Current Level: Beginner", SwingConstants.RIGHT);
+        levelLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         
         topPanel.add(welcomeLabel, BorderLayout.CENTER);
         topPanel.add(levelLabel, BorderLayout.EAST);
         mainPanel.add(topPanel, BorderLayout.NORTH);
         
-        // 创建任务按钮面板
+        // Create task button panel
         buttonPanel = new JPanel(new GridLayout(3, 2, 20, 20));
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         
-        // 添加任务按钮
-        addTaskButton("形状识别", "识别2D和3D形状（基础难度）", "basic");
-        addTaskButton("角度识别", "判断角度类型和大小（基础难度）", "basic");
-        addTaskButton("面积计算", "计算基本形状的面积（基础难度）", "basic");
-        addTaskButton("圆形计算", "计算圆的周长和面积（基础难度）", "basic");
-        addTaskButton("复合形状", "计算复合形状的面积（高级难度）", "advanced");
-        addTaskButton("扇形计算", "计算扇形的面积和弧长（高级难度）", "advanced");
+        // Add task buttons
+        addTaskButton("形状识别", "Identify 2D and 3D shapes (Basic Level)", "basic");
+        addTaskButton("角度识别", "Identify angle types and measurements (Basic Level)", "basic");
+        addTaskButton("面积计算", "Calculate areas of basic shapes (Basic Level)", "basic");
+        addTaskButton("圆形计算", "Calculate circle circumference and area (Basic Level)", "basic");
+        addTaskButton("复合形状", "Calculate areas of compound shapes (Advanced Level)", "advanced");
+        addTaskButton("扇形计算", "Calculate sector area and arc length (Advanced Level)", "advanced");
         
-        // 创建中央面板（包含任务按钮和说明）
+        // Create center panel (includes task buttons and description)
         JPanel centerPanel = new JPanel(new BorderLayout(10, 10));
         centerPanel.add(buttonPanel, BorderLayout.CENTER);
         
-        // 创建任务说明面板
+        // Create task description panel
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createEtchedBorder(), "任务说明"));
+            BorderFactory.createEtchedBorder(), "Task Description"));
         descriptionPanel.setPreferredSize(new Dimension(0, 100));
-        JLabel descriptionLabel = new JLabel("<html>完成基础任务可以解锁高级任务<br>每个任务都有相应的分数和星级评价</html>");
-        descriptionLabel.setFont(new Font("微软雅黑", Font.PLAIN, 14));
+        JLabel descriptionLabel = new JLabel("<html>Complete basic tasks to unlock advanced tasks<br>Each task has its own score and star rating</html>");
+        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         descriptionPanel.add(descriptionLabel);
         centerPanel.add(descriptionPanel, BorderLayout.SOUTH);
         
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         
-        // 创建底部面板
+        // Create bottom panel
         JPanel bottomPanel = new JPanel(new BorderLayout(10, 10));
         
-        // 创建进度条面板
+        // Create progress panel
         JPanel progressPanel = new JPanel(new BorderLayout(5, 5));
-        progressPanel.setBorder(BorderFactory.createTitledBorder("学习进度"));
+        progressPanel.setBorder(BorderFactory.createTitledBorder("Learning Progress"));
         progressBar = new JProgressBar(0, 100);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
         progressBar.setPreferredSize(new Dimension(0, 25));
-        progressBar.setString("总分: 0 分 (已完成: 0/6)");
+        int totalTasks = com.shapeville.gui.UIManager.getInstance().getTotalTaskCount();
+        progressBar.setString(String.format("Total Score: 0 points (Completed: 0/%d)", totalTasks));
         progressPanel.add(progressBar, BorderLayout.CENTER);
         
-        // 创建控制按钮面板
+        // Create control panel
         JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        setupControlPanel(controlPanel);  // 使用新的方法设置控制面板
+        setupControlPanel(controlPanel);
         
         bottomPanel.add(progressPanel, BorderLayout.CENTER);
         bottomPanel.add(controlPanel, BorderLayout.SOUTH);
@@ -101,43 +129,48 @@ public class MainWindow extends JFrame {
         
         add(mainPanel);
         
-        // 初始化任务完成状态
+        // Initialize task status
         initializeTaskStatus();
     }
     
+    /**
+     * Sets up the control panel with home, feature toggle, and end session buttons.
+     *
+     * @param controlPanel The panel to add the control buttons to
+     */
     private void setupControlPanel(JPanel controlPanel) {
-        homeButton = createStyledButton("主页", new Color(51, 153, 255));
-        endButton = createStyledButton("结束会话", new Color(255, 51, 51));
+        homeButton = createStyledButton("Home", new Color(51, 153, 255));
+        endButton = createStyledButton("End Session", new Color(255, 51, 51));
         
-        // 创建功能切换按钮
-        featureToggleButton = new JToggleButton("完整功能");
-        featureToggleButton.setFont(new Font("微软雅黑", Font.BOLD, 14));
+        // Create feature toggle button
+        featureToggleButton = new JToggleButton("Full Features");
+        featureToggleButton.setFont(new Font("Arial", Font.BOLD, 14));
         featureToggleButton.setForeground(Color.WHITE);
-        featureToggleButton.setBackground(new Color(128, 0, 128));  // 紫色
+        featureToggleButton.setBackground(new Color(128, 0, 128));
         featureToggleButton.setFocusPainted(false);
         featureToggleButton.setBorderPainted(false);
         featureToggleButton.setOpaque(true);
         
         featureToggleButton.addActionListener(e -> {
             fullFeaturesEnabled = featureToggleButton.isSelected();
-            UIManager.getInstance().setFullFeaturesEnabled(fullFeaturesEnabled);
+            com.shapeville.gui.UIManager.getInstance().setFullFeaturesEnabled(fullFeaturesEnabled);
             
             if (fullFeaturesEnabled) {
-                featureToggleButton.setText("正常模式");
-                featureToggleButton.setBackground(new Color(0, 128, 128));  // 青色
+                featureToggleButton.setText("Normal Mode");
+                featureToggleButton.setBackground(new Color(0, 128, 128));
                 JOptionPane.showMessageDialog(
                     this,
-                    "已切换到完整功能模式：所有任务已解锁",
-                    "模式切换",
+                    "Switched to Full Features Mode: All tasks are unlocked",
+                    "Mode Switch",
                     JOptionPane.INFORMATION_MESSAGE
                 );
             } else {
-                featureToggleButton.setText("完整功能");
-                featureToggleButton.setBackground(new Color(128, 0, 128));  // 紫色
+                featureToggleButton.setText("Full Features");
+                featureToggleButton.setBackground(new Color(128, 0, 128));
                 JOptionPane.showMessageDialog(
                     this,
-                    "已切换到正常模式：高级任务需要达到70分才能解锁",
-                    "模式切换",
+                    "Switched to Normal Mode: Advanced tasks require 70 points to unlock",
+                    "Mode Switch",
                     JOptionPane.INFORMATION_MESSAGE
                 );
             }
@@ -151,9 +184,16 @@ public class MainWindow extends JFrame {
         controlPanel.add(endButton);
     }
     
+    /**
+     * Creates a styled button with the specified text and background color.
+     *
+     * @param text The button text
+     * @param color The background color
+     * @return The styled JButton
+     */
     private JButton createStyledButton(String text, Color color) {
         JButton button = new JButton(text);
-        button.setFont(new Font("微软雅黑", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 14));
         button.setForeground(Color.WHITE);
         button.setBackground(color);
         button.setFocusPainted(false);
@@ -162,22 +202,26 @@ public class MainWindow extends JFrame {
         return button;
     }
     
+    /**
+     * Adds a task button to the button panel with specified properties.
+     *
+     * @param text The button text
+     * @param tooltip The tooltip text
+     * @param difficulty The task difficulty level ("basic" or "advanced")
+     */
     private void addTaskButton(String text, String tooltip, String difficulty) {
-        JButton button = new JButton(text);
+        JButton button = new JButton(TASK_DISPLAY_NAMES.get(text));
         
-        // 修改工具提示的显示方式
         if ("advanced".equals(difficulty)) {
-            // 为高级任务添加更详细的提示信息
             String advancedTooltip = String.format("<html>%s<br><br>" +
-                "<font color='red'>高级任务 - 当前未解锁</font><br>" +
-                "解锁条件：完成所有基础任务并获得至少70分<br>" +
-                "基础任务：形状识别、角度识别、面积计算、圆形计算</html>", 
+                "<font color='red'>Advanced Task - Currently Locked</font><br>" +
+                "Unlock Condition: Complete all basic tasks with at least 70 points<br>" +
+                "Basic Tasks: Shape Recognition, Angle Recognition, Area Calculation, Circle Calculation</html>", 
                 tooltip);
             button.setToolTipText(advancedTooltip);
             button.setBackground(new Color(255, 204, 153));
             button.setForeground(new Color(153, 51, 0));
         } else {
-            // 为基础任务添加基本提示
             button.setToolTipText("<html>" + tooltip + "</html>");
             button.setBackground(new Color(204, 229, 255));
             button.setForeground(new Color(0, 51, 153));
@@ -193,8 +237,8 @@ public class MainWindow extends JFrame {
             if ("advanced".equals(difficulty) && !canAccessAdvancedTasks()) {
                 JOptionPane.showMessageDialog(
                     this,
-                    "请先完成所有基础任务以解锁高级任务！",
-                    "提示",
+                    "Please complete all basic tasks to unlock advanced tasks!",
+                    "Notice",
                     JOptionPane.INFORMATION_MESSAGE
                 );
                 return;
@@ -206,6 +250,9 @@ public class MainWindow extends JFrame {
         taskButtons.put(text, button);
     }
     
+    /**
+     * Initializes the completion status for all tasks.
+     */
     private void initializeTaskStatus() {
         taskCompletionStatus.put("形状识别", false);
         taskCompletionStatus.put("角度识别", false);
@@ -216,85 +263,64 @@ public class MainWindow extends JFrame {
         updateProgress();
     }
     
+    /**
+     * Checks if advanced tasks can be accessed based on basic task completion.
+     *
+     * @return true if advanced tasks can be accessed, false otherwise
+     */
     private boolean canAccessAdvancedTasks() {
         if (fullFeaturesEnabled) {
-            return true;  // 完整功能模式下直接返回true
+            return true;
         }
-        // 正常模式下的检查逻辑
         return taskCompletionStatus.get("形状识别") &&
                taskCompletionStatus.get("角度识别") &&
                taskCompletionStatus.get("面积计算") &&
                taskCompletionStatus.get("圆形计算");
     }
     
+    /**
+     * Marks a task as completed and updates the UI accordingly.
+     *
+     * @param taskName The name of the completed task
+     */
     public void setTaskCompleted(String taskName) {
         taskCompletionStatus.put(taskName, true);
         JButton button = taskButtons.get(taskName);
         if (button != null) {
-            button.setBackground(new Color(204, 255, 204));  // 绿色背景表示完成
+            button.setBackground(new Color(204, 255, 204));
         }
         updateProgress();
         updateLevel();
     }
     
+    /**
+     * Updates the progress display based on task completion and scores.
+     */
     public void updateProgress() {
-        // 获取所有任务的完成状态和分数
-        Map<String, TaskStatus> taskStatusMap = UIManager.getInstance().getTaskStatusMap();
-        Map<String, Integer> taskScores = UIManager.getInstance().getTaskScores();
+        Map<String, TaskStatus> taskStatusMap = com.shapeville.gui.UIManager.getInstance().getTaskStatusMap();
+        Map<String, Integer> taskScores = com.shapeville.gui.UIManager.getInstance().getTaskScores();
         
-        System.out.println("正在更新主窗口进度...");
-        System.out.println("任务状态: " + taskStatusMap);
-        System.out.println("任务分数: " + taskScores);
+        int totalScore = taskScores.values().stream().mapToInt(Integer::intValue).sum();
+        int completedTasks = (int) taskScores.values().stream().filter(score -> score > 0).count();
+        int totalTasks = com.shapeville.gui.UIManager.getInstance().getTotalTaskCount();
+        int progress = totalTasks > 0 ? (completedTasks * 100) / totalTasks : 0;
         
-        // 计算总分和完成任务数
-        int totalScore = 0;
-        int completedTasks = 0;
-        
-        for (Map.Entry<String, TaskStatus> entry : taskStatusMap.entrySet()) {
-            String taskName = entry.getKey();
-            TaskStatus status = entry.getValue();
+        progressBar.setValue(progress);
+        progressBar.setString(String.format("Total Score: %d points (Completed: %d/%d)", 
+            totalScore, completedTasks, totalTasks));
             
-            if (status == TaskStatus.COMPLETED) {
-                completedTasks++;
-                totalScore += taskScores.getOrDefault(taskName, 0);
-                // 更新任务完成状态
-                taskCompletionStatus.put(taskName, true);
-                // 更新按钮状态
-                JButton button = taskButtons.get(taskName);
-                if (button != null) {
-                    SwingUtilities.invokeLater(() -> {
-                        button.setBackground(new Color(51, 153, 51)); // 深绿色表示完成
-                        button.setToolTipText(button.getToolTipText() + "<br><font color='green'>已完成！分数：" + taskScores.get(taskName) + "</font>");
-                    });
-                }
+        // Update task button status
+        taskStatusMap.forEach((taskName, status) -> {
+            JButton button = taskButtons.get(taskName);
+            if (button != null) {
+                updateButtonStatus(button, status);
             }
-        }
-        
-        // 计算总体进度
-        int totalTasks = taskStatusMap.size();
-        int progress = (int)((double)completedTasks / totalTasks * 100);
-        
-        // 更新进度条
-        final int finalTotalScore = totalScore;
-        final int finalCompletedTasks = completedTasks;
-        
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setValue(progress);
-            progressBar.setString(String.format("总分: %d分 (已完成: %d/%d)", 
-                finalTotalScore, finalCompletedTasks, totalTasks));
-                
-            // 根据完成度设置进度条颜色
-            if (progress > 0) {
-                progressBar.setForeground(new Color(255, 192, 203)); // 粉红色
-            }
-            
-            // 更新等级
-            updateLevel();
-            
-            System.out.println("进度更新完成 - 进度: " + progress + "%, 总分: " + finalTotalScore);
         });
     }
     
+    /**
+     * Updates the user's level based on completed tasks.
+     */
     private void updateLevel() {
         int completedTasks = 0;
         for (Boolean completed : taskCompletionStatus.values()) {
@@ -302,32 +328,39 @@ public class MainWindow extends JFrame {
         }
         
         if (completedTasks >= taskCompletionStatus.size()) {
-            levelLabel.setText("当前等级：专家");
+            levelLabel.setText("Current Level: Expert");
         } else if (completedTasks >= 4) {
-            levelLabel.setText("当前等级：进阶者");
+            levelLabel.setText("Current Level: Advanced");
         } else if (completedTasks >= 2) {
-            levelLabel.setText("当前等级：学习者");
+            levelLabel.setText("Current Level: Intermediate");
         } else {
-            levelLabel.setText("当前等级：初学者");
+            levelLabel.setText("Current Level: Beginner");
         }
     }
     
+    /**
+     * Updates the status of all task buttons based on their current state.
+     *
+     * @param taskStatusMap Map containing the current status of all tasks
+     */
     public void updateTaskStatus(Map<String, TaskStatus> taskStatusMap) {
-        System.out.println("正在更新任务状态...");
-        // 更新每个任务按钮的状态
         taskStatusMap.forEach((taskName, status) -> {
             JButton button = taskButtons.get(taskName);
             if (button != null) {
                 SwingUtilities.invokeLater(() -> {
                     updateButtonStatus(button, status);
-                    System.out.println("更新任务按钮状态: " + taskName + " -> " + status);
                 });
             }
         });
-        // 更新进度
         updateProgress();
     }
     
+    /**
+     * Updates the visual status of a task button.
+     *
+     * @param button The button to update
+     * @param status The new status of the task
+     */
     private void updateButtonStatus(JButton button, TaskStatus status) {
         String currentTooltip = button.getToolTipText();
         
@@ -340,35 +373,49 @@ public class MainWindow extends JFrame {
             case UNLOCKED:
                 button.setEnabled(true);
                 button.setBackground(new Color(51, 153, 255));
-                if (currentTooltip != null && currentTooltip.contains("未解锁")) {
-                    button.setToolTipText(currentTooltip.replace("<font color='red'>高级任务 - 当前未解锁</font><br>", ""));
+                if (currentTooltip != null && currentTooltip.contains("Currently Locked")) {
+                    button.setToolTipText(currentTooltip.replace("<font color='red'>Advanced Task - Currently Locked</font><br>", ""));
                 }
                 break;
             
             case IN_PROGRESS:
                 button.setEnabled(true);
-                button.setBackground(new Color(255, 153, 51));
-                if (!currentTooltip.contains("正在进行中")) {
-                    button.setToolTipText(currentTooltip + "<br><font color='blue'>正在进行中...</font>");
-                }
+                button.setBackground(new Color(255, 165, 0));
                 break;
             
             case COMPLETED:
                 button.setEnabled(true);
-                button.setBackground(new Color(51, 153, 51));
-                if (!currentTooltip.contains("已完成")) {
-                    button.setToolTipText(currentTooltip + "<br><font color='green'>已完成！</font>");
-                }
+                button.setBackground(new Color(34, 139, 34));
                 break;
         }
     }
     
+    /**
+     * Gets the English display name for a task.
+     *
+     * @param taskName The internal task name
+     * @return The English display name
+     */
+    private String getDisplayName(String taskName) {
+        return TASK_DISPLAY_NAMES.getOrDefault(taskName, taskName);
+    }
+    
+    /**
+     * Updates the displayed user level.
+     *
+     * @param levelTitle The new level title to display
+     */
     public void updateUserLevel(String levelTitle) {
         if (levelLabel != null) {
-            levelLabel.setText("当前等级：" + levelTitle);
+            levelLabel.setText("Current Level: " + levelTitle);
         }
     }
     
+    /**
+     * Updates the progress bar value and text.
+     *
+     * @param progress The new progress value (0-100)
+     */
     public void updateProgress(int progress) {
         if (progressBar != null) {
             progressBar.setValue(progress);
@@ -376,38 +423,39 @@ public class MainWindow extends JFrame {
         }
     }
     
-    // 将原来的endButton的ActionListener移到单独的方法中
+    /**
+     * Handles the end session action, showing a summary dialog and exit confirmation.
+     */
     private void handleEndSession() {
-        // 获取当前进度条上显示的总分
         String progressText = progressBar.getString();
         int score = 0;
         
         try {
-            if (progressText != null && progressText.contains("总分:")) {
-                String[] parts = progressText.split("分")[0].split(":");
+            if (progressText != null && progressText.contains("Total Score:")) {
+                String[] parts = progressText.split("points")[0].split(":");
                 if (parts.length > 1) {
                     score = Integer.parseInt(parts[1].trim());
                 }
             }
         } catch (Exception ex) {
-            System.out.println("解析分数时出错: " + ex.getMessage());
+            System.out.println("Error parsing score: " + ex.getMessage());
         }
         
         String encouragement;
         if (score >= 90) {
-            encouragement = "太棒了！你是几何学习的小天才！";
+            encouragement = "Excellent! You're a geometry genius!";
         } else if (score >= 70) {
-            encouragement = "做得很好！继续保持这份热情！";
+            encouragement = "Well done! Keep up the great work!";
         } else if (score >= 50) {
-            encouragement = "不错的表现！相信下次会更好！";
+            encouragement = "Good job! You'll do even better next time!";
         } else {
-            encouragement = "感谢参与！每一次练习都是进步！";
+            encouragement = "Thanks for participating! Every practice helps you improve!";
         }
         
         int choice = JOptionPane.showConfirmDialog(
             this,
-            String.format("在本次学习中，你获得了 %d 分！\n%s\n\n确定要结束学习会话吗？", score, encouragement),
-            "学习总结",
+            String.format("In this session, you earned %d points!\n%s\n\nAre you sure you want to end the session?", score, encouragement),
+            "Session Summary",
             JOptionPane.YES_NO_OPTION,
             JOptionPane.INFORMATION_MESSAGE
         );

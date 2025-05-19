@@ -155,9 +155,8 @@ public class TaskWindow extends JFrame {
      * @param maxScore The maximum possible score for the task
      */
     public void showResult(int score, int maxScore) {
-        System.out.println("TaskWindow showing result - Task: " + taskName + ", Score: " + score + "/" + maxScore);
         String feedback = generateFeedback(score, maxScore);
-        UIManager.getInstance().showResult(taskName, score, maxScore, feedback);
+        UIManager.getInstance().showResult("Results", score, maxScore, feedback);
     }
     
     /**

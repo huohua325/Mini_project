@@ -165,8 +165,6 @@ public class UIManager {
             currentWindow.dispose();
         }
         
-        System.out.println("Updating task status: " + taskName + ", score: " + score);
-        
         // Update task status and score
         taskStatusMap.put(taskName, TaskStatus.COMPLETED);
         taskScores.put(taskName, Math.max(taskScores.getOrDefault(taskName, 0), score));
@@ -184,16 +182,12 @@ public class UIManager {
         if (mainWindow != null) {
             SwingUtilities.invokeLater(() -> {
                 updateMainWindowStatus();
-                System.out.println("Main window status updated");
             });
         }
         
         // Show result window
         ResultWindow resultWindow = new ResultWindow(taskName, score, maxScore, feedback);
-        resultWindow.setVisible(true);
         currentWindow = resultWindow;
-        
-        System.out.println("Result window displayed, task status: " + taskStatusMap.get(taskName));
     }
     
     /**
@@ -448,6 +442,15 @@ public class UIManager {
      */
     public Map<String, TaskStatus> getTaskStatusMap() {
         return new HashMap<>(taskStatusMap);
+    }
+    
+    /**
+     * Gets the total number of tasks (both basic and advanced).
+     *
+     * @return The total number of tasks
+     */
+    public int getTotalTaskCount() {
+        return BASIC_TASKS.length + ADVANCED_TASKS.length;
     }
     
     /**

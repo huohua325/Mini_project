@@ -3,44 +3,57 @@ package com.shapeville.gui.shapes;
 import java.awt.*;
 
 /**
- * 复合形状绘制基类
- * 提供通用的绘图工具方法
+ * Abstract base class for compound shape drawing.
+ * Provides common utility methods for shape rendering.
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2024-05-01
  */
 public abstract class CompoundShapeDrawer implements ShapeRenderer {
+    /** Padding space around shapes */
     protected static final int PADDING = 40;
+    /** Size of dimension arrows */
     protected static final int ARROW_SIZE = 5;
+    /** Length of dash pattern */
     protected static final float DASH_LENGTH = 5.0f;
+    /** Color used for shape fill */
     protected static final Color SHAPE_COLOR = new Color(200, 220, 240);
+    /** Color used for lines */
     protected static final Color LINE_COLOR = Color.BLACK;
+    /** Color used for text */
     protected static final Color TEXT_COLOR = new Color(0, 51, 153);
     
     /**
-     * 准备绘图上下文
-     * @param g2d 图形上下文
+     * Prepares the graphics context for drawing.
+     * Sets up anti-aliasing, rendering hints, and basic drawing properties.
+     *
+     * @param g2d The graphics context to prepare
      */
     protected void prepareGraphics(Graphics2D g2d) {
-        System.out.println("准备绘图上下文");
+        System.out.println("Preparing graphics context");
         
-        // 设置抗锯齿
+        // Set anti-aliasing
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         
-        // 设置基本绘图属性
+        // Set basic drawing properties
         g2d.setStroke(new BasicStroke(2.0f));
         g2d.setBackground(Color.WHITE);
         
-        System.out.println("绘图上下文准备完成");
+        System.out.println("Graphics context preparation completed");
     }
     
     /**
-     * 计算缩放比例，使形状适应绘图区域
-     * @param realWidth 实际宽度
-     * @param realHeight 实际高度
-     * @param availableWidth 可用宽度
-     * @param availableHeight 可用高度
-     * @return 缩放比例
+     * Calculates the scale factor to fit the shape within the available drawing area.
+     *
+     * @param realWidth The actual width of the shape
+     * @param realHeight The actual height of the shape
+     * @param availableWidth The available width in the drawing area
+     * @param availableHeight The available height in the drawing area
+     * @return The scale factor to apply
      */
     protected double calculateScale(double realWidth, double realHeight, 
                                   int availableWidth, int availableHeight) {
@@ -50,53 +63,54 @@ public abstract class CompoundShapeDrawer implements ShapeRenderer {
     }
     
     /**
-     * 绘制带箭头的尺寸线
-     * @param g2d 图形上下文
-     * @param x1 起点x坐标
-     * @param y1 起点y坐标
-     * @param x2 终点x坐标
-     * @param y2 终点y坐标
-     * @param text 尺寸文本
+     * Draws a dimension line with arrows and measurement text.
+     *
+     * @param g2d The graphics context to draw on
+     * @param x1 The x-coordinate of the start point
+     * @param y1 The y-coordinate of the start point
+     * @param x2 The x-coordinate of the end point
+     * @param y2 The y-coordinate of the end point
+     * @param text The measurement text to display
      */
     protected void drawDimensionLine(Graphics2D g2d, int x1, int y1, int x2, int y2, String text) {
-        // 保存原始设置
+        // Save original settings
         Stroke originalStroke = g2d.getStroke();
         Color originalColor = g2d.getColor();
         Font originalFont = g2d.getFont();
         
         try {
-            // 设置虚线样式
+            // Set dashed line style
             g2d.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
                                         10.0f, new float[]{DASH_LENGTH}, 0.0f));
             g2d.setColor(LINE_COLOR);
             
-            // 绘制主线
+            // Draw main line
             g2d.drawLine(x1, y1, x2, y2);
             
-            // 计算箭头方向
+            // Calculate arrow direction
             double angle = Math.atan2(y2 - y1, x2 - x1);
             
-            // 绘制起点箭头
+            // Draw start arrow
             drawArrow(g2d, x1, y1, angle + Math.PI);
             
-            // 绘制终点箭头
+            // Draw end arrow
             drawArrow(g2d, x2, y2, angle);
             
-            // 绘制尺寸文本
-            g2d.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+            // Draw dimension text
+            g2d.setFont(new Font("Arial", Font.PLAIN, 12));
             g2d.setColor(TEXT_COLOR);
             FontMetrics fm = g2d.getFontMetrics();
             int textWidth = fm.stringWidth(text);
             int textHeight = fm.getHeight();
             
-            // 计算文本位置
+            // Calculate text position
             int textX, textY;
             if (Math.abs(x2 - x1) > Math.abs(y2 - y1)) {
-                // 水平线
+                // Horizontal line
                 textX = (x1 + x2 - textWidth) / 2;
                 textY = y1 - 5;
             } else {
-                // 垂直线
+                // Vertical line
                 textX = x1 + 5;
                 textY = (y1 + y2 + textHeight) / 2;
             }
@@ -104,7 +118,7 @@ public abstract class CompoundShapeDrawer implements ShapeRenderer {
             g2d.drawString(text, textX, textY);
             
         } finally {
-            // 恢复原始设置
+            // Restore original settings
             g2d.setStroke(originalStroke);
             g2d.setColor(originalColor);
             g2d.setFont(originalFont);
@@ -112,7 +126,12 @@ public abstract class CompoundShapeDrawer implements ShapeRenderer {
     }
     
     /**
-     * 绘制箭头
+     * Draws an arrow head at the specified position and angle.
+     *
+     * @param g2d The graphics context to draw on
+     * @param x The x-coordinate of the arrow tip
+     * @param y The y-coordinate of the arrow tip
+     * @param angle The angle of the arrow in radians
      */
     private void drawArrow(Graphics2D g2d, int x, int y, double angle) {
         int[] xPoints = new int[3];
