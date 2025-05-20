@@ -10,7 +10,7 @@ import java.util.*;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class UIManager {
     private static UIManager instance;
@@ -193,7 +193,7 @@ public class UIManager {
     /**
      * Checks and updates the unlock status of advanced tasks.
      * In full feature mode, all tasks are unlocked.
-     * In normal mode, advanced tasks are unlocked when all basic tasks score ≥ 70.
+     * In normal mode, advanced tasks are unlocked when all basic tasks are completed.
      */
     private void checkAndUnlockTasks() {
         // In full feature mode, all tasks are unlocked
@@ -204,27 +204,27 @@ public class UIManager {
             }
             return;
         }
-        
-        // Normal mode unlock logic
-        boolean canUnlockAdvanced = true;
-        
-        // Check basic tasks completion and scores
+
+        // Normal mode unlock logic: Unlock when all basic tasks are COMPLETED
+        boolean allBasicCompleted = true;
+
+        // Check if all basic tasks are completed
         for (String task : BASIC_TASKS) {
-            int score = taskScores.getOrDefault(task, 0);
-            if (score < 70) {  // Each basic task needs at least 70 points
-                canUnlockAdvanced = false;
+            if (taskStatusMap.getOrDefault(task, TaskStatus.LOCKED) != TaskStatus.COMPLETED) {
+                allBasicCompleted = false;
                 break;
             }
         }
-        
-        // Update advanced tasks status
+
+        // Update advanced tasks status based on basic task completion
         for (String task : ADVANCED_TASKS) {
-            TaskStatus newStatus = canUnlockAdvanced ? TaskStatus.UNLOCKED : TaskStatus.LOCKED;
+            TaskStatus newStatus = allBasicCompleted ? TaskStatus.UNLOCKED : TaskStatus.LOCKED;
             taskStatusMap.put(task, newStatus);
-            if (canUnlockAdvanced) {
+            if (allBasicCompleted) {
                 unlockedTasks.add(task);
             } else {
-                unlockedTasks.remove(task); // Update unlock status when full mode is disabled
+                 // Ensure advanced tasks are locked if not all basic tasks are completed
+                 unlockedTasks.remove(task);
             }
         }
     }
@@ -364,13 +364,27 @@ public class UIManager {
      * @return Progress percentage (0-100)
      */
     private int calculateOverallProgress() {
-        int totalTasks = BASIC_TASKS.length + ADVANCED_TASKS.length;
         int completedTasks = countCompletedTasks();
-        int totalPossibleScore = totalTasks * 100;
-        int currentTotalScore = calculateTotalScore();
-        
-        // Progress calculation considers both completed tasks and total score
-        return (int) ((completedTasks * 50.0 / totalTasks) + (currentTotalScore * 50.0 / totalPossibleScore));
+        int totalAvailableTasks = BASIC_TASKS.length;
+
+        // Check if advanced tasks are unlocked
+        boolean advancedUnlocked = false;
+        for (String task : ADVANCED_TASKS) {
+            if (taskStatusMap.getOrDefault(task, TaskStatus.LOCKED) == TaskStatus.UNLOCKED) {
+                advancedUnlocked = true;
+                break;
+            }
+        }
+
+        if (advancedUnlocked) {
+            totalAvailableTasks += ADVANCED_TASKS.length;
+        }
+
+        if (totalAvailableTasks == 0) {
+            return 0; // Avoid division by zero
+        }
+
+        return (int) ((double) completedTasks / totalAvailableTasks * 100);
     }
     
     /**
@@ -380,6 +394,15 @@ public class UIManager {
      */
     private int calculateTotalScore() {
         return taskScores.values().stream().mapToInt(Integer::intValue).sum();
+    }
+    
+    /**
+     * Gets the total score across all tasks.
+     *
+     * @return The total score
+     */
+    public int getTotalCumulativeScore() {
+        return calculateTotalScore();
     }
     
     /**

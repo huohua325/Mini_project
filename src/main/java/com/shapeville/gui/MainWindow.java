@@ -13,7 +13,7 @@ import com.shapeville.gui.UIManager.TaskStatus;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class MainWindow extends JFrame {
     private JProgressBar progressBar;
@@ -169,7 +169,7 @@ public class MainWindow extends JFrame {
                 featureToggleButton.setBackground(new Color(128, 0, 128));
                 JOptionPane.showMessageDialog(
                     this,
-                    "Switched to Normal Mode: Advanced tasks require 70 points to unlock",
+                    "Switched to Normal Mode: Advanced tasks require completing all basic tasks to unlock",
                     "Mode Switch",
                     JOptionPane.INFORMATION_MESSAGE
                 );
@@ -215,7 +215,7 @@ public class MainWindow extends JFrame {
         if ("advanced".equals(difficulty)) {
             String advancedTooltip = String.format("<html>%s<br><br>" +
                 "<font color='red'>Advanced Task - Currently Locked</font><br>" +
-                "Unlock Condition: Complete all basic tasks with at least 70 points<br>" +
+                "Unlock Condition: Complete all basic tasks<br>" +
                 "Basic Tasks: Shape Recognition, Angle Recognition, Area Calculation, Circle Calculation</html>", 
                 tooltip);
             button.setToolTipText(advancedTooltip);
@@ -427,26 +427,15 @@ public class MainWindow extends JFrame {
      * Handles the end session action, showing a summary dialog and exit confirmation.
      */
     private void handleEndSession() {
-        String progressText = progressBar.getString();
-        int score = 0;
-        
-        try {
-            if (progressText != null && progressText.contains("Total Score:")) {
-                String[] parts = progressText.split("points")[0].split(":");
-                if (parts.length > 1) {
-                    score = Integer.parseInt(parts[1].trim());
-                }
-            }
-        } catch (Exception ex) {
-            System.out.println("Error parsing score: " + ex.getMessage());
-        }
-        
+        // Get total cumulative score from UIManager
+        int totalCumulativeScore = com.shapeville.gui.UIManager.getInstance().getTotalCumulativeScore();
+
         String encouragement;
-        if (score >= 90) {
+        if (totalCumulativeScore >= 90) {
             encouragement = "Excellent! You're a geometry genius!";
-        } else if (score >= 70) {
+        } else if (totalCumulativeScore >= 70) {
             encouragement = "Well done! Keep up the great work!";
-        } else if (score >= 50) {
+        } else if (totalCumulativeScore >= 50) {
             encouragement = "Good job! You'll do even better next time!";
         } else {
             encouragement = "Thanks for participating! Every practice helps you improve!";
@@ -454,7 +443,7 @@ public class MainWindow extends JFrame {
         
         int choice = JOptionPane.showConfirmDialog(
             this,
-            String.format("In this session, you earned %d points!\n%s\n\nAre you sure you want to end the session?", score, encouragement),
+            String.format("In this session, you earned %d points!\n%s\n\nAre you sure you want to end the session?", totalCumulativeScore, encouragement),
             "Session Summary",
             JOptionPane.YES_NO_OPTION,
             JOptionPane.INFORMATION_MESSAGE

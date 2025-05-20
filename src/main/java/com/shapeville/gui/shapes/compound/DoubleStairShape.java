@@ -6,81 +6,103 @@ import java.util.*;
 import com.shapeville.gui.shapes.CompoundShapeDrawer;
 
 /**
- * 双阶梯形状（形状3）的实现
- * 整体结构：
- * - 左侧高度：19 cm（总高度）
- * - 顶部水平边分两段：
- *   * 左段：18 cm（较高）
- *   * 右段：16 cm（较低，比左段低3cm）
- * - 右侧垂直边：16 cm
- * - 底边总长：34 cm（18 + 16）
- * 可以看作是一个大矩形(34×19)减去右上角的小矩形(16×3)
+ * Implementation of the Double Stair shape (Shape 4 in the list).
+ * Overall structure:
+ * - Left side height: 19 cm (total height)
+ * - Top horizontal edge in two segments:
+ *   * Left segment: 18 cm (higher)
+ *   * Right segment: 16 cm (lower, 3cm lower than the left segment)
+ * - Right vertical edge: 16 cm
+ * - Total bottom edge length: 34 cm (18 + 16)
+ * Can be viewed as a large rectangle (34x19) minus a small rectangle in the top-right corner (16x3).
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2025-05-01
  */
 public class DoubleStairShape extends CompoundShapeDrawer {
     private final Map<String, Double> dimensions;
     private static final int FIXED_SIZE = 200;
     
+    /**
+     * Constructs a new DoubleStairShape.
+     * Initializes the dimensions of the shape.
+     */
     public DoubleStairShape() {
         dimensions = new HashMap<>();
-        dimensions.put("totalHeight", 19.0);     // 总高度
-        dimensions.put("leftWidth", 18.0);       // 左段宽度
-        dimensions.put("rightWidth", 16.0);      // 右段宽度
-        dimensions.put("rightSideHeight", 16.0); // 右侧高度
-        dimensions.put("stepHeight", 3.0);       // 台阶高度差
+        dimensions.put("totalHeight", 19.0);     // Total height
+        dimensions.put("leftWidth", 18.0);       // Left segment width
+        dimensions.put("rightWidth", 16.0);      // Right segment width
+        dimensions.put("rightSideHeight", 16.0); // Right side height
+        dimensions.put("stepHeight", 3.0);       // Height difference of the step
     }
     
+    /**
+     * Draws the Double Stair shape.
+     *
+     * @param g The graphics context to draw on.
+     * @param width The available width for drawing.
+     * @param height The available height for drawing.
+     */
     @Override
     public void draw(Graphics2D g, int width, int height) {
-        System.out.println("DoubleStairShape.draw() - 开始绘制");
+        // Removed System.out.println for drawing start
         
         prepareGraphics(g);
         
-        // 计算缩放比例
+        // Calculate scaling factor
         double scale = FIXED_SIZE / Math.max(dimensions.get("leftWidth") + dimensions.get("rightWidth"), 
             dimensions.get("totalHeight"));
         
-        // 计算实际尺寸
-        int totalHeight = (int)(dimensions.get("totalHeight") * scale);    // 19cm
-        int leftWidth = (int)(dimensions.get("leftWidth") * scale);        // 18cm
-        int rightWidth = (int)(dimensions.get("rightWidth") * scale);      // 16cm
-        int rightSideHeight = (int)(dimensions.get("rightSideHeight") * scale); // 16cm
-        int stepHeight = (int)(dimensions.get("stepHeight") * scale);      // 3cm
-        int totalWidth = leftWidth + rightWidth;  // 34cm
+        // Calculate actual dimensions
+        int totalHeight = (int)(dimensions.get("totalHeight") * scale);
+        int leftWidth = (int)(dimensions.get("leftWidth") * scale);
+        int rightWidth = (int)(dimensions.get("rightWidth") * scale);
+        int rightSideHeight = (int)(dimensions.get("rightSideHeight") * scale);
+        int stepHeight = (int)(dimensions.get("stepHeight") * scale);
+        int totalWidth = leftWidth + rightWidth;
         
-        // 计算绘制位置（居中）
+        // Calculate drawing position (centered)
         int centerX = width / 2;
         int centerY = height / 2;
         int startX = centerX - totalWidth / 2;
         int startY = centerY - totalHeight / 2;
         
         try {
-            // 创建形状路径
+            // Create shape path
             Path2D.Double path = new Path2D.Double();
             
-            // 从左上角开始逆时针绘制
-            path.moveTo(startX, startY);  // 左上角
-            path.lineTo(startX + leftWidth, startY);  // 上边左段(18cm)
-            path.lineTo(startX + leftWidth, startY + stepHeight);  // 向下的小竖线(3cm)
-            path.lineTo(startX + totalWidth, startY + stepHeight);  // 上边右段(16cm)
-            path.lineTo(startX + totalWidth, startY + totalHeight);  // 右边(19cm)
-            path.lineTo(startX, startY + totalHeight);  // 底边(34cm)
-            path.closePath();  // 回到左上角
+            // Draw counter-clockwise from the top-left corner
+            path.moveTo(startX, startY);  // Top-left corner
+            path.lineTo(startX + leftWidth, startY);  // Top edge left segment (18cm)
+            path.lineTo(startX + leftWidth, startY + stepHeight);  // Small vertical line down (3cm)
+            path.lineTo(startX + totalWidth, startY + stepHeight);  // Top edge right segment (16cm)
+            path.lineTo(startX + totalWidth, startY + totalHeight);  // Right edge (19cm)
+            path.lineTo(startX, startY + totalHeight);  // Bottom edge (34cm)
+            path.closePath();  // Return to the top-left corner
             
-            // 填充形状
+            // Fill shape
             g.setColor(SHAPE_COLOR);
             g.fill(path);
             
-            // 绘制轮廓
+            // Draw outline
             g.setColor(LINE_COLOR);
             g.setStroke(new BasicStroke(2.0f));
             g.draw(path);
             
         } catch (Exception e) {
-            System.err.println("绘制双阶梯形状时出错: " + e.getMessage());
+            System.err.println("Error drawing Double Stair shape: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
+    /**
+     * Draws the dimensions for the Double Stair shape.
+     *
+     * @param g The graphics context to draw on.
+     * @param width The available width for drawing.
+     * @param height The available height for drawing.
+     */
     @Override
     public void drawDimensions(Graphics2D g, int width, int height) {
         double scale = FIXED_SIZE / Math.max(dimensions.get("leftWidth") + dimensions.get("rightWidth"), 
@@ -98,40 +120,50 @@ public class DoubleStairShape extends CompoundShapeDrawer {
         int startX = centerX - totalWidth / 2;
         int startY = centerY - totalHeight / 2;
         
-        // 绘制左侧总高度(19cm)
+        // Draw total height on the left side (19cm)
         drawDimensionLine(g, startX - 20, startY,
                          startX - 20, startY + totalHeight,
-                         "19 cm");
+                         String.format("%.0f cm", dimensions.get("totalHeight"))); // 19 cm
         
-        // 绘制上边左段(18cm)
+        // Draw left segment of the top edge (18cm)
         drawDimensionLine(g, startX, startY - 20,
                          startX + leftWidth, startY - 20,
-                         "18 cm");
+                         String.format("%.0f cm", dimensions.get("leftWidth"))); // 18 cm
         
-        // 绘制上边右段(16cm)
+        // Draw right segment of the top edge (16cm)
         drawDimensionLine(g, startX + leftWidth, startY + stepHeight - 20,
                          startX + totalWidth, startY + stepHeight - 20,
-                         "16 cm");
+                         String.format("%.0f cm", dimensions.get("rightWidth"))); // 16 cm
         
-        // 绘制右侧高度(16cm)
+        // Draw right side height (16cm)
         drawDimensionLine(g, startX + totalWidth + 20, startY + stepHeight,
                          startX + totalWidth + 20, startY + totalHeight,
-                         "16 cm");
+                         String.format("%.0f cm", dimensions.get("rightSideHeight"))); // 16 cm
         
-        // 绘制底边总长(34cm)
+        // Draw total length of the bottom edge (34cm)
         drawDimensionLine(g, startX, startY + totalHeight + 20,
                          startX + totalWidth, startY + totalHeight + 20,
-                         "34 cm");
+                         String.format("%.0f cm", dimensions.get("leftWidth") + dimensions.get("rightWidth"))); // 34 cm
     }
     
+    /**
+     * Gets the dimensions of the shape.
+     *
+     * @return A map containing dimension names and their values.
+     */
     @Override
     public Map<String, Double> getDimensions() {
         return new HashMap<>(dimensions);
     }
     
+    /**
+     * Calculates the area of the Double Stair shape.
+     *
+     * @return The calculated area.
+     */
     @Override
     public double calculateArea() {
-        // 总面积 = 大矩形面积 - 右上角小矩形面积
+        // Total area = Area of large rectangle - Area of small rectangle in top-right corner
         double totalArea = (dimensions.get("leftWidth") + dimensions.get("rightWidth")) * 
                           dimensions.get("totalHeight");
         double cutoutArea = dimensions.get("rightWidth") * dimensions.get("stepHeight");
@@ -139,19 +171,32 @@ public class DoubleStairShape extends CompoundShapeDrawer {
         return totalArea - cutoutArea;
     }
     
+    /**
+     * Gets the solution steps for calculating the area of the Double Stair shape.
+     *
+     * @return A text description of the solution steps.
+     */
     @Override
     public String getSolutionSteps() {
+        double totalWidth = dimensions.get("leftWidth") + dimensions.get("rightWidth");
+        double totalHeight = dimensions.get("totalHeight");
+        double cutoutWidth = dimensions.get("rightWidth");
+        double cutoutHeight = dimensions.get("stepHeight");
+        
+        double largeRectArea = totalWidth * totalHeight;
+        double cutoutArea = cutoutWidth * cutoutHeight;
+        double totalShapeArea = largeRectArea - cutoutArea;
+        
         return String.format(
-            "1. 计算大矩形面积：\n" +
-            "   底边 × 高 = (18 + 16) × 19\n" +
-            "   = 34 × 19 = 646 cm²\n\n" +
-            "2. 计算右上角缺口面积：\n" +
-            "   宽 × 高 = 16 × 3\n" +
-            "   = 48 cm²\n\n" +
-            "3. 计算总面积：\n" +
-            "   大矩形面积 - 缺口面积\n" +
-            "   = 646 - 48\n" +
-            "   = 598 cm²"
+            "1. Calculate the area of the large rectangle:\n" +
+            "   Base \u00d7 Height = (%.0f + %.0f) \u00d7 %.0f = %.0f \u00d7 %.0f = %.0f cm\u00b2\n\n" + // (18+16) x 19 = 34 x 19 = 646
+            "2. Calculate the area of the top-right cutout:\n" +
+            "   Width \u00d7 Height = %.0f \u00d7 %.0f = %.0f cm\u00b2\n\n" + // 16 x 3 = 48
+            "3. Calculate the total area:\n" +
+            "   Large rectangle area - Cutout area = %.0f - %.0f = %.0f cm\u00b2",
+            dimensions.get("leftWidth"), dimensions.get("rightWidth"), dimensions.get("totalHeight"), totalWidth, totalHeight, largeRectArea,
+            cutoutWidth, cutoutHeight, cutoutArea,
+            largeRectArea, cutoutArea, totalShapeArea
         );
     }
 } 

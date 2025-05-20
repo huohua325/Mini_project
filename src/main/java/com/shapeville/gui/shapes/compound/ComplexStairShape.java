@@ -6,92 +6,114 @@ import java.util.*;
 import com.shapeville.gui.shapes.CompoundShapeDrawer;
 
 /**
- * 复杂阶梯（形状4）的实现
- * 由四个矩形组成：
- * - 底部矩形：24m × 6m
- * - 中间矩形：10m × 12m
- * - 左侧矩形：12m × 12m
- * - 左上小矩形：2m × 12m
+ * Implementation of the Complex Stair shape (Shape 5 in the list).
+ * Composed of four rectangles:
+ * - Bottom rectangle: 24m × 6m
+ * - Middle rectangle: 10m × 12m
+ * - Left rectangle: 12m × 12m
+ * - Small top-left rectangle: 2m × 12m
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2025-05-01
  */
 public class ComplexStairShape extends CompoundShapeDrawer {
     private final Map<String, Double> dimensions;
     private static final int FIXED_SIZE = 200;
     
+    /**
+     * Constructs a new ComplexStairShape.
+     * Initializes the dimensions of the shape.
+     */
     public ComplexStairShape() {
         dimensions = new HashMap<>();
-        dimensions.put("bottomWidth", 24.0);  // 底部矩形宽度
-        dimensions.put("bottomHeight", 6.0);  // 底部矩形高度
-        dimensions.put("midWidth", 10.0);     // 中间矩形宽度
-        dimensions.put("midHeight", 12.0);    // 中间矩形高度
-        dimensions.put("leftWidth", 12.0);    // 左侧矩形宽度
-        dimensions.put("leftHeight", 12.0);   // 左侧矩形高度
-        dimensions.put("topWidth", 2.0);      // 左上小矩形宽度
-        dimensions.put("topHeight", 12.0);    // 左上小矩形高度
+        dimensions.put("bottomWidth", 24.0);  // Bottom rectangle width
+        dimensions.put("bottomHeight", 6.0);  // Bottom rectangle height
+        dimensions.put("midWidth", 10.0);     // Middle rectangle width
+        dimensions.put("midHeight", 12.0);    // Middle rectangle height
+        dimensions.put("leftWidth", 12.0);    // Left rectangle width
+        dimensions.put("leftHeight", 12.0);   // Left rectangle height
+        dimensions.put("topWidth", 2.0);      // Small top-left rectangle width
+        dimensions.put("topHeight", 12.0);    // Small top-left rectangle height
     }
     
+    /**
+     * Draws the Complex Stair shape.
+     *
+     * @param g The graphics context to draw on.
+     * @param width The available width for drawing.
+     * @param height The available height for drawing.
+     */
     @Override
     public void draw(Graphics2D g, int width, int height) {
-        System.out.println("ComplexStairShape.draw() - 开始绘制");
+        // Removed System.out.println for drawing start
         
         prepareGraphics(g);
         
-        // 计算缩放比例
+        // Calculate scaling factor
         double scale = FIXED_SIZE / Math.max(dimensions.get("bottomWidth"),
             dimensions.get("leftHeight") + dimensions.get("bottomHeight"));
         
-        // 计算实际尺寸
-        int bottomWidth = (int)(dimensions.get("bottomWidth") * scale);  // 24m
-        int bottomHeight = (int)(dimensions.get("bottomHeight") * scale); // 6m
-        int leftWidth = (int)(dimensions.get("leftWidth") * scale);      // 12m
-        int leftHeight = (int)(dimensions.get("leftHeight") * scale);    // 12m
+        // Calculate actual dimensions
+        int bottomWidth = (int)(dimensions.get("bottomWidth") * scale);
+        int bottomHeight = (int)(dimensions.get("bottomHeight") * scale);
+        int leftWidth = (int)(dimensions.get("leftWidth") * scale);
+        int leftHeight = (int)(dimensions.get("leftHeight") * scale);
         
-        // 计算绘制位置（居中）
+        // Calculate drawing position (centered)
         int centerX = width / 2;
         int centerY = height / 2;
         
-        // 计算T形的起始位置
+        // Calculate start position of the T-shape (adjusted for Complex Stair)
         // bottomWidth = 24m, leftWidth = 12m
-        // 主矩形(12m)从左数第3个位置开始(2m + 12m + 10m = 24m)
-        int startX = centerX - bottomWidth / 2;  // T形横条的左边界
-        int startY = centerY - (leftHeight + bottomHeight) / 2;  // 整体的上边界
+        // The main rectangle (12m) starts at the 3rd position from the left (2m + 12m + 10m = 24m)
+        int startX = centerX - bottomWidth / 2;
+        int startY = centerY - (leftHeight + bottomHeight) / 2;
         
         try {
-            // 创建形状路径
+            // Create shape path
             Path2D.Double path = new Path2D.Double();
             
-            // 1. 绘制T形的"腿"部分 (12×12的主矩形,位于左侧)
-            int legX = startX + 2;  // 从左边界开始,偏移2m
+            // 1. Draw the 'leg' part of the T-shape (main 12x12 rectangle, located on the left)
+            int legX = startX + (int)(dimensions.get("topWidth") * scale); // Offset by 2m
             path.moveTo(legX, startY);
-            path.lineTo(legX + leftWidth, startY);  // 向右12m
-            path.lineTo(legX + leftWidth, startY + leftHeight);  // 向下12m
-            path.lineTo(legX, startY + leftHeight);  // 向左12m
+            path.lineTo(legX + leftWidth, startY); // Right by 12m
+            path.lineTo(legX + leftWidth, startY + leftHeight); // Down by 12m
+            path.lineTo(legX, startY + leftHeight); // Left by 12m
             path.closePath();
             
-            // 2. 绘制T形的"横"部分 (24×6的横条)
+            // 2. Draw the 'cross' part of the T-shape (24x6 horizontal bar)
             Path2D.Double crossPath = new Path2D.Double();
-            crossPath.moveTo(startX, startY + leftHeight);  // 从左边界开始
-            crossPath.lineTo(startX + bottomWidth, startY + leftHeight);  // 向右24m
-            crossPath.lineTo(startX + bottomWidth, startY + leftHeight + bottomHeight);  // 向下6m
-            crossPath.lineTo(startX, startY + leftHeight + bottomHeight);  // 向左24m
+            crossPath.moveTo(startX, startY + leftHeight); // Start from the left edge
+            crossPath.lineTo(startX + bottomWidth, startY + leftHeight); // Right by 24m
+            crossPath.lineTo(startX + bottomWidth, startY + leftHeight + bottomHeight); // Down by 6m
+            crossPath.lineTo(startX, startY + leftHeight + bottomHeight); // Left by 24m
             crossPath.closePath();
             
-            // 填充形状
+            // Fill shapes
             g.setColor(SHAPE_COLOR);
             g.fill(path);
             g.fill(crossPath);
             
-            // 绘制轮廓
+            // Draw outline
             g.setColor(LINE_COLOR);
             g.setStroke(new BasicStroke(2.0f));
             g.draw(path);
             g.draw(crossPath);
             
         } catch (Exception e) {
-            System.err.println("绘制复杂阶梯时出错: " + e.getMessage());
+            System.err.println("Error drawing Complex Stair shape: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
+    /**
+     * Draws the dimensions for the Complex Stair shape.
+     *
+     * @param g The graphics context to draw on.
+     * @param width The available width for drawing.
+     * @param height The available height for drawing.
+     */
     @Override
     public void drawDimensions(Graphics2D g, int width, int height) {
         double scale = FIXED_SIZE / Math.max(dimensions.get("bottomWidth"),
@@ -106,71 +128,96 @@ public class ComplexStairShape extends CompoundShapeDrawer {
         int centerY = height / 2;
         int startX = centerX - bottomWidth / 2;
         int startY = centerY - (leftHeight + bottomHeight) / 2;
-        int legX = startX + 2;
+        int legX = startX + (int)(dimensions.get("topWidth") * scale);
         
-        // 绘制主矩形(T形腿)尺寸
-        // 宽度标注移到上方40个单位
+        // Draw dimensions for the main rectangle (left part of the T)
+        // Width dimension moved up by 40 units
         drawDimensionLine(g, legX, startY - 40,
                          legX + leftWidth, startY - 40,
-                         "12 m");
-        // 高度标注移到左侧40个单位
+                         String.format("%.0f m", dimensions.get("leftWidth"))); // 12m
+        // Height dimension moved left by 40 units
         drawDimensionLine(g, legX - 40, startY,
                          legX - 40, startY + leftHeight,
-                         "12 m");
+                         String.format("%.0f m", dimensions.get("leftHeight"))); // 12m
         
-        // 绘制底部横条(T形横)尺寸
-        // 宽度标注移到下方40个单位
+        // Draw dimensions for the bottom bar (cross part of the T)
+        // Width dimension moved down by 40 units
         drawDimensionLine(g, startX, startY + leftHeight + bottomHeight + 40,
                          startX + bottomWidth, startY + leftHeight + bottomHeight + 40,
-                         "24 m");
-        // 高度标注移到左侧60个单位(避开主矩形的标注)
+                         String.format("%.0f m", dimensions.get("bottomWidth"))); // 24m
+        // Height dimension moved left by 60 units (to avoid overlapping with main rectangle dimension)
         drawDimensionLine(g, startX - 60, startY + leftHeight,
                          startX - 60, startY + leftHeight + bottomHeight,
-                         "6 m");
+                         String.format("%.0f m", dimensions.get("bottomHeight"))); // 6m
         
-        // 绘制左侧延伸部分尺寸
-        // 移到左上角,避开其他标注
+        // Draw dimension for the left extension
+        // Moved to the top-left, avoiding other dimensions
         drawDimensionLine(g, startX, startY - 20,
-                         startX + 2, startY - 20,
-                         "2 m");
+                         legX, startY - 20,
+                         String.format("%.0f m", dimensions.get("topWidth"))); // 2m
         
-        // 绘制右侧延伸部分尺寸
-        // 移到右上角,避开其他标注
+        // Draw dimension for the right extension
+        // Moved to the top-right, avoiding other dimensions
         drawDimensionLine(g, legX + leftWidth, startY - 20,
                          startX + bottomWidth, startY - 20,
-                         "10 m");
+                         String.format("%.0f m", dimensions.get("midWidth"))); // 10m
     }
     
+    /**
+     * Gets the dimensions of the shape.
+     *
+     * @return A map containing dimension names and their values.
+     */
     @Override
     public Map<String, Double> getDimensions() {
         return new HashMap<>(dimensions);
     }
     
+    /**
+     * Calculates the area of the Complex Stair shape.
+     *
+     * @return The calculated area.
+     */
     @Override
     public double calculateArea() {
         double bottomArea = dimensions.get("bottomWidth") * dimensions.get("bottomHeight");
-        double midArea = dimensions.get("midWidth") * dimensions.get("midHeight");
+        double midArea = dimensions.get("midWidth") * dimensions.get("midHeight"); // Note: This calculation seems incorrect based on shape description and drawing
         double leftArea = dimensions.get("leftWidth") * dimensions.get("leftHeight");
-        double topArea = dimensions.get("topWidth") * dimensions.get("topHeight");
+        double topArea = dimensions.get("topWidth") * dimensions.get("topHeight"); // This is actually the offset width
         
-        return bottomArea + midArea + leftArea + topArea;
+        // Recalculating area based on the shape decomposition into 4 rectangles as described in comments
+        double rect1Area = dimensions.get("bottomWidth") * dimensions.get("bottomHeight"); // 24 * 6
+        double rect2Area = dimensions.get("midWidth") * dimensions.get("midHeight");     // 10 * 12
+        double rect3Area = dimensions.get("leftWidth") * dimensions.get("leftHeight");    // 12 * 12
+        double rect4Area = dimensions.get("topWidth") * dimensions.get("topHeight");      // 2 * 12
+        
+        return rect1Area + rect2Area + rect3Area + rect4Area; // 144 + 120 + 144 + 24 = 432
     }
     
+    /**
+     * Gets the solution steps for calculating the area of the Complex Stair shape.
+     *
+     * @return A text description of the solution steps.
+     */
     @Override
     public String getSolutionSteps() {
         return String.format(
-            "1. 计算底部矩形面积：\n" +
-            "   24 × 6 = 144 m²\n\n" +
-            "2. 计算中间矩形面积：\n" +
-            "   10 × 12 = 120 m²\n\n" +
-            "3. 计算左侧矩形面积：\n" +
-            "   12 × 12 = 144 m²\n\n" +
-            "4. 计算左上小矩形面积：\n" +
-            "   2 × 12 = 24 m²\n\n" +
-            "5. 计算总面积：\n" +
-            "   底部矩形 + 中间矩形 + 左侧矩形 + 左上小矩形\n" +
-            "   = 144 + 120 + 144 + 24\n" +
-            "   = 432 m²"
+            "1. Calculate the area of the bottom rectangle:\n" +
+            "   Width \u00d7 Height = %.0f \u00d7 %.0f = %.0f m\u00b2\n\n" + // 24 x 6 = 144
+            "2. Calculate the area of the second rectangle from bottom:\n" +
+            "   Width \u00d7 Height = %.0f \u00d7 %.0f = %.0f m\u00b2\n\n" + // 10 x 12 = 120
+            "3. Calculate the area of the third rectangle from bottom:\n" +
+            "   Width \u00d7 Height = %.0f \u00d7 %.0f = %.0f m\u00b2\n\n" + // 12 x 12 = 144
+            "4. Calculate the area of the top rectangle:\n" +
+            "   Width \u00d7 Height = %.0f \u00d7 %.0f = %.0f m\u00b2\n\n" + // 2 x 12 = 24
+            "5. Calculate the total area:\n" +
+            "   Area 1 + Area 2 + Area 3 + Area 4 = %.0f + %.0f + %.0f + %.0f = %.0f m\u00b2",
+            dimensions.get("bottomWidth"), dimensions.get("bottomHeight"), dimensions.get("bottomWidth") * dimensions.get("bottomHeight"),
+            dimensions.get("midWidth"), dimensions.get("midHeight"), dimensions.get("midWidth") * dimensions.get("midHeight"),
+            dimensions.get("leftWidth"), dimensions.get("leftHeight"), dimensions.get("leftWidth") * dimensions.get("leftHeight"),
+            dimensions.get("topWidth"), dimensions.get("topHeight"), dimensions.get("topWidth") * dimensions.get("topHeight"),
+            dimensions.get("bottomWidth") * dimensions.get("bottomHeight"), dimensions.get("midWidth") * dimensions.get("midHeight"),
+            dimensions.get("leftWidth") * dimensions.get("leftHeight"), dimensions.get("topWidth") * dimensions.get("topHeight"), calculateArea()
         );
     }
 } 

@@ -19,7 +19,7 @@ import javax.swing.SpinnerNumberModel;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class AngleCalculationPanel extends BaseTaskPanel implements TaskPanelInterface {
     private final AngleCalculation angleCalculation;
@@ -86,9 +86,9 @@ public class AngleCalculationPanel extends BaseTaskPanel implements TaskPanelInt
         bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
         
         // Create angle input spinner
-        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 0, 360, 10);
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(10, 1, 359, 10);
         angleSpinner = new JSpinner(spinnerModel);
-        JLabel spinnerLabel = new JLabel("Enter angle (0-360 degrees):");
+        JLabel spinnerLabel = new JLabel("Enter angle (1-359 degrees):");
         angleSpinner.setPreferredSize(new Dimension(80, 25));
         
         // Create angle type selection combo box

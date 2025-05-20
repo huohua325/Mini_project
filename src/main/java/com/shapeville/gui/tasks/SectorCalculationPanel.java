@@ -25,7 +25,7 @@ import java.awt.event.ActionListener;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelInterface {
     private static final int MAX_ATTEMPTS = 3;  // Maximum 3 attempts per question
@@ -37,8 +37,10 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     private JLabel sectorLabel;
     private JTextArea descriptionArea;
     private JTextField areaField;
+    private JTextField arcLengthField;
     private JButton submitButton;
     private JTextArea areaSolutionArea;
+    private JTextArea arcLengthSolutionArea;
     private JLabel feedbackLabel;
     private JLabel scoreLabel;
     private int attempts = 0;
@@ -56,7 +58,7 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
      * Initializes the sector calculation game and sets up the UI components.
      */
     public SectorCalculationPanel() {
-        super("Sector Area Calculation");
+        super("扇形计算");
         this.sectorCalculation = new SectorCalculation();
         this.correctAnswers = new ArrayList<>();
         initializeUI();
@@ -64,6 +66,10 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     
     @Override
     public void initializeUI() {
+        if (this.sectorCalculation == null) {
+            return;
+        }
+
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -125,6 +131,13 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         areaPanel.add(areaField);
         inputPanel.add(areaPanel);
         
+        // Add arc length input section
+        JPanel arcLengthPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        arcLengthPanel.add(new JLabel("Arc Length: "));
+        arcLengthField = new JTextField(10);
+        arcLengthPanel.add(arcLengthField);
+        inputPanel.add(arcLengthPanel);
+        
         // Add submit button
         submitButton = new JButton("Submit Answer");
         submitButton.addActionListener(e -> handleSubmit());
@@ -150,6 +163,15 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         JScrollPane areaSolutionScroll = new JScrollPane(areaSolutionArea);
         areaSolutionScroll.setBorder(BorderFactory.createTitledBorder("Solution Steps"));
         inputPanel.add(areaSolutionScroll);
+        
+        // Add arc length solution area
+        arcLengthSolutionArea = new JTextArea(4, 30);
+        arcLengthSolutionArea.setEditable(false);
+        arcLengthSolutionArea.setLineWrap(true);
+        arcLengthSolutionArea.setWrapStyleWord(true);
+        JScrollPane arcLengthSolutionScroll = new JScrollPane(arcLengthSolutionArea);
+        arcLengthSolutionScroll.setBorder(BorderFactory.createTitledBorder("Solution Steps"));
+        inputPanel.add(arcLengthSolutionScroll);
         
         // Add panels to main panel
         centerPanel.add(sectorDisplayPanel, BorderLayout.CENTER);
@@ -212,11 +234,14 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
             Sector sector = sectors.get(currentSectorIndex);
             sectorLabel.setText("Sector " + (currentSectorIndex + 1));
             areaField.setText("");
+            arcLengthField.setText("");
             areaField.setEnabled(true);
+            arcLengthField.setEnabled(true);
             submitButton.setEnabled(true);
             nextButton.setVisible(false);
             sectorSelector.setSelectedIndex(currentSectorIndex);
             areaSolutionArea.setText("Please calculate the sector's area");
+            arcLengthSolutionArea.setText("Optional: Calculate the arc length");
             
             sectorDisplayPanel.repaint();
             startQuestionTimer();
@@ -249,6 +274,7 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     @Override
     public void handleSubmit() {
         String areaStr = areaField.getText().trim();
+        String arcLengthStr = arcLengthField.getText().trim();
         
         try {
             double answer = Double.parseDouble(areaStr);
@@ -268,7 +294,32 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                 
                 areaSolutionArea.setText(sector.getSolution());
                 
+                // 处理可选的弧长计算
+                if (!arcLengthStr.isEmpty()) {
+                    try {
+                        double arcLengthAnswer = Double.parseDouble(arcLengthStr);
+                        double correctArcLength = 2 * Math.PI * sector.getRadius() * sector.getAngle() / 360.0;
+                        if (Math.abs(arcLengthAnswer - correctArcLength) <= 0.1) {
+                            arcLengthSolutionArea.setText(String.format(
+                                "Solution steps for arc length:\n" +
+                                "1. Arc length formula: L = (θ/360°) × 2πr\n" +
+                                "2. Substitute values: L = (%.1f°/360°) × 2 × 3.14 × %.1f\n" +
+                                "3. Calculate result: L = %.1f %s",
+                                sector.getAngle(), sector.getRadius(), correctArcLength, sector.getUnit()
+                            ));
+                        } else {
+                            arcLengthSolutionArea.setText(String.format(
+                                "Incorrect arc length. Correct answer: %.1f %s",
+                                correctArcLength, sector.getUnit()
+                            ));
+                        }
+                    } catch (NumberFormatException e) {
+                        arcLengthSolutionArea.setText("Invalid arc length input");
+                    }
+                }
+                
                 areaField.setEnabled(false);
+                arcLengthField.setEnabled(false);
                 submitButton.setEnabled(false);
                 nextButton.setVisible(true);
                 
@@ -281,7 +332,20 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                 
                 areaSolutionArea.setText(sector.getSolution());
                 
+                // 显示弧长解答（如果输入了弧长）
+                if (!arcLengthStr.isEmpty()) {
+                    double correctArcLength = 2 * Math.PI * sector.getRadius() * sector.getAngle() / 360.0;
+                    arcLengthSolutionArea.setText(String.format(
+                        "Solution steps for arc length:\n" +
+                        "1. Arc length formula: L = (θ/360°) × 2πr\n" +
+                        "2. Substitute values: L = (%.1f°/360°) × 2 × 3.14 × %.1f\n" +
+                        "3. Calculate result: L = %.1f %s",
+                        sector.getAngle(), sector.getRadius(), correctArcLength, sector.getUnit()
+                    ));
+                }
+                
                 areaField.setEnabled(false);
+                arcLengthField.setEnabled(false);
                 submitButton.setEnabled(false);
                 nextButton.setVisible(true);
                 
@@ -295,7 +359,7 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
                 setFeedback(feedback);
             }
         } catch (NumberFormatException e) {
-            setFeedback("Please enter a valid number!");
+            setFeedback("Please enter a valid number for area!");
         }
     }
     
@@ -349,6 +413,9 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         if (areaField != null) {
             areaField.setEnabled(false);
         }
+        if (arcLengthField != null) {
+            arcLengthField.setEnabled(false);
+        }
         if (sectorSelector != null) {
             sectorSelector.setEnabled(false);
         }
@@ -364,6 +431,9 @@ public class SectorCalculationPanel extends BaseTaskPanel implements TaskPanelIn
         }
         if (areaField != null) {
             areaField.setEnabled(true);
+        }
+        if (arcLengthField != null) {
+            arcLengthField.setEnabled(true);
         }
         if (sectorSelector != null) {
             sectorSelector.setEnabled(true);

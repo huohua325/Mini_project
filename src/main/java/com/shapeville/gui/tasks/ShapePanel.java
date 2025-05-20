@@ -32,7 +32,7 @@ import java.util.logging.Level;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class ShapePanel extends BaseTaskPanel {
     private static final Logger logger = Logger.getLogger(ShapePanel.class.getName());
@@ -49,6 +49,9 @@ public class ShapePanel extends BaseTaskPanel {
     private ArrayList<Integer> attemptsPerTask;
     private ArrayList<Boolean> correctAnswers;
     private Map<JComponent, Boolean> componentStates;
+    
+    private JPanel modePanel;
+    private JPanel taskContentPanel;
     
     /** Number of shapes to test for both 2D and 3D modes */
     private volatile boolean isEnding = false;
@@ -112,12 +115,29 @@ public class ShapePanel extends BaseTaskPanel {
      */
     private void setupShapeUI() {
         JPanel shapeContentPanel = new JPanel(new BorderLayout(10, 10));
-        shapeContentPanel.add(createTopPanel(), BorderLayout.NORTH);
-        shapeContentPanel.add(createContentPanel(), BorderLayout.CENTER);
         
+        // Create and add top panel (Home button and Shape label)
+        JPanel topPanel = createTopPanel();
+        shapeContentPanel.add(topPanel, BorderLayout.NORTH);
+        
+        // Create mode selection panel
+        modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        addModeButton(modePanel, "2D Shapes", true);
+        addModeButton(modePanel, "3D Shapes", false);
+        shapeContentPanel.add(modePanel, BorderLayout.CENTER); // Add mode panel initially
+        
+        // Create main task content panel and hide it initially
+        taskContentPanel = createContentPanel();
+        taskContentPanel.setVisible(false);
+        shapeContentPanel.add(taskContentPanel, BorderLayout.SOUTH); // Add task content panel
+
         add(shapeContentPanel, BorderLayout.CENTER);
         
-        showCurrentShape();
+        // Initially show mode selection
+        modePanel.setVisible(true);
+        taskContentPanel.setVisible(false);
+        
+        // showCurrentShape is called after mode selection
     }
     
     /**
@@ -142,11 +162,6 @@ public class ShapePanel extends BaseTaskPanel {
         buttonPanel.add(homeButton);
         topPanel.add(buttonPanel, BorderLayout.NORTH);
         
-        JPanel modePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        addModeButton(modePanel, "2D Shapes", true);
-        addModeButton(modePanel, "3D Shapes", false);
-        topPanel.add(modePanel, BorderLayout.CENTER);
-        
         shapeLabel = new JLabel("Identify the shape:", SwingConstants.CENTER);
         shapeLabel.setFont(new Font("Arial", Font.BOLD, 24));
         topPanel.add(shapeLabel, BorderLayout.SOUTH);
@@ -166,8 +181,13 @@ public class ShapePanel extends BaseTaskPanel {
             is2DMode = is2D;
             currentShapeIndex = 0;
             resetAttempts();
-            initializeShapes();
-            showCurrentShape();
+            initializeShapes(); // Re-initialize shapes for the selected mode
+            
+            // Hide mode selection and show task content
+            modePanel.setVisible(false);
+            taskContentPanel.setVisible(true);
+            
+            showCurrentShape(); // Show the first shape in the new mode
         });
         panel.add(button);
     }
@@ -328,6 +348,8 @@ public class ShapePanel extends BaseTaskPanel {
             String correctAnswer = getCorrectAnswer(shape);
             boolean correct = checkAnswer(shape, answer);
             
+            logger.info("Submit handled: answer=" + answer + ", correct=" + correct + ", shapeIndex=" + currentShapeIndex);
+            
             handleAnswerResult(correct, correctAnswer);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error handling submit", e);
@@ -371,24 +393,41 @@ public class ShapePanel extends BaseTaskPanel {
             return;
         }
         
+        logger.info("handleAnswerResult: shapeIndex=" + currentShapeIndex + ", correct=" + correct);
         // Ensure list size is sufficient
         while (currentShapeIndex >= attemptsPerTask.size()) {
             attemptsPerTask.add(0);
             correctAnswers.add(false);
         }
         
+        // 无论正确或错误，都增加尝试次数
+        int attempts = attemptsPerTask.get(currentShapeIndex);
+        attempts++;
+        attemptsPerTask.set(currentShapeIndex, attempts);
+        logger.info("Updated attempts. shapeIndex=" + currentShapeIndex + ", attempts=" + attempts + ", attemptsPerTask: " + attemptsPerTask);
+        
         if (correct) {
             updateFeedback("Correct! Well done!");
             correctAnswers.set(currentShapeIndex, true);
+            logger.info("Shape " + currentShapeIndex + " marked as correct. correctAnswers: " + correctAnswers);
             
             // Check if all shapes are completed
             if (isTaskComplete()) {
+
+                int finalScore = calculateScore();
+
+                int maxScore = 12; // 作答正确4道题就退出，最高分应为 4 * 3 = 12
+                if (parentWindow != null) {
+                    parentWindow.showResult(finalScore, maxScore);
+                }
+                logger.info("Task complete. Final Score: " + finalScore + ", Max Score: " + maxScore);
                 endTask();
                 return;
             }
             
             // Move to next shape
             currentShapeIndex++;
+            logger.info("Moving to next shape: " + currentShapeIndex);
             if (currentShapeIndex < (is2DMode ? shapes2D.size() : shapes3D.size())) {
                 resetAttempts();
                 showCurrentShape();
@@ -397,10 +436,6 @@ public class ShapePanel extends BaseTaskPanel {
             }
         } else {
             // Handle incorrect answer
-            int attempts = attemptsPerTask.get(currentShapeIndex);
-            attempts++;
-            attemptsPerTask.set(currentShapeIndex, attempts);
-            
             if (attempts < 3) {
                 updateFeedback("Incorrect. Try again! (" + (3 - attempts) + " attempts remaining)");
             } else {
@@ -440,10 +475,11 @@ public class ShapePanel extends BaseTaskPanel {
         int size = Math.min(attemptsPerTask.size(), correctAnswers.size());
         for (int i = 0; i < size; i++) {
             if (correctAnswers.get(i)) {
+
                 int attempts = attemptsPerTask.get(i);
-                if (attempts == 1) totalScore += 3;
-                else if (attempts == 2) totalScore += 2;
-                else if (attempts == 3) totalScore += 1;
+                if (attempts > 0 && attempts <= 3) { 
+                    totalScore += (4 - attempts); 
+                }
             }
         }
         return totalScore;
@@ -456,7 +492,8 @@ public class ShapePanel extends BaseTaskPanel {
     @Override
     public String getFeedback() {
         int score = calculateScore();
-        int maxScore = attemptsPerTask.size() * 3;
+
+        int maxScore = 12; // 作答正确4道题就退出，最高分应为 4 * 3 = 12
 
         StringBuilder feedback = new StringBuilder();
         feedback.append(String.format("Test completed!\nScore: %d (Maximum: %d)\n\n", score, maxScore));
@@ -493,7 +530,8 @@ public class ShapePanel extends BaseTaskPanel {
                 cleanup();
                 if (parentWindow != null) {
                 int score = calculateScore();
-                int maxScore = attemptsPerTask.size() * 3;
+                // 根据当前模式计算最高分
+                int maxScore = 12; // 作答正确4道题就退出，最高分应为 4 * 3 = 12
                 parentWindow.showResult(score, maxScore);
                 }
         }
@@ -510,9 +548,18 @@ public class ShapePanel extends BaseTaskPanel {
         correctAnswers.clear();
         is2DMode = true;
         shapeRecognition.reset();
-        initializeShapes();
-        showCurrentShape();
-        updateFeedback(shapeRecognition.getRemainingTypesMessage(is2DMode));
+        
+        // Hide task content and show mode selection
+        taskContentPanel.setVisible(false);
+        modePanel.setVisible(true);
+        
+        // Reset feedback area
+        if (parentWindow != null) {
+            parentWindow.setFeedback("");
+        }
+        
+        // Re-initialize shapes will happen when a mode is selected again
+        // showCurrentShape is called after mode selection
     }
     
     /**
@@ -520,7 +567,12 @@ public class ShapePanel extends BaseTaskPanel {
      */
     @Override
     public void startTask() {
-        reset();
+        // startTask now just ensures the mode selection is visible
+        taskContentPanel.setVisible(false);
+        modePanel.setVisible(true);
+         if (parentWindow != null) {
+             parentWindow.setFeedback("");
+         }
     }
     
     /**

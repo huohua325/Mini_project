@@ -8,7 +8,7 @@ import java.util.*;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class AngleCalculation {
     private final Set<String> identifiedTypes;
@@ -47,6 +47,7 @@ public class AngleCalculation {
      * @return The type of angle as a string ("acute", "right", "obtuse", "straight", "reflex", or "unknown")
      */
     public String getAngleType(int angle) {
+        if (angle <= 0 || angle >= 360) return "unknown";
         if (angle == 90) return "right";
         if (angle > 0 && angle < 90) return "acute";
         if (angle > 90 && angle < 180) return "obtuse";

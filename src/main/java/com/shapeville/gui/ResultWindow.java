@@ -11,7 +11,7 @@ import java.awt.event.ActionListener;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class ResultWindow extends JFrame {
     private final int score;
@@ -154,35 +154,7 @@ public class ResultWindow extends JFrame {
             com.shapeville.gui.UIManager.getInstance().showMainWindow();
         });
         
-        JButton retryButton = createStyledButton("Try Again", new Color(255, 153, 51));
-        retryButton.addActionListener(e -> {
-            dispose();
-            com.shapeville.gui.UIManager.getInstance().switchToTask(taskName);
-        });
-        
-        JButton exitButton = createStyledButton("Exit", new Color(255, 51, 51));
-        exitButton.addActionListener(e -> {
-            // Create a custom JOptionPane with English buttons
-            javax.swing.UIManager.put("OptionPane.yesButtonText", "Yes");
-            javax.swing.UIManager.put("OptionPane.noButtonText", "No");
-            
-            int choice = JOptionPane.showConfirmDialog(
-                this,
-                "Are you sure you want to exit?",
-                "Confirm",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-            );
-            
-            if (choice == JOptionPane.YES_OPTION) {
-                dispose();
-                System.exit(0);
-            }
-        });
-        
         buttonPanel.add(continueButton);
-        buttonPanel.add(retryButton);
-        buttonPanel.add(exitButton);
         
         mainPanel.add(buttonPanel, BorderLayout.SOUTH);
         

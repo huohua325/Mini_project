@@ -26,7 +26,7 @@ import java.awt.event.ActionListener;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelInterface {
     private JComboBox<String> calculationType;
@@ -43,15 +43,15 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
     private int remainingTime;
     private int attempts = 0;
     private double currentValue;
-    private boolean isRadius;
     private double correctAnswer;
     private Random random = new Random();
     private DecimalFormat df = new DecimalFormat("0.0");
     private int score = 0;
     private int completedCalculations = 0;
     private Set<String> completedTypes = new HashSet<>();
-    private static final int TOTAL_TYPES = 4; // Total calculation types
+    private static final int TOTAL_TYPES = 4; // Total calculation types (area/radius, area/diameter, circumference/radius, circumference/diameter)
     private boolean isArea;
+    private boolean isRadius;
     
     /**
      * Constructs a new CircleCalculationPanel.
@@ -147,14 +147,14 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
      */
     private void startNewCalculation() {
         attempts = 0;
-        isRadius = random.nextBoolean();
         isArea = random.nextBoolean();
+        isRadius = random.nextBoolean();
         currentValue = 1 + random.nextInt(20);
         
         String currentType = getCalculationType();
         while (completedTypes.contains(currentType)) {
-            isRadius = random.nextBoolean();
             isArea = random.nextBoolean();
+            isRadius = random.nextBoolean();
             currentType = getCalculationType();
         }
         
@@ -255,7 +255,6 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
      * Updates the formula display based on the current calculation type.
      */
     private void updateFormulaDisplay() {
-        boolean isArea = calculationType.getSelectedItem().toString().equals("Area Calculation");
         if (isArea) {
             if (isRadius) {
                 formulaLabel.setText("<html>Area Formula:<br>A = πr²<br>r = " + currentValue + "<br>(Use π = 3.14)</html>");
@@ -275,7 +274,6 @@ public class CircleCalculationPanel extends BaseTaskPanel implements TaskPanelIn
      * Calculates the correct answer for the current problem.
      */
     private void calculateCorrectAnswer() {
-        boolean isArea = calculationType.getSelectedItem().toString().equals("Area Calculation");
         if (isArea) {
             if (isRadius) {
                 correctAnswer = 3.14 * currentValue * currentValue;

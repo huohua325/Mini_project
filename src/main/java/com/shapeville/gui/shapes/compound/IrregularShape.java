@@ -6,157 +6,198 @@ import java.util.*;
 import com.shapeville.gui.shapes.CompoundShapeDrawer;
 
 /**
- * 不规则四边形（形状5）的实现
- * 由一个矩形和一个直角三角形组成：
- * - 底部矩形：4m × 2m
- * - 上方直角三角形：
- *   * 左边（与矩形共边）：4m
- *   * 右边：2m
- *   * 斜边：16m
+ * Implementation of the Irregular Quadrilateral shape (Shape 6 in the list).
+ * Composed of a rectangle and a right triangle:
+ * - Bottom rectangle: 4m × 2m
+ * - Top right triangle:
+ *   * Left side (shared with rectangle): 4m
+ *   * Right side: 2m
+ *   * Hypotenuse: 16m
+ *
+ * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
+ * @version 1.0
+ * @since 2025-05-01
  */
 public class IrregularShape extends CompoundShapeDrawer {
     private final Map<String, Double> dimensions;
     private static final int FIXED_SIZE = 200;
     
+    /**
+     * Constructs a new IrregularShape.
+     * Initializes the dimensions of the shape.
+     */
     public IrregularShape() {
         dimensions = new HashMap<>();
-        dimensions.put("baseWidth", 4.0);    // 底部矩形宽度
-        dimensions.put("baseHeight", 2.0);   // 底部矩形高度
-        dimensions.put("leftSide", 4.0);     // 三角形左边（与矩形共边）
-        dimensions.put("rightSide", 2.0);    // 三角形右边
-        dimensions.put("hypotenuse", 16.0);  // 三角形斜边
+        dimensions.put("baseWidth", 4.0);    // Bottom rectangle width
+        dimensions.put("baseHeight", 2.0);   // Bottom rectangle height
+        dimensions.put("leftSide", 4.0);     // Triangle left side (shared with rectangle)
+        dimensions.put("rightSide", 2.0);    // Triangle right side
+        dimensions.put("hypotenuse", 16.0);  // Triangle hypotenuse
     }
     
+    /**
+     * Draws the Irregular Quadrilateral shape.
+     *
+     * @param g The graphics context to draw on.
+     * @param width The available width for drawing.
+     * @param height The available height for drawing.
+     */
     @Override
     public void draw(Graphics2D g, int width, int height) {
-        System.out.println("IrregularShape.draw() - 开始绘制");
+        // Removed System.out.println for drawing start
         
         prepareGraphics(g);
         
-        // 计算缩放比例
+        // Calculate scaling factor
         double scale = FIXED_SIZE / Math.max(dimensions.get("baseWidth"),
             dimensions.get("baseHeight") + dimensions.get("leftSide"));
         
-        // 计算实际尺寸
+        // Calculate actual dimensions
         int baseWidth = (int)(dimensions.get("baseWidth") * scale);
         int baseHeight = (int)(dimensions.get("baseHeight") * scale);
         int leftSide = (int)(dimensions.get("leftSide") * scale);
         int rightSide = (int)(dimensions.get("rightSide") * scale);
         
-        // 计算绘制位置（居中）
+        // Calculate drawing position (centered)
         int centerX = width / 2;
         int centerY = height / 2;
         int startX = centerX - baseWidth / 2;
         int startY = centerY - (baseHeight + leftSide) / 2;
         
         try {
-            // 创建形状路径
+            // Create shape path
             Path2D.Double path = new Path2D.Double();
             
-            // 从左下角开始逆时针绘制
-            path.moveTo(startX, startY + leftSide + baseHeight);              // 左下角
-            path.lineTo(startX + baseWidth, startY + leftSide + baseHeight);  // 底边
-            path.lineTo(startX + baseWidth, startY + leftSide);              // 右边竖线
-            path.lineTo(startX + baseWidth, startY + rightSide);             // 右上边
-            path.lineTo(startX, startY);                                     // 斜边到左上角
+            // Draw counter-clockwise from the bottom-left corner
+            path.moveTo(startX, startY + leftSide + baseHeight);              // Bottom-left corner
+            path.lineTo(startX + baseWidth, startY + leftSide + baseHeight);  // Bottom edge
+            path.lineTo(startX + baseWidth, startY + leftSide);              // Right vertical line
+            path.lineTo(startX + baseWidth, startY + rightSide);             // Top-right edge
+            path.lineTo(startX, startY);                                     // Diagonal to top-left corner
             path.closePath();
             
-            // 填充形状
+            // Fill shape
             g.setColor(SHAPE_COLOR);
             g.fill(path);
             
-            // 绘制轮廓
+            // Draw outline
             g.setColor(LINE_COLOR);
             g.setStroke(new BasicStroke(2.0f));
             g.draw(path);
             
         } catch (Exception e) {
-            System.err.println("绘制不规则四边形时出错: " + e.getMessage());
+            System.err.println("Error drawing Irregular Quadrilateral shape: " + e.getMessage());
             e.printStackTrace();
         }
     }
     
+    /**
+     * Draws the dimensions for the Irregular Quadrilateral shape.
+     *
+     * @param g The graphics context to draw on.
+     * @param width The available width for drawing.
+     * @param height The available height for drawing.
+     */
     @Override
     public void drawDimensions(Graphics2D g, int width, int height) {
-        // 使用与draw方法相同的计算
+        // Use the same calculations as in the draw method
         double scale = FIXED_SIZE / Math.max(dimensions.get("baseWidth"),
             dimensions.get("baseHeight") + dimensions.get("leftSide"));
         
-        // 计算实际尺寸
+        // Calculate actual dimensions
         int baseWidth = (int)(dimensions.get("baseWidth") * scale);
         int baseHeight = (int)(dimensions.get("baseHeight") * scale);
         int leftSide = (int)(dimensions.get("leftSide") * scale);
         int rightSide = (int)(dimensions.get("rightSide") * scale);
         
-        // 计算绘制位置
+        // Calculate drawing position
         int centerX = width / 2;
         int centerY = height / 2;
         int startX = centerX - baseWidth / 2;
         int startY = centerY - (baseHeight + leftSide) / 2;
         
-        // 绘制底部矩形尺寸
+        // Draw bottom rectangle dimension
         drawDimensionLine(g, startX, startY + leftSide + baseHeight + 20,
                          startX + baseWidth, startY + leftSide + baseHeight + 20,
-                         "4 m");
+                         String.format("%.0f m", dimensions.get("baseWidth"))); // 4m
         
-        // 绘制左侧矩形高度（向左移动40像素）
+        // Draw left rectangle height (move 40 pixels to the left)
         drawDimensionLine(g, startX - 40, startY + leftSide,
                          startX - 40, startY + leftSide + baseHeight,
-                         "2 m");
+                         String.format("%.0f m", dimensions.get("baseHeight"))); // 2m
         
-        // 绘制左侧三角形高度（向左移动40像素）
+        // Draw left triangle height (move 40 pixels to the left)
         drawDimensionLine(g, startX - 40, startY,
                          startX - 40, startY + leftSide,
-                         "4 m");
+                         String.format("%.0f m", dimensions.get("leftSide"))); // 4m
         
-        // 绘制右侧高度
+        // Draw right side height
         drawDimensionLine(g, startX + baseWidth + 20, startY + rightSide,
                          startX + baseWidth + 20, startY + leftSide,
-                         "2 m");
+                         String.format("%.0f m", dimensions.get("leftSide") - dimensions.get("rightSide"))); // 4m-2m = 2m
         
-        // 绘制斜边长度（用虚线表示）
+        // Draw hypotenuse length (represented by a dashed line)
         g.setStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
                                   10.0f, new float[]{5.0f}, 0.0f));
         drawDimensionLine(g, startX + 10, startY - 10,
                          startX + baseWidth + 10, startY + rightSide - 10,
-                         "16 m");
+                         String.format("%.0f m", dimensions.get("hypotenuse"))); // 16m
     }
     
+    /**
+     * Gets the dimensions of the shape.
+     *
+     * @return A map containing dimension names and their values.
+     */
     @Override
     public Map<String, Double> getDimensions() {
         return new HashMap<>(dimensions);
     }
     
+    /**
+     * Calculates the area of the Irregular Quadrilateral shape.
+     *
+     * @return The calculated area.
+     */
     @Override
     public double calculateArea() {
-        // 矩形面积
+        // Area of the rectangle
         double rectangleArea = dimensions.get("baseWidth") * dimensions.get("baseHeight");
         
-        // 三角形面积
-        double triangleArea = dimensions.get("baseWidth") * 
-                            (dimensions.get("leftSide") - dimensions.get("rightSide")) / 2;
+        // Area of the triangle
+        double triangleHeight = dimensions.get("leftSide") - dimensions.get("rightSide");
+        double triangleBase = dimensions.get("baseWidth");
+        double triangleArea = triangleBase * triangleHeight / 2.0;
         
         return rectangleArea + triangleArea;
     }
     
+    /**
+     * Gets the solution steps for calculating the area of the Irregular Quadrilateral shape.
+     *
+     * @return A text description of the solution steps.
+     */
     @Override
     public String getSolutionSteps() {
         double rectangleArea = dimensions.get("baseWidth") * dimensions.get("baseHeight");
         double triangleHeight = dimensions.get("leftSide") - dimensions.get("rightSide");
-        double triangleArea = dimensions.get("baseWidth") * triangleHeight / 2;
+        double triangleBase = dimensions.get("baseWidth");
+        double triangleArea = triangleBase * triangleHeight / 2.0;
         
         return String.format(
-            "1. 计算底部矩形面积：\n" +
-            "   底 × 高 = 4 × 2 = 8 m²\n\n" +
-            "2. 计算上方直角三角形面积：\n" +
-            "   底 × 高 ÷ 2\n" +
-            "   底边 = 4 m\n" +
-            "   高 = 左边 - 右边 = 4 - 2 = 2 m\n" +
-            "   面积 = 4 × 2 ÷ 2 = 4 m²\n\n" +
-            "3. 计算总面积：\n" +
-            "   矩形面积 + 三角形面积\n" +
-            "   = 8 + 4\n" +
-            "   = 12 m²"
+            "1. Divide the irregular quadrilateral into a rectangle and a right triangle.\n\n" +
+            "2. Calculate the area of the rectangle:\n" +
+            "   Base \u00d7 Height = %.0f \u00d7 %.0f = %.0f m\u00b2\n\n" + // 4 x 2 = 8
+            "3. Calculate the area of the right triangle:\n" +
+            "   Base \u00d7 Height \u00f7 2\n" +
+            "   Base = %.0f m\n" + // 4
+            "   Height = Left side - Right side = %.0f - %.0f = %.0f m\n" + // 4 - 2 = 2
+            "   Area = %.0f \u00d7 %.0f \u00f7 2 = %.0f m\u00b2\n\n" + // 4 x 2 / 2 = 4
+            "4. Calculate the total area:\n" +
+            "   Rectangle area + Triangle area = %.0f + %.0f = %.0f m\u00b2", // 8 + 4 = 12
+            dimensions.get("baseWidth"), dimensions.get("baseHeight"), rectangleArea,
+            triangleBase, dimensions.get("leftSide"), dimensions.get("rightSide"), triangleHeight, triangleBase, triangleHeight, triangleArea,
+            rectangleArea, triangleArea, calculateArea()
         );
     }
 } 

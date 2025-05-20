@@ -17,7 +17,7 @@ import com.shapeville.gui.shapes.compound.*;
  *
  * @author Ye Jin, Jian Wang, Zijie Long, Tianyun Zhang, Xianzhi Dong
  * @version 1.0
- * @since 2024-05-01
+ * @since 2025-05-01
  */
 public class CompoundShapeCalculation {
     /**
@@ -109,19 +109,7 @@ public class CompoundShapeCalculation {
         List<CompoundShape> shapeList = new ArrayList<>();
         
         try {
-            System.out.println("Initializing shapes...");
-            
-            // 1. Arrow Shape
-            ArrowShape arrowShape = new ArrowShape();
-            shapeList.add(new CompoundShape(
-                "Arrow Shape",
-                "Composed of a rectangle (14×14) and a trapezoid (base 14, top 5, height 5).\nCalculate the total area.",
-                arrowShape.calculateArea(),
-                arrowShape.getSolutionSteps(),
-                arrowShape
-            ));
-            
-            // 2. T Shape
+            // 1. T Shape
             TShape tShape = new TShape();
             shapeList.add(new CompoundShape(
                 "T Shape",
@@ -131,17 +119,7 @@ public class CompoundShapeCalculation {
                 tShape
             ));
             
-            // 3. Trapezoid
-            TrapezoidShape trapezoidShape = new TrapezoidShape();
-            shapeList.add(new CompoundShape(
-                "Trapezoid",
-                "Base 20m, top 9m, height 11m, right side 14m.\nCalculate the total area.",
-                trapezoidShape.calculateArea(),
-                trapezoidShape.getSolutionSteps(),
-                trapezoidShape
-            ));
-            
-            // 4. Stair Shape
+            // 2. Stair Shape
             StairShape stairShape = new StairShape();
             shapeList.add(new CompoundShape(
                 "Stair Shape",
@@ -151,7 +129,7 @@ public class CompoundShapeCalculation {
                 stairShape
             ));
             
-            // 5. Step Rectangle
+            // 3. Step Rectangle
             StepShape stepShape = new StepShape();
             shapeList.add(new CompoundShape(
                 "Step Rectangle",
@@ -161,7 +139,7 @@ public class CompoundShapeCalculation {
                 stepShape
             ));
             
-            // 6. Double Stair Shape
+            // 4. Double Stair Shape
             DoubleStairShape doubleStairShape = new DoubleStairShape();
             shapeList.add(new CompoundShape(
                 "Double Stair Shape",
@@ -171,17 +149,7 @@ public class CompoundShapeCalculation {
                 doubleStairShape
             ));
             
-            // 7. House Shape
-            HouseShape houseShape = new HouseShape();
-            shapeList.add(new CompoundShape(
-                "House Shape",
-                "Bottom rectangle (14×5) and two triangles (base 14 height 12 and base 16 height 13).\nCalculate the total area.",
-                houseShape.calculateArea(),
-                houseShape.getSolutionSteps(),
-                houseShape
-            ));
-            
-            // 8. Complex Stair
+            // 5. Complex Stair
             ComplexStairShape complexStairShape = new ComplexStairShape();
             shapeList.add(new CompoundShape(
                 "Complex Stair",
@@ -191,7 +159,7 @@ public class CompoundShapeCalculation {
                 complexStairShape
             ));
             
-            // 9. Irregular Quadrilateral
+            // 6. Irregular Quadrilateral
             IrregularShape irregularShape = new IrregularShape();
             shapeList.add(new CompoundShape(
                 "Irregular Quadrilateral",
@@ -201,10 +169,7 @@ public class CompoundShapeCalculation {
                 irregularShape
             ));
             
-            System.out.println("All shapes initialized, total count: " + shapeList.size());
-            
         } catch (Exception e) {
-            System.err.println("Error initializing shapes: " + e.getMessage());
             e.printStackTrace();
         }
         
