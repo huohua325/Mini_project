@@ -292,47 +292,17 @@ public class ShapePanel extends BaseTaskPanel {
      * @param is2D whether the shape is 2D or 3D
      */
     private void displayShapeImage(String imageName, boolean is2D) {
-        Path imagePath = getImagePath(imageName, is2D);
-        try {
-            File imageFile = imagePath.toFile();
-            if (imageFile.exists()) {
-                BufferedImage img = ImageIO.read(imageFile);
-                int maxSize = 160;
-                
-                double scale = Math.min((double)maxSize / img.getWidth(), (double)maxSize / img.getHeight());
-                int newWidth = (int)(img.getWidth() * scale);
-                int newHeight = (int)(img.getHeight() * scale);
-                
-                Image scaledImg = img.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
-                shapeImageLabel.setIcon(new ImageIcon(scaledImg));
-                shapeImageLabel.setPreferredSize(new Dimension(maxSize + 20, maxSize + 20));
-            } else {
-                shapeImageLabel.setIcon(null);
-                shapeImageLabel.setText("Image not found: " + imagePath);
-                logger.warning("Image file not found: " + imagePath);
-            }
-        } catch (IOException e) {
+        String resourcePath = "images/" + (is2D ? "2d/" : "3d/") + imageName;
+        java.net.URL imgUrl = getClass().getClassLoader().getResource(resourcePath);
+        if (imgUrl != null) {
+            ImageIcon icon = new ImageIcon(imgUrl);
+            shapeImageLabel.setIcon(icon);
+            shapeImageLabel.setText("");
+        } else {
             shapeImageLabel.setIcon(null);
-            shapeImageLabel.setText("Failed to load image: " + e.getMessage());
-            logger.log(Level.SEVERE, "Failed to load image: " + imagePath, e);
+            shapeImageLabel.setText("Image not found: " + resourcePath);
+            logger.warning("Image file not found: " + resourcePath);
         }
-    }
-    
-    /**
-     * Gets the path to the shape image file.
-     * @param imageName the name of the image file
-     * @param is2D whether the shape is 2D or 3D
-     * @return Path to the image file
-     */
-    private Path getImagePath(String imageName, boolean is2D) {
-        return Paths.get(System.getProperty("user.dir"))
-                   .resolve("shapeville")
-                   .resolve("src")
-                   .resolve("main")
-                   .resolve("resources")
-                   .resolve("images")
-                   .resolve(is2D ? "2d" : "3d")
-                   .resolve(imageName);
     }
     
     /**

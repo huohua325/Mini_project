@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"com.shapeville"},{"l":"com.shapeville.game"},{"l":"com.shapeville.gui"},{"l":"com.shapeville.gui.shapes"},{"l":"com.shapeville.gui.shapes.compound"},{"l":"com.shapeville.gui.tasks"},{"l":"com.shapeville.model"},{"l":"所有程序包","u":"allpackages-index.html"}];updateSearchResults();
