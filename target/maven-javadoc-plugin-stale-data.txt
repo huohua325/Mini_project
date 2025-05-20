@@ -1,0 +1,85 @@
+-Xdoclint:none
+@options
+@packages
+-classpath
+'C:/Users/1/.m2/repository/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar;C:/Users/1/.m2/repository/org/processing/core/3.3.7/core-3.3.7.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all-main/2.3.2/jogl-all-main-2.3.2.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-android-aarch64.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-android-armv6.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-linux-amd64.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-linux-armv6.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-linux-armv6hf.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-linux-i586.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-macosx-universal.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-solaris-amd64.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-solaris-i586.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-windows-amd64.jar;C:/Users/1/.m2/repository/org/jogamp/jogl/jogl-all/2.3.2/jogl-all-2.3.2-natives-windows-i586.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt-main/2.3.2/gluegen-rt-main-2.3.2.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-android-aarch64.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-android-armv6.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-linux-amd64.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-linux-armv6.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-linux-armv6hf.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-linux-i586.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-macosx-universal.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-solaris-amd64.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-solaris-i586.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-windows-amd64.jar;C:/Users/1/.m2/repository/org/jogamp/gluegen/gluegen-rt/2.3.2/gluegen-rt-2.3.2-natives-windows-i586.jar'
+-encoding
+'UTF-8'
+-private
+-source
+'17'
+-sourcepath
+'E:/homwork/java/Mini/shapeville/src/main/java'
+-author
+-bottom
+'Copyright &#169; 2025. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'E:/homwork/java/Mini/shapeville/target/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'shapeville 1.0-SNAPSHOT API'
+-nohelp
+-use
+-version
+-windowtitle
+'shapeville 1.0-SNAPSHOT API'
+com.shapeville.game
+com.shapeville.gui
+com.shapeville.gui.shapes
+com.shapeville.gui.shapes.compound
+com.shapeville.gui.tasks
+com.shapeville
+com.shapeville.model
+C:\Users\1\.m2\repository\com\google\code\gson\gson\2.10.1\gson-2.10.1.jar = 1744652480271
+C:\Users\1\.m2\repository\org\processing\core\3.3.7\core-3.3.7.jar = 1746705001528
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all-main\2.3.2\jogl-all-main-2.3.2.jar = 1746705505380
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2.jar = 1746705505852
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-android-aarch64.jar = 1746705505589
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-android-armv6.jar = 1746705505643
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-linux-amd64.jar = 1746705505653
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-linux-armv6.jar = 1746705505648
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-linux-armv6hf.jar = 1746705505813
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-linux-i586.jar = 1746705505841
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-macosx-universal.jar = 1746705505864
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-solaris-amd64.jar = 1746705505905
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-solaris-i586.jar = 1746705505982
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-windows-amd64.jar = 1746705506032
+C:\Users\1\.m2\repository\org\jogamp\jogl\jogl-all\2.3.2\jogl-all-2.3.2-natives-windows-i586.jar = 1746705506042
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt-main\2.3.2\gluegen-rt-main-2.3.2.jar = 1746705505996
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2.jar = 1746705506079
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-android-aarch64.jar = 1746705506161
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-android-armv6.jar = 1746705506158
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-linux-amd64.jar = 1746705506202
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-linux-armv6.jar = 1746705506217
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-linux-armv6hf.jar = 1746705506261
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-linux-i586.jar = 1746705506335
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-macosx-universal.jar = 1746705506363
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-solaris-amd64.jar = 1746705506363
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-solaris-i586.jar = 1746705506400
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-windows-amd64.jar = 1746705506512
+C:\Users\1\.m2\repository\org\jogamp\gluegen\gluegen-rt\2.3.2\gluegen-rt-2.3.2-natives-windows-i586.jar = 1746705506521
+E:\homwork\java\Mini\shapeville\src\main\java = 1746543624502
+E:\homwork\java\Mini\shapeville\target\site\apidocs\allclasses-index.html = 1747713806561
+E:\homwork\java\Mini\shapeville\target\site\apidocs\allpackages-index.html = 1747713806565
+E:\homwork\java\Mini\shapeville\target\site\apidocs\constant-values.html = 1747713806312
+E:\homwork\java\Mini\shapeville\target\site\apidocs\copy.svg = 1747713806618
+E:\homwork\java\Mini\shapeville\target\site\apidocs\element-list = 1747713806223
+E:\homwork\java\Mini\shapeville\target\site\apidocs\index-all.html = 1747713806609
+E:\homwork\java\Mini\shapeville\target\site\apidocs\index.html = 1747713806513
+E:\homwork\java\Mini\shapeville\target\site\apidocs\link.svg = 1747713806619
+E:\homwork\java\Mini\shapeville\target\site\apidocs\member-search-index.js = 1747713806570
+E:\homwork\java\Mini\shapeville\target\site\apidocs\module-search-index.js = 1747713806566
+E:\homwork\java\Mini\shapeville\target\site\apidocs\overview-summary.html = 1747713806614
+E:\homwork\java\Mini\shapeville\target\site\apidocs\overview-tree.html = 1747713806507
+E:\homwork\java\Mini\shapeville\target\site\apidocs\package-search-index.js = 1747713806567
+E:\homwork\java\Mini\shapeville\target\site\apidocs\script.js = 1747713806617
+E:\homwork\java\Mini\shapeville\target\site\apidocs\search-page.js = 1747713806623
+E:\homwork\java\Mini\shapeville\target\site\apidocs\search.html = 1747713806612
+E:\homwork\java\Mini\shapeville\target\site\apidocs\search.js = 1747713806621
+E:\homwork\java\Mini\shapeville\target\site\apidocs\serialized-form.html = 1747713806342
+E:\homwork\java\Mini\shapeville\target\site\apidocs\stylesheet.css = 1747713806616
+E:\homwork\java\Mini\shapeville\target\site\apidocs\tag-search-index.js = 1747713806572
+E:\homwork\java\Mini\shapeville\target\site\apidocs\type-search-index.js = 1747713806568
