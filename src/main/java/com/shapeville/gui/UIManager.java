@@ -26,12 +26,12 @@ public class UIManager {
     private boolean fullFeaturesEnabled = false;  // Flag for full feature mode
     
     /** Basic tasks that are available from the start */
-    private static final String[] BASIC_TASKS = {
+    public static final String[] BASIC_TASKS = {
         "形状识别", "角度识别", "面积计算", "圆形计算"
     };
     
     /** Advanced tasks that need to be unlocked */
-    private static final String[] ADVANCED_TASKS = {
+    public static final String[] ADVANCED_TASKS = {
         "复合形状", "扇形计算"
     };
     
@@ -215,21 +215,24 @@ public class UIManager {
 
         // Check if all basic tasks are completed
         for (String task : BASIC_TASKS) {
-            if (taskStatusMap.getOrDefault(task, TaskStatus.LOCKED) != TaskStatus.COMPLETED) {
+            TaskStatus status = taskStatusMap.getOrDefault(task, TaskStatus.LOCKED);
+            if (status != TaskStatus.COMPLETED) {
                 allBasicCompleted = false;
-                break;
+                // break; // Removed break to log all statuses
             }
         }
 
         // Update advanced tasks status based on basic task completion
         for (String task : ADVANCED_TASKS) {
             TaskStatus newStatus = allBasicCompleted ? TaskStatus.UNLOCKED : TaskStatus.LOCKED;
-            taskStatusMap.put(task, newStatus);
-            if (allBasicCompleted) {
-                unlockedTasks.add(task);
-            } else {
-                 // Ensure advanced tasks are locked if not all basic tasks are completed
-                 unlockedTasks.remove(task);
+            TaskStatus currentStatus = taskStatusMap.getOrDefault(task, TaskStatus.LOCKED);
+            if (currentStatus != newStatus) {
+                 taskStatusMap.put(task, newStatus);
+                 if (allBasicCompleted) {
+                     unlockedTasks.add(task);
+                 } else {
+                      unlockedTasks.remove(task);
+                 }
             }
         }
     }
@@ -415,7 +418,7 @@ public class UIManager {
      *
      * @return The number of completed tasks
      */
-    private int countCompletedTasks() {
+    public int countCompletedTasks() {
         return (int) taskStatusMap.values().stream()
             .filter(status -> status == TaskStatus.COMPLETED)
             .count();

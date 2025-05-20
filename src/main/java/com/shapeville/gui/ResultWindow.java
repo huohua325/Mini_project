@@ -61,13 +61,6 @@ public class ResultWindow extends JFrame {
         // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout(15, 15));
         
-        // Task name
-        JLabel taskLabel = new JLabel(taskName);
-        taskLabel.setFont(new Font("Arial", Font.BOLD, 28));
-        taskLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        taskLabel.setForeground(new Color(51, 51, 153));
-        topPanel.add(taskLabel, BorderLayout.NORTH);
-        
         // Score display panel
         JPanel scorePanel = new JPanel(new BorderLayout(10, 10));
         scorePanel.setBorder(BorderFactory.createCompoundBorder(

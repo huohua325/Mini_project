@@ -55,7 +55,6 @@ public class TaskWindow extends JFrame {
             if (currentTask != null) {
                 currentTask.pauseTask();
             }
-            showResult(0, 1); // Show 0 score result
             dispose(); // Close the window
         });
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -176,7 +175,7 @@ public class TaskWindow extends JFrame {
     public void showResult(int score, int maxScore) {
         this.taskCompletedNormally = true;
         String feedback = generateFeedback(score, maxScore);
-        UIManager.getInstance().showResult("Results", score, maxScore, feedback);
+        UIManager.getInstance().showResult(this.taskName, score, maxScore, feedback);
     }
     
     /**

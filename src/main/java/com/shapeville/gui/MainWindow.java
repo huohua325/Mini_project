@@ -274,10 +274,14 @@ public class MainWindow extends JFrame {
         if (fullFeaturesEnabled) {
             return true;
         }
-        return taskCompletionStatus.get("形状识别") &&
-               taskCompletionStatus.get("角度识别") &&
-               taskCompletionStatus.get("面积计算") &&
-               taskCompletionStatus.get("圆形计算");
+        // Directly check UIManager's task status map
+        Map<String, TaskStatus> taskStatusMap = com.shapeville.gui.UIManager.getInstance().getTaskStatusMap();
+        for (String task : com.shapeville.gui.UIManager.BASIC_TASKS) {
+            if (taskStatusMap.getOrDefault(task, TaskStatus.LOCKED) != TaskStatus.COMPLETED) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -303,7 +307,7 @@ public class MainWindow extends JFrame {
         Map<String, Integer> taskScores = com.shapeville.gui.UIManager.getInstance().getTaskScores();
         
         int totalScore = taskScores.values().stream().mapToInt(Integer::intValue).sum();
-        int completedTasks = (int) taskScores.values().stream().filter(score -> score > 0).count();
+        int completedTasks = com.shapeville.gui.UIManager.getInstance().countCompletedTasks();
         int totalTasks = com.shapeville.gui.UIManager.getInstance().getTotalTaskCount();
         int progress = totalTasks > 0 ? (completedTasks * 100) / totalTasks : 0;
         
