@@ -32,7 +32,6 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
     private JLabel paramsLabel;
     private JTextField answerField;
     private JButton submitButton;
-    private JButton homeButton;
     private javax.swing.Timer timer;
     private JLabel timerLabel;
     private int remainingSeconds = 180; // 3 minutes = 180 seconds
@@ -99,13 +98,6 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
 
         // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-        
-        // Home button
-        homeButton = new JButton("Home");
-        homeButton.addActionListener(e -> endTask());
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(homeButton);
-        topPanel.add(buttonPanel, BorderLayout.EAST);
         
         // Timer
         JPanel timerPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -435,9 +427,6 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
         if (answerField != null) {
             answerField.setEnabled(false);
         }
-        if (homeButton != null) {
-            homeButton.setEnabled(false);
-        }
         if (shapeSelector != null) {
             shapeSelector.setEnabled(false);
         }
@@ -456,9 +445,6 @@ public class AreaCalculationPanel extends BaseTaskPanel implements TaskPanelInte
         }
         if (answerField != null) {
             answerField.setEnabled(true);
-        }
-        if (homeButton != null) {
-            homeButton.setEnabled(true);
         }
         if (shapeSelector != null) {
             shapeSelector.setEnabled(true);

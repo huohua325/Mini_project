@@ -63,13 +63,6 @@ public class AngleCalculationPanel extends BaseTaskPanel implements TaskPanelInt
         // Create top panel
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
         
-        // Home button
-        homeButton = new JButton("Home");
-        homeButton.addActionListener(e -> endTask());
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        buttonPanel.add(homeButton);
-        topPanel.add(buttonPanel, BorderLayout.NORTH);
-        
         // Create angle display panel
         angleDisplayPanel = new JPanel() {
             @Override
@@ -260,7 +253,6 @@ public class AngleCalculationPanel extends BaseTaskPanel implements TaskPanelInt
     public void pauseTask() {
         if (submitButton != null) submitButton.setEnabled(false);
         if (angleTypeComboBox != null) angleTypeComboBox.setEnabled(false);
-        if (homeButton != null) homeButton.setEnabled(false);
     }
     
     /**
@@ -270,7 +262,6 @@ public class AngleCalculationPanel extends BaseTaskPanel implements TaskPanelInt
     public void resumeTask() {
         if (submitButton != null) submitButton.setEnabled(true);
         if (angleTypeComboBox != null) angleTypeComboBox.setEnabled(true);
-        if (homeButton != null) homeButton.setEnabled(true);
     }
     
     /**

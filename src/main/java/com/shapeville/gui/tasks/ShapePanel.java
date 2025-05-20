@@ -43,7 +43,6 @@ public class ShapePanel extends BaseTaskPanel {
     private JLabel shapeImageLabel;
     private JTextField answerField;
     private JButton submitButton;
-    private JButton homeButton;
     private ArrayList<Shape2D> shapes2D;
     private ArrayList<Shape3D> shapes3D;
     private ArrayList<Integer> attemptsPerTask;
@@ -155,12 +154,6 @@ public class ShapePanel extends BaseTaskPanel {
      */
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout(5, 5));
-        
-        homeButton = new JButton("Home");
-        homeButton.addActionListener(e -> endTask());
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 5, 0));
-        buttonPanel.add(homeButton);
-        topPanel.add(buttonPanel, BorderLayout.NORTH);
         
         shapeLabel = new JLabel("Identify the shape:", SwingConstants.CENTER);
         shapeLabel.setFont(new Font("Arial", Font.BOLD, 24));
@@ -583,7 +576,6 @@ public class ShapePanel extends BaseTaskPanel {
         saveComponentStates();
         submitButton.setEnabled(false);
         answerField.setEnabled(false);
-        homeButton.setEnabled(false);
     }
     
     /**
@@ -623,7 +615,6 @@ public class ShapePanel extends BaseTaskPanel {
         componentStates.clear();
         componentStates.put(submitButton, submitButton.isEnabled());
         componentStates.put(answerField, answerField.isEnabled());
-        componentStates.put(homeButton, homeButton.isEnabled());
     }
     
     /**

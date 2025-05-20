@@ -66,20 +66,20 @@ public class MainWindow extends JFrame {
         
         // Create welcome label
         JLabel welcomeLabel = new JLabel("Welcome to Shapeville Geometry Learning Park!", SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 28));
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 32));
         welcomeLabel.setForeground(new Color(51, 51, 153));
         
         // Create level label
         levelLabel = new JLabel("Current Level: Beginner", SwingConstants.RIGHT);
-        levelLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        levelLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         
         topPanel.add(welcomeLabel, BorderLayout.CENTER);
         topPanel.add(levelLabel, BorderLayout.EAST);
         mainPanel.add(topPanel, BorderLayout.NORTH);
         
         // Create task button panel
-        buttonPanel = new JPanel(new GridLayout(3, 2, 20, 20));
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+        buttonPanel = new JPanel(new GridLayout(3, 2, 30, 30));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(40, 40, 40, 40));
         
         // Add task buttons
         addTaskButton("形状识别", "Identify 2D and 3D shapes (Basic Level)", "basic");
@@ -97,9 +97,9 @@ public class MainWindow extends JFrame {
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createEtchedBorder(), "Task Description"));
-        descriptionPanel.setPreferredSize(new Dimension(0, 100));
+        descriptionPanel.setPreferredSize(new Dimension(0, 120));
         JLabel descriptionLabel = new JLabel("<html>Complete basic tasks to unlock advanced tasks<br>Each task has its own score and star rating</html>");
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         descriptionPanel.add(descriptionLabel);
         centerPanel.add(descriptionPanel, BorderLayout.SOUTH);
         
@@ -114,13 +114,14 @@ public class MainWindow extends JFrame {
         progressBar = new JProgressBar(0, 100);
         progressBar.setValue(0);
         progressBar.setStringPainted(true);
-        progressBar.setPreferredSize(new Dimension(0, 25));
+        progressBar.setPreferredSize(new Dimension(0, 30));
         int totalTasks = com.shapeville.gui.UIManager.getInstance().getTotalTaskCount();
         progressBar.setString(String.format("Total Score: 0 points (Completed: 0/%d)", totalTasks));
+        progressBar.setFont(new Font("Arial", Font.BOLD, 14));
         progressPanel.add(progressBar, BorderLayout.CENTER);
         
         // Create control panel
-        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 15));
         setupControlPanel(controlPanel);
         
         bottomPanel.add(progressPanel, BorderLayout.CENTER);
@@ -144,7 +145,7 @@ public class MainWindow extends JFrame {
         
         // Create feature toggle button
         featureToggleButton = new JToggleButton("Full Features");
-        featureToggleButton.setFont(new Font("Arial", Font.BOLD, 14));
+        featureToggleButton.setFont(new Font("Arial", Font.BOLD, 16));
         featureToggleButton.setForeground(Color.WHITE);
         featureToggleButton.setBackground(new Color(128, 0, 128));
         featureToggleButton.setFocusPainted(false);
@@ -193,7 +194,7 @@ public class MainWindow extends JFrame {
      */
     private JButton createStyledButton(String text, Color color) {
         JButton button = new JButton(text);
-        button.setFont(new Font("Arial", Font.BOLD, 14));
+        button.setFont(new Font("Arial", Font.BOLD, 16));
         button.setForeground(Color.WHITE);
         button.setBackground(color);
         button.setFocusPainted(false);
@@ -211,6 +212,7 @@ public class MainWindow extends JFrame {
      */
     private void addTaskButton(String text, String tooltip, String difficulty) {
         JButton button = new JButton(TASK_DISPLAY_NAMES.get(text));
+        button.setFont(new Font("Arial", Font.BOLD, 18));
         
         if ("advanced".equals(difficulty)) {
             String advancedTooltip = String.format("<html>%s<br><br>" +
@@ -362,31 +364,66 @@ public class MainWindow extends JFrame {
      * @param status The new status of the task
      */
     private void updateButtonStatus(JButton button, TaskStatus status) {
-        String currentTooltip = button.getToolTipText();
-        
+        String currentText = button.getText();
+        // Remove any existing status text before adding the new one
+        String baseText = currentText.replace(" (Locked)", "").replace(" (In Progress)", "").replace(" (Completed)", "");
+
+        String statusText = "";
+        Color bgColor;
+        boolean enabled = true;
+
         switch (status) {
             case LOCKED:
-                button.setEnabled(false);
-                button.setBackground(Color.GRAY);
+                statusText = " (Locked)";
+                bgColor = Color.GRAY;
+                enabled = false;
                 break;
-            
+
             case UNLOCKED:
-                button.setEnabled(true);
-                button.setBackground(new Color(51, 153, 255));
-                if (currentTooltip != null && currentTooltip.contains("Currently Locked")) {
-                    button.setToolTipText(currentTooltip.replace("<font color='red'>Advanced Task - Currently Locked</font><br>", ""));
-                }
+                statusText = ""; // Unlocked buttons don't need explicit status text
+                bgColor = new Color(51, 153, 255); // A clear blue for unlocked
+                enabled = true;
                 break;
-            
+
             case IN_PROGRESS:
-                button.setEnabled(true);
-                button.setBackground(new Color(255, 165, 0));
+                statusText = " (In Progress)";
+                bgColor = new Color(255, 165, 0); // Orange for in progress
+                enabled = true;
                 break;
-            
+
             case COMPLETED:
-                button.setEnabled(true);
-                button.setBackground(new Color(34, 139, 34));
+                statusText = " (Completed)";
+                bgColor = new Color(34, 139, 34); // Green for completed
+                enabled = true;
                 break;
+
+            default:
+                 statusText = "";
+                 bgColor = button.getBackground();
+                 enabled = button.isEnabled();
+                 break;
+        }
+
+        button.setText(baseText + statusText);
+        button.setBackground(bgColor);
+        button.setEnabled(enabled);
+
+        // Tooltip logic remains largely the same, ensuring it reflects the locked status correctly
+        String originalTooltip = button.getToolTipText(); // Get the current tooltip
+
+        if (status == TaskStatus.LOCKED) {
+             // If locked, ensure the tooltip includes the locked message and unlock condition
+             if (originalTooltip == null || !originalTooltip.contains("Advanced Task - Currently Locked")) {
+                 // Reconstruct or add the locked part if missing
+                 String baseTooltipContent = TASK_DISPLAY_NAMES.getOrDefault(baseText, baseText) + "<br><br>";
+                 button.setToolTipText("<html>" + baseTooltipContent + "<font color='red'>Advanced Task - Currently Locked</font><br>Unlock Condition: Complete all basic tasks<br>Basic Tasks: Shape Recognition, Angle Recognition, Area Calculation, Circle Calculation</html>");
+             }
+             // If it already contains the locked message, leave it as is (assuming it's correct)
+        } else {
+             // If not locked, remove the locked indicator from the tooltip
+             if (originalTooltip != null && originalTooltip.contains("Advanced Task - Currently Locked")) {
+                 button.setToolTipText(originalTooltip.replace("<font color='red'>Advanced Task - Currently Locked</font><br>Unlock Condition: Complete all basic tasks<br>Basic Tasks: Shape Recognition, Angle Recognition, Area Calculation, Circle Calculation", ""));
+             }
         }
     }
     

@@ -23,6 +23,7 @@ public class ResultWindow extends JFrame {
     private JLabel scoreLabel;
     private JPanel starsPanel;
     private JProgressBar scoreProgress;
+    private JLabel starRatingTextLabel;
     
     /**
      * Constructs a new ResultWindow with the specified task results.
@@ -49,20 +50,20 @@ public class ResultWindow extends JFrame {
     private void initializeUI() {
         setTitle("Shapeville - Task Results");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(700, 500);
+        setSize(750, 550);
         setAlwaysOnTop(true);
         
         // Create main panel
         JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout(20, 20));
+        mainPanel.setLayout(new BorderLayout(25, 25));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
         
         // Create top panel
-        JPanel topPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel topPanel = new JPanel(new BorderLayout(15, 15));
         
         // Task name
         JLabel taskLabel = new JLabel(taskName);
-        taskLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        taskLabel.setFont(new Font("Arial", Font.BOLD, 28));
         taskLabel.setHorizontalAlignment(SwingConstants.CENTER);
         taskLabel.setForeground(new Color(51, 51, 153));
         topPanel.add(taskLabel, BorderLayout.NORTH);
@@ -75,14 +76,15 @@ public class ResultWindow extends JFrame {
         ));
         
         scoreLabel = new JLabel("0");
-        scoreLabel.setFont(new Font("Arial", Font.BOLD, 48));
+        scoreLabel.setFont(new Font("Arial", Font.BOLD, 60));
         scoreLabel.setHorizontalAlignment(SwingConstants.CENTER);
         scoreLabel.setForeground(new Color(51, 153, 255));
         
         scoreProgress = new JProgressBar(0, 100);
         scoreProgress.setValue(0);
         scoreProgress.setStringPainted(true);
-        scoreProgress.setPreferredSize(new Dimension(0, 20));
+        scoreProgress.setPreferredSize(new Dimension(0, 25));
+        scoreProgress.setFont(new Font("Arial", Font.BOLD, 16));
         
         scorePanel.add(scoreLabel, BorderLayout.CENTER);
         scorePanel.add(scoreProgress, BorderLayout.SOUTH);
@@ -91,12 +93,20 @@ public class ResultWindow extends JFrame {
         
         // Create stars rating panel
         starsPanel = createStarsPanel();
-        topPanel.add(starsPanel, BorderLayout.SOUTH);
+        
+        // Create and add the star rating text label
+        starRatingTextLabel = new JLabel("", SwingConstants.CENTER);
+        starRatingTextLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        JPanel starPanelWithText = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        starPanelWithText.add(starsPanel);
+        starPanelWithText.add(starRatingTextLabel);
+
+        topPanel.add(starPanelWithText, BorderLayout.SOUTH);
         
         mainPanel.add(topPanel, BorderLayout.NORTH);
         
         // Create feedback panel
-        JPanel feedbackPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel feedbackPanel = new JPanel(new BorderLayout(15, 15));
         feedbackPanel.setBorder(BorderFactory.createTitledBorder(
             BorderFactory.createEtchedBorder(),
             "Detailed Feedback"
@@ -112,8 +122,8 @@ public class ResultWindow extends JFrame {
             for (String line : lines) {
                 if (!line.trim().isEmpty()) {
                     JLabel label = new JLabel(line);
-                    label.setFont(new Font("Arial", Font.PLAIN, 14));
-                    label.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 10));
+                    label.setFont(new Font("Arial", Font.PLAIN, 16));
+                    label.setBorder(BorderFactory.createEmptyBorder(3, 15, 3, 15));
                     label.setAlignmentX(Component.LEFT_ALIGNMENT);
                     feedbackContent.add(label);
                 }
@@ -123,8 +133,8 @@ public class ResultWindow extends JFrame {
             feedbackArea.setEditable(false);
             feedbackArea.setWrapStyleWord(true);
             feedbackArea.setLineWrap(true);
-            feedbackArea.setFont(new Font("Arial", Font.PLAIN, 14));
-            feedbackArea.setMargin(new Insets(10, 10, 10, 10));
+            feedbackArea.setFont(new Font("Arial", Font.PLAIN, 16));
+            feedbackArea.setMargin(new Insets(15, 15, 15, 15));
             feedbackContent.add(feedbackArea);
         }
         
@@ -135,7 +145,7 @@ public class ResultWindow extends JFrame {
         // Add performance analysis
         JPanel analysisPanel = new JPanel();
         analysisPanel.setLayout(new BoxLayout(analysisPanel, BoxLayout.Y_AXIS));
-        analysisPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+        analysisPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
         
         addAnalysisItem(analysisPanel, "Completion", getCompletionStatus());
         addAnalysisItem(analysisPanel, "Accuracy", getAccuracyStatus());
@@ -212,6 +222,9 @@ public class ResultWindow extends JFrame {
         }
         starsPanel.revalidate();
         starsPanel.repaint();
+
+        // Update the star rating text label
+        starRatingTextLabel.setText(starCount + "/5 Stars");
     }
     
     /**
@@ -260,9 +273,9 @@ public class ResultWindow extends JFrame {
     private void addAnalysisItem(JPanel panel, String label, String value) {
         JPanel itemPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel labelComponent = new JLabel(label + ": ");
-        labelComponent.setFont(new Font("Arial", Font.BOLD, 14));
+        labelComponent.setFont(new Font("Arial", Font.BOLD, 16));
         JLabel valueComponent = new JLabel(value);
-        valueComponent.setFont(new Font("Arial", Font.PLAIN, 14));
+        valueComponent.setFont(new Font("Arial", Font.PLAIN, 16));
         
         itemPanel.add(labelComponent);
         itemPanel.add(valueComponent);

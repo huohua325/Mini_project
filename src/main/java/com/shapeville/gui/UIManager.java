@@ -115,7 +115,7 @@ public class UIManager {
     /**
      * Updates the main window's display status.
      */
-    private void updateMainWindowStatus() {
+    public void updateMainWindowStatus() {
         if (mainWindow != null) {
             mainWindow.updateTaskStatus(taskStatusMap);
             mainWindow.updateUserLevel(getUserLevelTitle());
@@ -132,15 +132,20 @@ public class UIManager {
         if (!isTaskUnlocked(taskName)) {
             return;
         }
-        
+
+        // Before switching, check if there's a current task in progress and reset its status
+        if (this.currentTaskWindow != null && this.currentTask != null) {
+             TaskStatus currentStatus = taskStatusMap.get(this.currentTask);
+             if (currentStatus == TaskStatus.IN_PROGRESS) {
+                 taskStatusMap.put(this.currentTask, TaskStatus.UNLOCKED); // Reset to Unlocked
+             }
+             this.currentTaskWindow.dispose(); // Dispose the old task window
+        }
+
         // Reset session score when switching tasks
         sessionScore = 0;
-        currentTask = taskName;
-        
-        if (currentTaskWindow != null) {
-            currentTaskWindow.dispose();
-        }
-        
+        this.currentTask = taskName; // Update current task name AFTER disposing old window
+
         currentTaskWindow = new TaskWindow(taskName);
         String taskDescription = getTaskDescription(taskName);
         currentTaskWindow.setTaskDescription(taskDescription);

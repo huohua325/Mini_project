@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import com.shapeville.gui.tasks.*;
 import com.shapeville.gui.tasks.TaskPanelInterface;
+import com.shapeville.gui.UIManager.TaskStatus;
 
 /**
  * The TaskWindow class represents the main window for different geometric tasks in Shapeville.
@@ -19,6 +20,8 @@ public class TaskWindow extends JFrame {
     private JPanel inputPanel;
     private JTextArea feedbackArea;
     private TaskPanelInterface currentTask;
+    private boolean taskCompletedNormally = false;
+    private JButton homeButton;
     
     /**
      * Constructs a new TaskWindow with the specified task name.
@@ -37,23 +40,39 @@ public class TaskWindow extends JFrame {
      */
     private void initializeUI() {
         setTitle("Shapeville - " + taskName);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        setSize(850, 650);
         setLocationRelativeTo(null);
         
         // Create main panel
-        JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        JPanel mainPanel = new JPanel(new BorderLayout(15, 15));
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(25, 25, 25, 25));
+        
+        // Create top panel with home button
+        JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+        homeButton = new JButton("Home");
+        homeButton.addActionListener(e -> {
+            if (currentTask != null) {
+                currentTask.pauseTask();
+            }
+            showResult(0, 1); // Show 0 score result
+            dispose(); // Close the window
+        });
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(homeButton);
+        topPanel.add(buttonPanel, BorderLayout.EAST);
         
         // Create task description area
         taskDescription = new JTextArea();
         taskDescription.setEditable(false);
         taskDescription.setWrapStyleWord(true);
         taskDescription.setLineWrap(true);
-        taskDescription.setFont(new Font("Arial", Font.PLAIN, 14));
+        taskDescription.setFont(new Font("Arial", Font.PLAIN, 16));
         JScrollPane scrollPane = new JScrollPane(taskDescription);
-        scrollPane.setPreferredSize(new Dimension(750, 100));
-        mainPanel.add(scrollPane, BorderLayout.NORTH);
+        scrollPane.setPreferredSize(new Dimension(800, 120));
+        topPanel.add(scrollPane, BorderLayout.CENTER);
+        
+        mainPanel.add(topPanel, BorderLayout.NORTH);
         
         // Create input panel
         inputPanel = new JPanel();
@@ -65,9 +84,9 @@ public class TaskWindow extends JFrame {
         feedbackArea.setEditable(false);
         feedbackArea.setWrapStyleWord(true);
         feedbackArea.setLineWrap(true);
-        feedbackArea.setFont(new Font("Arial", Font.PLAIN, 14));
+        feedbackArea.setFont(new Font("Arial", Font.PLAIN, 16));
         JScrollPane feedbackScroll = new JScrollPane(feedbackArea);
-        feedbackScroll.setPreferredSize(new Dimension(750, 100));
+        feedbackScroll.setPreferredSize(new Dimension(800, 120));
         
         // Create control panel
         JPanel controlPanel = new JPanel(new BorderLayout());
@@ -155,6 +174,7 @@ public class TaskWindow extends JFrame {
      * @param maxScore The maximum possible score for the task
      */
     public void showResult(int score, int maxScore) {
+        this.taskCompletedNormally = true;
         String feedback = generateFeedback(score, maxScore);
         UIManager.getInstance().showResult("Results", score, maxScore, feedback);
     }
@@ -190,6 +210,14 @@ public class TaskWindow extends JFrame {
     public void cleanup() {
         if (currentTask != null) {
             currentTask.pauseTask();
+            if (!this.taskCompletedNormally) {
+                UIManager uiManager = UIManager.getInstance();
+                TaskStatus currentStatus = uiManager.getTaskStatusMap().get(this.taskName);
+                if (currentStatus == TaskStatus.IN_PROGRESS) {
+                    uiManager.getTaskStatusMap().put(this.taskName, TaskStatus.UNLOCKED);
+                    uiManager.updateMainWindowStatus();
+                }
+            }
         }
     }
     
